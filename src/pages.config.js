@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Platforms from './pages/Platforms';
 import Portfolio from './pages/Portfolio';
 import Admin from './pages/Admin';
+import VentureManagement from './pages/VentureManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -12,6 +13,7 @@ export const PAGES = {
     "Platforms": Platforms,
     "Portfolio": Portfolio,
     "Admin": Admin,
+    "VentureManagement": VentureManagement,
 }
 
 export const pagesConfig = {

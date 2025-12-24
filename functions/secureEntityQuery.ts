@@ -24,6 +24,9 @@ Deno.serve(async (req) => {
         const securityRules = {
             'ContentAsset': 'created_by',
             'ContentAssetVersion': 'created_by',
+            'Venture': 'created_by',
+            'VentureKPI': 'created_by',
+            'VentureTalent': 'created_by',
             'UserProfile': 'user_id',
             'Purchase': 'user_id',
             'Order': 'user_id',
