@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rocket, TrendingUp, Cpu, Zap, Grid, Search, X, Filter } from 'lucide-react';
+import { Rocket, TrendingUp, Cpu, Zap, Grid, Search, X, Filter, Palette, Network } from 'lucide-react';
 import SectionTitle from "@/components/ui/SectionTitle";
 import VentureCard from "@/components/portfolio/VentureCard";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,7 @@ const ventures = [
   {
     name: "Colour Me Brazil",
     description: "Plataforma de arte digital e experiências culturais brasileiras.",
-    layer: "startup",
+    layer: "cultural",
     status: "active",
     category: "Digital Art",
     tags: ["Art", "Culture", "Brazil", "Digital"],
@@ -169,6 +169,24 @@ const ventures = [
     category: "Incubation",
     tags: ["Early Stage", "Mentoring", "Seed"],
     website: "https://criaincubator.com.br"
+  },
+  // Cultural Cluster
+  {
+    name: "Arte e Cultura Lab",
+    description: "Laboratório de inovação em artes e manifestações culturais.",
+    layer: "cultural",
+    status: "active",
+    category: "Cultural Innovation",
+    tags: ["Arts", "Culture", "Innovation", "Community"]
+  },
+  // Win-Win Optionalities
+  {
+    name: "Synergy Hub",
+    description: "Plataforma de parcerias estratégicas e colaborações win-win.",
+    layer: "winwin",
+    status: "active",
+    category: "Strategic Partnerships",
+    tags: ["Partnerships", "Collaboration", "Network", "Value Creation"]
   }
 ];
 
@@ -177,7 +195,9 @@ const layers = [
   { id: "startup", label: "Startups", icon: Rocket },
   { id: "scaleup", label: "Scale-ups", icon: TrendingUp },
   { id: "deeptech", label: "Deep Tech", icon: Cpu },
-  { id: "platform", label: "Platforms", icon: Zap }
+  { id: "platform", label: "Platforms", icon: Zap },
+  { id: "cultural", label: "Cluster Cultural", icon: Palette },
+  { id: "winwin", label: "Opcionalidades Win-Win", icon: Network }
 ];
 
 export default function Portfolio() {
@@ -535,7 +555,7 @@ export default function Portfolio() {
         >
           {[
             { value: "15+", label: "Ventures Ativas" },
-            { value: "4", label: "Camadas Estratégicas" },
+            { value: "6", label: "Camadas Estratégicas" },
             { value: "50+", label: "Profissionais" },
             { value: "R$2M+", label: "Capital Deployado" }
           ].map((stat, index) => (
