@@ -53,6 +53,33 @@ const ventures = [
     tags: ["AI", "Digital Twins", "Simulation"],
     website: "https://twins.caiovision.com"
   },
+  {
+    name: "Troyjo",
+    description: "Plataforma de análise estratégica e inteligência de mercado.",
+    layer: "startup",
+    status: "active",
+    category: "Analytics",
+    tags: ["Strategy", "Market Intelligence", "Analytics"],
+    website: "https://troyjo.caiovision.com"
+  },
+  {
+    name: "Colour Me Brazil",
+    description: "Plataforma de arte digital e experiências culturais brasileiras.",
+    layer: "startup",
+    status: "active",
+    category: "Digital Art",
+    tags: ["Art", "Culture", "Brazil", "Digital"],
+    website: "https://colour-me-brazil.caiovision.com"
+  },
+  {
+    name: "i9net",
+    description: "Rede de inovação e conhecimento conectando empresas e instituições.",
+    layer: "scaleup",
+    status: "scaling",
+    category: "Innovation Network",
+    tags: ["Network", "Innovation", "Collaboration"],
+    website: "https://i9net.caiovision.com"
+  },
   // Scale-Up
   {
     name: "All.AI",

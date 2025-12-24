@@ -12,16 +12,16 @@ const portfolioLayers = [
     description: "Ideias em estágio inicial sendo validadas e desenvolvidas com metodologias ágeis.",
     icon: Rocket,
     color: "cyan",
-    ventures: ["Golden Deer", "ESIOS", "Twins", "QuickTech"],
-    stats: "5 projetos ativos"
+    ventures: ["Golden Deer", "ESIOS", "Twins", "Troyjo", "Colour Me Brazil"],
+    stats: "8 projetos ativos"
   },
   {
     title: "Scale-Up Ventures",
     description: "Empresas em crescimento acelerado, prontas para conquistar novos mercados.",
     icon: TrendingUp,
     color: "gold",
-    ventures: ["All.AI", "Innova Academy", "DataSync"],
-    stats: "3 em expansão"
+    ventures: ["All.AI", "Innova Academy", "i9net", "DataSync"],
+    stats: "4 em expansão"
   },
   {
     title: "Deep Tech & IP",
