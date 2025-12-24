@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
         // Key: entity name, Value: field name to filter by user
         const securityRules = {
             'ContentAsset': 'created_by',
+            'ContentAssetVersion': 'created_by',
             'UserProfile': 'user_id',
             'Purchase': 'user_id',
             'Order': 'user_id',

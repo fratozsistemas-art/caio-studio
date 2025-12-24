@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Image, File, Type, Copy, Trash2, ExternalLink, Check } from 'lucide-react';
+import { Image, File, Type, Copy, Trash2, ExternalLink, Check, History, Upload } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import GlowCard from "@/components/ui/GlowCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import VersionHistory from "./VersionHistory";
+import VersionUploader from "./VersionUploader";
 
 export default function SecureAssetGallery({ assets, onDelete }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterType, setFilterType] = useState('all');
   const [copiedId, setCopiedId] = useState(null);
+  const [showVersionHistory, setShowVersionHistory] = useState(null);
+  const [showVersionUploader, setShowVersionUploader] = useState(null);
 
   const copyToClipboard = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -156,15 +160,23 @@ export default function SecureAssetGallery({ assets, onDelete }) {
                         </div>
                       )}
 
+                      {/* Version Info */}
+                      {asset.version_count > 1 && (
+                        <div className="flex items-center gap-2 text-xs text-slate-400">
+                          <History className="w-3 h-3" />
+                          <span>v{asset.current_version} ({asset.version_count} versões)</span>
+                        </div>
+                      )}
+
                       {/* Actions */}
-                      <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                      <div className="grid grid-cols-3 gap-1 pt-2 border-t border-white/10">
                         {asset.file_url && (
                           <>
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => copyToClipboard(asset.file_url, asset.id)}
-                              className="flex-1 text-[#00D4FF] hover:bg-[#00D4FF]/10"
+                              className="text-[#00D4FF] hover:bg-[#00D4FF]/10"
                             >
                               {copiedId === asset.id ? (
                                 <Check className="w-4 h-4" />
@@ -176,7 +188,7 @@ export default function SecureAssetGallery({ assets, onDelete }) {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="text-white/70 hover:bg-white/10"
+                                className="text-white/70 hover:bg-white/10 w-full"
                               >
                                 <ExternalLink className="w-4 h-4" />
                               </Button>
@@ -188,7 +200,7 @@ export default function SecureAssetGallery({ assets, onDelete }) {
                             size="sm"
                             variant="ghost"
                             onClick={() => copyToClipboard(asset.text_content, asset.id)}
-                            className="flex-1 text-[#00D4FF] hover:bg-[#00D4FF]/10"
+                            className="text-[#00D4FF] hover:bg-[#00D4FF]/10"
                           >
                             {copiedId === asset.id ? (
                               <Check className="w-4 h-4" />
@@ -197,6 +209,24 @@ export default function SecureAssetGallery({ assets, onDelete }) {
                             )}
                           </Button>
                         )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setShowVersionUploader(asset)}
+                          className="text-[#C7A763] hover:bg-[#C7A763]/10"
+                          title="Upload nova versão"
+                        >
+                          <Upload className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setShowVersionHistory(asset)}
+                          className="text-white/70 hover:bg-white/10"
+                          title="Ver histórico"
+                        >
+                          <History className="w-4 h-4" />
+                        </Button>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -228,6 +258,34 @@ export default function SecureAssetGallery({ assets, onDelete }) {
           <p>Nenhum asset encontrado</p>
         </div>
       )}
+
+      {/* Version History Modal */}
+      <AnimatePresence>
+        {showVersionHistory && (
+          <VersionHistory
+            asset={showVersionHistory}
+            onClose={() => setShowVersionHistory(null)}
+            onRevert={() => {
+              setShowVersionHistory(null);
+              if (onDelete) onDelete();
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Version Uploader Modal */}
+      <AnimatePresence>
+        {showVersionUploader && (
+          <VersionUploader
+            asset={showVersionUploader}
+            onClose={() => setShowVersionUploader(null)}
+            onSuccess={() => {
+              setShowVersionUploader(null);
+              if (onDelete) onDelete();
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
