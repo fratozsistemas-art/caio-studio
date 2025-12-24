@@ -20,12 +20,22 @@ const ventures = [
     website: "https://goldendeer.com.br"
   },
   {
-    name: "QuickTech",
+    name: "QuickTech Acabamentos",
     description: "Soluções de automação para pequenas e médias empresas com IA integrada.",
     layer: "startup",
     status: "active",
     category: "SaaS",
-    tags: ["Automação", "PMEs", "AI"]
+    tags: ["Automação", "PMEs", "AI"],
+    website: "https://quicktechacabamentos.com.br"
+  },
+  {
+    name: "ESU Empreendimentos",
+    description: "Plataforma de gestão e desenvolvimento de empreendimentos imobiliários.",
+    layer: "startup",
+    status: "active",
+    category: "PropTech",
+    tags: ["Real Estate", "Gestão", "Empreendimentos"],
+    website: "https://esuemi.com.br"
   },
   {
     name: "Nexus Pay",
@@ -43,6 +53,24 @@ const ventures = [
     category: "Platform",
     tags: ["Management", "Strategy", "Operations"],
     website: "https://esios.caiovision.com"
+  },
+  {
+    name: "CAIO Vision Studio",
+    description: "Portal institucional e showcase do ecossistema CAIO Vision.",
+    layer: "platform",
+    status: "active",
+    category: "Institutional",
+    tags: ["Portal", "Brand", "Ecosystem"],
+    website: "https://caiovision.com"
+  },
+  {
+    name: "CAIO Vision Brasil",
+    description: "Portal regional para o mercado brasileiro com conteúdo localizado.",
+    layer: "platform",
+    status: "active",
+    category: "Regional Portal",
+    tags: ["Portal", "Brazil", "Regional"],
+    website: "https://caiovision.com.br"
   },
   {
     name: "Twins",
@@ -506,7 +534,7 @@ export default function Portfolio() {
           transition={{ duration: 0.6 }}
         >
           {[
-            { value: "10+", label: "Ventures Ativas" },
+            { value: "15+", label: "Ventures Ativas" },
             { value: "4", label: "Camadas Estratégicas" },
             { value: "50+", label: "Profissionais" },
             { value: "R$2M+", label: "Capital Deployado" }
