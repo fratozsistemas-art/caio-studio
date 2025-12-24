@@ -10,6 +10,9 @@ import GlowCard from "@/components/ui/GlowCard";
 import PortfolioMetrics from "@/components/dashboard/PortfolioMetrics";
 import PortfolioCharts from "@/components/dashboard/PortfolioCharts";
 import DashboardCustomizer from "@/components/dashboard/DashboardCustomizer";
+import VentureHeatmap from "@/components/dashboard/VentureHeatmap";
+import ResourceAllocation from "@/components/dashboard/ResourceAllocation";
+import CustomAlertManager from "@/components/dashboard/CustomAlertManager";
 import { toast } from "sonner";
 
 export default function PortfolioDashboard() {
