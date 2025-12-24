@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import GlowCard from "@/components/ui/GlowCard";
 import AnalysisReport from "./AnalysisReport";
 import MarketDataFeed from "./MarketDataFeed";
+import VentureScore from "./VentureScore";
 import { toast } from "sonner";
 
 export default function VentureAnalytics({ ventures }) {
@@ -301,6 +302,9 @@ Seja específico, acionável e use dados quantitativos sempre que possível.`;
           </div>
         </GlowCard>
       )}
+
+      {/* Venture Score */}
+      {ventureScore && <VentureScore score={ventureScore} />}
 
       {/* Market Data Feed */}
       {selectedVenture && venture && (

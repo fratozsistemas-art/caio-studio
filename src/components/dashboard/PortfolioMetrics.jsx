@@ -1,6 +1,8 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { TrendingUp, AlertTriangle, CheckCircle2, Users, Target } from 'lucide-react';
+import { TrendingUp, AlertTriangle, CheckCircle2, Users, Target, Award } from 'lucide-react';
 import GlowCard from "@/components/ui/GlowCard";
 import { Badge } from "@/components/ui/badge";
 
@@ -8,6 +10,24 @@ export default function PortfolioMetrics({ data, config }) {
   if (!data) return null;
 
   const { ventures, kpis, talents, financials } = data;
+
+  // Fetch all venture scores
+  const { data: allScores } = useQuery({
+    queryKey: ['allVentureScores'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureScore',
+        operation: 'list',
+        sort: '-calculated_at'
+      });
+      return res.data?.data || [];
+    }
+  });
+
+  // Calculate average portfolio score
+  const portfolioScore = allScores?.length > 0
+    ? allScores.reduce((sum, s) => sum + s.overall_score, 0) / allScores.length
+    : 0;
 
   // Calculate metrics
   const venturesByLayer = ventures.reduce((acc, v) => {
@@ -28,6 +48,41 @@ export default function PortfolioMetrics({ data, config }) {
 
   return (
     <div className="space-y-6">
+      {/* Portfolio Score */}
+      {allScores && allScores.length > 0 && (
+        <GlowCard glowColor="mixed" className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Award className="w-5 h-5 text-[#C7A763]" />
+            Portfolio Score Médio
+          </h3>
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="text-5xl font-bold text-white mb-2">
+                {portfolioScore.toFixed(1)}
+              </div>
+              <p className="text-sm text-slate-400">
+                Baseado em {allScores.length} ventures avaliadas
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {allScores.slice(0, 4).map((score, i) => {
+                const venture = ventures.find(v => v.id === score.venture_id);
+                return (
+                  <div key={i} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <div className="text-xs text-slate-400 mb-1">
+                      {venture?.name || 'Venture'}
+                    </div>
+                    <div className="text-2xl font-bold text-[#C7A763]">
+                      {score.overall_score.toFixed(0)}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </GlowCard>
+      )}
+
       {/* Ventures Distribution */}
       <GlowCard glowColor="cyan" className="p-6">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
