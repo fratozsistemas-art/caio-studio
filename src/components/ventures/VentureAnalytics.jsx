@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GlowCard from "@/components/ui/GlowCard";
 import AnalysisReport from "./AnalysisReport";
+import MarketDataFeed from "./MarketDataFeed";
 import { toast } from "sonner";
 
 export default function VentureAnalytics({ ventures }) {
@@ -88,10 +89,26 @@ export default function VentureAnalytics({ ventures }) {
         }
       };
 
+      // Fetch market data for enriched analysis
+      let marketContext = '';
+      try {
+        const marketQuery = `${venture.category || venture.name} industry trends market analysis 2025`;
+        const marketResponse = await base44.integrations.Core.InvokeLLM({
+          prompt: `Forneça um breve resumo de tendências de mercado e dados relevantes para: ${marketQuery}`,
+          add_context_from_internet: true
+        });
+        marketContext = typeof marketResponse === 'string' ? marketResponse : JSON.stringify(marketResponse);
+      } catch (error) {
+        console.warn('Market data fetch failed:', error);
+      }
+
       const prompt = `Você é um consultor especialista em análise de ventures de venture studios e startups. Analise os dados da venture abaixo e forneça insights estratégicos detalhados.
 
 DADOS DA VENTURE:
 ${JSON.stringify(analysisContext, null, 2)}
+
+CONTEXTO DE MERCADO:
+${marketContext}
 
 Por favor, forneça uma análise completa no formato JSON especificado, incluindo:
 
@@ -283,6 +300,11 @@ Seja específico, acionável e use dados quantitativos sempre que possível.`;
             <p className="text-sm">Adicione KPIs para habilitar a análise com IA.</p>
           </div>
         </GlowCard>
+      )}
+
+      {/* Market Data Feed */}
+      {selectedVenture && venture && (
+        <MarketDataFeed venture={venture} compact={false} />
       )}
 
       {/* Analysis Report */}

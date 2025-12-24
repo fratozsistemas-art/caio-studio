@@ -9,7 +9,8 @@ const navigation = [
   { name: "Home", page: "Home" },
   { name: "Portfolio", page: "Portfolio" },
   { name: "Plataformas", page: "Platforms" },
-  { name: "Sobre", page: "About" }
+  { name: "Sobre", page: "About" },
+  { name: "Dashboard", page: "PortfolioDashboard" }
 ];
 
 export default function Layout({ children, currentPageName }) {
