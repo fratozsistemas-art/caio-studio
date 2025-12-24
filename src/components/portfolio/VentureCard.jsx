@@ -40,16 +40,18 @@ export default function VentureCard({ venture, index }) {
           </p>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {venture.tags?.map((tag, tagIndex) => (
-              <span
-                key={tagIndex}
-                className="px-2 py-1 rounded-md bg-white/5 text-white/60 text-xs"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          {venture.tags && venture.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              {venture.tags.map((tag, tagIndex) => (
+                <span
+                  key={tagIndex}
+                  className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-medium hover:bg-white/10 transition-colors"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           {/* Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-white/10">
