@@ -111,9 +111,10 @@ export default function FileUploader({ onUploadComplete }) {
         {/* Asset Type */}
         <div>
           <Label className="text-white/70 mb-2 block">Tipo de Asset</Label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-4 gap-3">
             {[
               { value: 'image', label: 'Imagem', icon: Image },
+              { value: 'video', label: 'Vídeo', icon: File },
               { value: 'file', label: 'Arquivo', icon: File },
               { value: 'text', label: 'Texto', icon: Type }
             ].map((type) => (
@@ -153,25 +154,29 @@ export default function FileUploader({ onUploadComplete }) {
         ) : (
           <div>
             <Label className="text-white/70 mb-2 block">
-              {assetType === 'image' ? 'Selecionar Imagem' : 'Selecionar Arquivo'}
+              {assetType === 'image' ? 'Selecionar Imagem' : assetType === 'video' ? 'Selecionar Vídeo (MP4, etc)' : 'Selecionar Arquivo'}
             </Label>
             <label className="block">
               <input
                 type="file"
                 onChange={handleFileSelect}
-                accept={assetType === 'image' ? 'image/*' : '*'}
+                accept={assetType === 'image' ? 'image/*' : assetType === 'video' ? 'video/*' : '*'}
                 className="hidden"
               />
               <div className="p-8 border-2 border-dashed border-white/20 rounded-xl hover:border-[#C7A763]/50 transition-colors cursor-pointer text-center bg-white/5">
                 {selectedFile ? (
-                  <div className="flex items-center justify-center gap-2 text-[#C7A763]">
+                  <div className="flex flex-col items-center justify-center gap-2 text-[#C7A763]">
                     <Check className="w-5 h-5" />
                     <span className="text-sm">{selectedFile.name}</span>
+                    <span className="text-xs text-white/50">({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
                   </div>
                 ) : (
                   <div className="text-white/50">
                     <Upload className="w-8 h-8 mx-auto mb-2" />
                     <p className="text-sm">Clique para selecionar ou arraste aqui</p>
+                    {assetType === 'video' && (
+                      <p className="text-xs mt-1">Suporta MP4, MOV, AVI, etc</p>
+                    )}
                   </div>
                 )}
               </div>
