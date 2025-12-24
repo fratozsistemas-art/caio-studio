@@ -10,6 +10,9 @@ import VentureList from "@/components/ventures/VentureList";
 import VentureForm from "@/components/ventures/VentureForm";
 import KPIManager from "@/components/ventures/KPIManager";
 import TalentManager from "@/components/ventures/TalentManager";
+import TalentAnalysis from "@/components/ventures/TalentAnalysis";
+import SkillRecommendations from "@/components/ventures/SkillRecommendations";
+import TalentPerformance from "@/components/ventures/TalentPerformance";
 import VentureAnalytics from "@/components/ventures/VentureAnalytics";
 import FinancialModeling from "@/components/ventures/FinancialModeling";
 import FinancialScenarios from "@/components/ventures/FinancialScenarios";
@@ -156,8 +159,17 @@ export default function VentureManagement() {
             <KPIManager ventures={ventures} />
           </TabsContent>
 
-          <TabsContent value="talents">
+          <TabsContent value="talents" className="space-y-6">
             <TalentManager ventures={ventures} />
+            <TalentPerformance 
+              talents={talents}
+              onUpdate={() => refetch()}
+            />
+            <TalentAnalysis 
+              talents={talents}
+              ventures={ventures}
+            />
+            <SkillRecommendations talents={talents} />
           </TabsContent>
 
           <TabsContent value="financial">
