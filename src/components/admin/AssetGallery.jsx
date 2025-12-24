@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Image, File, Type, Copy, Trash2, ExternalLink, Check, Filter } from 'lucide-react';
+import { Image, File, Type, Copy, Trash2, ExternalLink, Check, Filter, Video } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { base44 } from "@/api/base44Client";
@@ -44,6 +44,7 @@ export default function AssetGallery({ assets, onDelete }) {
   const getIcon = (type) => {
     switch (type) {
       case 'image': return Image;
+      case 'video': return Video;
       case 'file': return File;
       case 'text': return Type;
       default: return File;
@@ -70,6 +71,7 @@ export default function AssetGallery({ assets, onDelete }) {
             <SelectContent>
               <SelectItem value="all">Todos os tipos</SelectItem>
               <SelectItem value="image">Imagens</SelectItem>
+              <SelectItem value="video">Vídeos</SelectItem>
               <SelectItem value="file">Arquivos</SelectItem>
               <SelectItem value="text">Textos</SelectItem>
             </SelectContent>
@@ -115,6 +117,14 @@ export default function AssetGallery({ assets, onDelete }) {
                           className="w-full h-full object-cover"
                         />
                       </div>
+                    ) : asset.type === 'video' && asset.file_url ? (
+                      <div className="relative aspect-video rounded-lg overflow-hidden mb-4 bg-black">
+                        <video 
+                          src={asset.file_url} 
+                          controls
+                          className="w-full h-full"
+                        />
+                      </div>
                     ) : (
                       <div className="aspect-video rounded-lg bg-white/5 border border-white/10 mb-4 flex items-center justify-center">
                         <Icon className="w-12 h-12 text-white/30" />
@@ -132,6 +142,7 @@ export default function AssetGallery({ assets, onDelete }) {
                         </div>
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           asset.type === 'image' ? 'bg-purple-500/20 text-purple-400' :
+                          asset.type === 'video' ? 'bg-red-500/20 text-red-400' :
                           asset.type === 'file' ? 'bg-blue-500/20 text-blue-400' :
                           'bg-green-500/20 text-green-400'
                         }`}>
