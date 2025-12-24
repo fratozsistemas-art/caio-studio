@@ -17,6 +17,7 @@ import VentureAnalytics from "@/components/ventures/VentureAnalytics";
 import FinancialModeling from "@/components/ventures/FinancialModeling";
 import FinancialScenarios from "@/components/ventures/FinancialScenarios";
 import NotificationsAlerts from "@/components/ventures/NotificationsAlerts";
+import PortfolioManager from "@/components/ventures/PortfolioManager";
 
 export default function VentureManagement() {
   const [user, setUser] = useState(null);
@@ -56,6 +57,46 @@ export default function VentureManagement() {
   });
 
   const ventures = venturesResponse?.data || [];
+
+  const { data: financialsResponse } = useQuery({
+    queryKey: ['allFinancials'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'FinancialRecord',
+        operation: 'list'
+      });
+      return response.data;
+    },
+    enabled: !!user
+  });
+
+  const { data: kpisResponse } = useQuery({
+    queryKey: ['allKPIs'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureKPI',
+        operation: 'list'
+      });
+      return response.data;
+    },
+    enabled: !!user
+  });
+
+  const { data: talentsResponse } = useQuery({
+    queryKey: ['allTalents'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureTalent',
+        operation: 'list'
+      });
+      return response.data;
+    },
+    enabled: !!user
+  });
+
+  const financials = financialsResponse?.data || [];
+  const kpis = kpisResponse?.data || [];
+  const talents = talentsResponse?.data || [];
 
   if (loading) {
     return (
@@ -136,6 +177,7 @@ export default function VentureManagement() {
         <Tabs defaultValue="ventures" className="space-y-6">
           <TabsList className="bg-white/5 border border-white/10">
             <TabsTrigger value="ventures">Ventures</TabsTrigger>
+            <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
             <TabsTrigger value="kpis">KPIs & Metas</TabsTrigger>
             <TabsTrigger value="talents">Talentos & Skills</TabsTrigger>
             <TabsTrigger value="financial">Modelagem Financeira</TabsTrigger>
@@ -152,6 +194,14 @@ export default function VentureManagement() {
                 setShowVentureForm(true);
               }}
               onRefresh={refetch}
+            />
+          </TabsContent>
+
+          <TabsContent value="portfolios">
+            <PortfolioManager 
+              ventures={ventures}
+              financials={financials}
+              kpis={kpis}
             />
           </TabsContent>
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Pencil, Trash2, ExternalLink } from 'lucide-react';
+import { Pencil, Trash2, ExternalLink, Eye } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import GlowCard from "@/components/ui/GlowCard";
+import { Link } from 'react-router-dom';
+import { createPageUrl } from "@/utils";
 
 export default function VentureList({ ventures, onEdit, onRefresh }) {
   const handleDelete = async (venture) => {
@@ -75,6 +77,11 @@ export default function VentureList({ ventures, onEdit, onRefresh }) {
               )}
 
               <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                <Link to={`${createPageUrl('VentureDetail')}?id=${venture.id}`}>
+                  <Button size="sm" variant="ghost" className="text-[#C7A763] hover:bg-[#C7A763]/10">
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                </Link>
                 {venture.website && (
                   <a href={venture.website} target="_blank" rel="noopener noreferrer">
                     <Button size="sm" variant="ghost" className="text-white/70 hover:bg-white/10">
