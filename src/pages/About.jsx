@@ -95,14 +95,18 @@ export default function About() {
 
           <motion.div
             className="flex justify-center"
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="relative w-80 h-80">
-              <div className="absolute inset-0 rounded-full border border-[#C7A763]/20" />
-              <div className="absolute inset-8 rounded-full border border-[#00D4FF]/20" />
-              <NeuralBrain className="w-full h-full" />
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+              <iframe
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                title="CAIO Vision Presentation"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
             </div>
           </motion.div>
         </div>
