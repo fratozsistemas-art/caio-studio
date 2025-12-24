@@ -12,6 +12,8 @@ import KPIManager from "@/components/ventures/KPIManager";
 import TalentManager from "@/components/ventures/TalentManager";
 import VentureAnalytics from "@/components/ventures/VentureAnalytics";
 import FinancialModeling from "@/components/ventures/FinancialModeling";
+import FinancialScenarios from "@/components/ventures/FinancialScenarios";
+import NotificationsAlerts from "@/components/ventures/NotificationsAlerts";
 
 export default function VentureManagement() {
   const [user, setUser] = useState(null);
@@ -133,8 +135,10 @@ export default function VentureManagement() {
             <TabsTrigger value="ventures">Ventures</TabsTrigger>
             <TabsTrigger value="kpis">KPIs & Metas</TabsTrigger>
             <TabsTrigger value="talents">Talentos & Skills</TabsTrigger>
-            <TabsTrigger value="analytics">Análise com IA</TabsTrigger>
             <TabsTrigger value="financial">Modelagem Financeira</TabsTrigger>
+            <TabsTrigger value="scenarios">Cenários Avançados</TabsTrigger>
+            <TabsTrigger value="alerts">Notificações</TabsTrigger>
+            <TabsTrigger value="analytics">Análise com IA</TabsTrigger>
           </TabsList>
 
           <TabsContent value="ventures">
@@ -156,12 +160,20 @@ export default function VentureManagement() {
             <TalentManager ventures={ventures} />
           </TabsContent>
 
-          <TabsContent value="analytics">
-            <VentureAnalytics ventures={ventures} />
-          </TabsContent>
-
           <TabsContent value="financial">
             <FinancialModeling ventures={ventures} />
+          </TabsContent>
+
+          <TabsContent value="scenarios">
+            <FinancialScenarios ventureId={ventures[0]?.id} />
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <NotificationsAlerts ventureId={ventures[0]?.id} />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <VentureAnalytics ventures={ventures} />
           </TabsContent>
         </Tabs>
 

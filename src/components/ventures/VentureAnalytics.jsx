@@ -14,6 +14,7 @@ import { toast } from "sonner";
 export default function VentureAnalytics({ ventures }) {
   const [selectedVenture, setSelectedVenture] = useState(ventures[0]?.id || null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [calculatingScore, setCalculatingScore] = useState(false);
   const [analysis, setAnalysis] = useState(null);
 
   const { data: ventureData } = useQuery({
@@ -44,6 +45,36 @@ export default function VentureAnalytics({ ventures }) {
   });
 
   const venture = ventures.find(v => v.id === selectedVenture);
+
+  const { data: ventureScore, refetch: refetchScore } = useQuery({
+    queryKey: ['ventureScore', selectedVenture],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureScore',
+        operation: 'filter',
+        query: { venture_id: selectedVenture },
+        sort: '-calculated_at',
+        limit: 1
+      });
+      return res.data?.data?.[0] || null;
+    },
+    enabled: !!selectedVenture
+  });
+
+  const calculateScore = async () => {
+    setCalculatingScore(true);
+    try {
+      await base44.functions.invoke('calculateVentureScore', {
+        venture_id: selectedVenture
+      });
+      await refetchScore();
+      toast.success('Score calculado com sucesso');
+    } catch (error) {
+      toast.error('Erro ao calcular score: ' + error.message);
+    } finally {
+      setCalculatingScore(false);
+    }
+  };
 
   const analyzeVenture = async () => {
     if (!venture || !ventureData) {
@@ -224,23 +255,43 @@ Seja específico, acionável e use dados quantitativos sempre que possível.`;
           </SelectContent>
         </Select>
 
-        <Button
-          onClick={analyzeVenture}
-          disabled={!selectedVenture || analyzing || !ventureData?.kpis?.length}
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
-        >
-          {analyzing ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Analisando com IA...
-            </>
-          ) : (
-            <>
-              <Brain className="w-4 h-4 mr-2" />
-              Analisar com IA
-            </>
-          )}
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={calculateScore}
+            disabled={!selectedVenture || calculatingScore}
+            variant="outline"
+            className="border-white/10 text-white hover:bg-white/10"
+          >
+            {calculatingScore ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Calculando...
+              </>
+            ) : (
+              <>
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Calcular Score
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={analyzeVenture}
+            disabled={!selectedVenture || analyzing || !ventureData?.kpis?.length}
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+          >
+            {analyzing ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Analisando com IA...
+              </>
+            ) : (
+              <>
+                <Brain className="w-4 h-4 mr-2" />
+                Analisar com IA
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
