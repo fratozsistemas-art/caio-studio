@@ -4,18 +4,19 @@ import { createPageUrl } from "@/utils";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Brain, ArrowUpRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { base44 } from "@/api/base44Client";
 
 const navigation = [
   { name: "Home", page: "Home" },
   { name: "Portfolio", page: "Portfolio" },
   { name: "Plataformas", page: "Platforms" },
-  { name: "Sobre", page: "About" },
-  { name: "Dashboard", page: "PortfolioDashboard" }
+  { name: "Sobre", page: "About" }
 ];
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +24,18 @@ export default function Layout({ children, currentPageName }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const user = await base44.auth.me();
+        setIsAdmin(user?.role === 'admin');
+      } catch (error) {
+        setIsAdmin(false);
+      }
+    };
+    checkAdmin();
   }, []);
 
   useEffect(() => {
@@ -112,6 +125,25 @@ export default function Layout({ children, currentPageName }) {
                 )}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                to={createPageUrl("PortfolioDashboard")}
+                className={`relative text-sm font-medium transition-colors ${
+                  currentPageName === "PortfolioDashboard" 
+                    ? 'text-[#C7A763]' 
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                Dashboard
+                {currentPageName === "PortfolioDashboard" && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+              </Link>
+            )}
           </div>
 
           {/* CTA Button */}
@@ -163,6 +195,18 @@ export default function Layout({ children, currentPageName }) {
                     {item.name}
                   </Link>
                 ))}
+                {isAdmin && (
+                  <Link
+                    to={createPageUrl("PortfolioDashboard")}
+                    className={`block py-3 text-lg font-medium transition-colors ${
+                      currentPageName === "PortfolioDashboard" 
+                        ? 'text-[#C7A763]' 
+                        : 'text-white/70'
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 <Link 
                   to={createPageUrl("About")}
                   className="block"
