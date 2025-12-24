@@ -16,7 +16,8 @@ const ventures = [
     layer: "startup",
     status: "development",
     category: "FinTech",
-    tags: ["Blockchain", "Investimentos", "DeFi"]
+    tags: ["Blockchain", "Investimentos", "DeFi"],
+    website: "https://goldendeer.com.br"
   },
   {
     name: "QuickTech",
@@ -34,6 +35,24 @@ const ventures = [
     category: "Payments",
     tags: ["E-commerce", "Pagamentos", "API"]
   },
+  {
+    name: "ESIOS",
+    description: "Sistema operacional para gestão estratégica de ventures e portfolios.",
+    layer: "startup",
+    status: "active",
+    category: "Platform",
+    tags: ["Management", "Strategy", "Operations"],
+    website: "https://esios.caiovision.com"
+  },
+  {
+    name: "Twins",
+    description: "Plataforma de inteligência artificial para criação de gêmeos digitais.",
+    layer: "startup",
+    status: "development",
+    category: "AI Platform",
+    tags: ["AI", "Digital Twins", "Simulation"],
+    website: "https://twins.caiovision.com"
+  },
   // Scale-Up
   {
     name: "All.AI",
@@ -49,7 +68,8 @@ const ventures = [
     layer: "scaleup",
     status: "active",
     category: "EdTech",
-    tags: ["Educação", "Carreira", "Online"]
+    tags: ["Educação", "Carreira", "Online"],
+    website: "https://innovaacademy.com.br"
   },
   {
     name: "DataSync",
@@ -66,7 +86,8 @@ const ventures = [
     layer: "deeptech",
     status: "research",
     category: "Advanced Materials",
-    tags: ["Nanotechnology", "R&D", "IP"]
+    tags: ["Nanotechnology", "R&D", "IP"],
+    website: "https://orixmaterials.com"
   },
   {
     name: "QuantumBridge",
@@ -91,7 +112,8 @@ const ventures = [
     layer: "platform",
     status: "active",
     category: "Incubation",
-    tags: ["Early Stage", "Mentoring", "Seed"]
+    tags: ["Early Stage", "Mentoring", "Seed"],
+    website: "https://criaincubator.com.br"
   }
 ];
 

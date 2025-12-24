@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, Globe } from 'lucide-react';
 import GlowCard from "@/components/ui/GlowCard";
+import { Button } from "@/components/ui/button";
 
 export default function VentureCard({ venture, index }) {
   const statusColors = {
@@ -54,12 +55,28 @@ export default function VentureCard({ venture, index }) {
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-white/10">
-            <span className="text-xs text-slate-500">{venture.category}</span>
-            <button className="flex items-center gap-1 text-sm text-[#C7A763] opacity-0 group-hover:opacity-100 transition-opacity">
-              Detalhes
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+          <div className="pt-4 border-t border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-500">{venture.category}</span>
+              {venture.website ? (
+                <a 
+                  href={venture.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1.5 text-xs text-[#C7A763] hover:text-[#D4B474] transition-colors font-medium"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  Visitar Site
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              ) : (
+                <button className="flex items-center gap-1 text-sm text-[#C7A763] opacity-0 group-hover:opacity-100 transition-opacity">
+                  Detalhes
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </GlowCard>

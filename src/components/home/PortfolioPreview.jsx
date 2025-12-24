@@ -12,7 +12,7 @@ const portfolioLayers = [
     description: "Ideias em estágio inicial sendo validadas e desenvolvidas com metodologias ágeis.",
     icon: Rocket,
     color: "cyan",
-    ventures: ["Golden Deer", "QuickTech", "Nexus Pay"],
+    ventures: ["Golden Deer", "ESIOS", "Twins", "QuickTech"],
     stats: "5 projetos ativos"
   },
   {
