@@ -11,6 +11,7 @@ import VentureForm from "@/components/ventures/VentureForm";
 import KPIManager from "@/components/ventures/KPIManager";
 import TalentManager from "@/components/ventures/TalentManager";
 import VentureAnalytics from "@/components/ventures/VentureAnalytics";
+import FinancialModeling from "@/components/ventures/FinancialModeling";
 
 export default function VentureManagement() {
   const [user, setUser] = useState(null);
@@ -133,6 +134,7 @@ export default function VentureManagement() {
             <TabsTrigger value="kpis">KPIs & Metas</TabsTrigger>
             <TabsTrigger value="talents">Talentos & Skills</TabsTrigger>
             <TabsTrigger value="analytics">Análise com IA</TabsTrigger>
+            <TabsTrigger value="financial">Modelagem Financeira</TabsTrigger>
           </TabsList>
 
           <TabsContent value="ventures">
@@ -156,6 +158,10 @@ export default function VentureManagement() {
 
           <TabsContent value="analytics">
             <VentureAnalytics ventures={ventures} />
+          </TabsContent>
+
+          <TabsContent value="financial">
+            <FinancialModeling ventures={ventures} />
           </TabsContent>
         </Tabs>
 

@@ -27,6 +27,7 @@ Deno.serve(async (req) => {
             'Venture': 'created_by',
             'VentureKPI': 'created_by',
             'VentureTalent': 'created_by',
+            'FinancialRecord': 'created_by',
             'UserProfile': 'user_id',
             'Purchase': 'user_id',
             'Order': 'user_id',
