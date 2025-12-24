@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import SectionTitle from "@/components/ui/SectionTitle";
 import FileUploader from "@/components/admin/FileUploader";
-import AssetGallery from "@/components/admin/AssetGallery";
+import SecureAssetGallery from "@/components/admin/SecureAssetGallery";
 import { Button } from "@/components/ui/button";
 
 export default function Admin() {
@@ -32,12 +32,21 @@ export default function Admin() {
     checkAuth();
   }, []);
 
-  // Fetch assets
-  const { data: assets = [], isLoading, refetch } = useQuery({
+  // Fetch assets using secure function
+  const { data: assetsResponse, isLoading, refetch } = useQuery({
     queryKey: ['contentAssets'],
-    queryFn: () => base44.entities.ContentAsset.list('-created_date'),
+    queryFn: async () => {
+      const response = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'ContentAsset',
+        operation: 'list',
+        sort: '-created_date'
+      });
+      return response.data;
+    },
     enabled: !!user && user.role === 'admin'
   });
+
+  const assets = assetsResponse?.data || [];
 
   if (loading) {
     return (
@@ -144,7 +153,7 @@ export default function Admin() {
             </Button>
           </div>
 
-          <AssetGallery assets={assets} onDelete={refetch} />
+          <SecureAssetGallery assets={assets} onDelete={refetch} />
         </motion.div>
 
         {/* Instructions */}

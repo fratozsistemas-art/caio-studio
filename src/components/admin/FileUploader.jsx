@@ -61,20 +61,24 @@ export default function FileUploader({ onUploadComplete }) {
         fileUrl = uploadResult.file_url;
       }
 
-      // Create asset record
+      // Create asset record using secure function
       const tagsArray = formData.tags
         .split(',')
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      await base44.entities.ContentAsset.create({
-        title: formData.title,
-        type: assetType,
-        file_url: fileUrl,
-        text_content: assetType === 'text' ? textContent : null,
-        description: formData.description,
-        tags: tagsArray,
-        category: formData.category
+      await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'ContentAsset',
+        operation: 'create',
+        data: {
+          title: formData.title,
+          type: assetType,
+          file_url: fileUrl,
+          text_content: assetType === 'text' ? textContent : null,
+          description: formData.description,
+          tags: tagsArray,
+          category: formData.category
+        }
       });
 
       toast.success('Asset enviado com sucesso!');
