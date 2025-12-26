@@ -22,6 +22,9 @@ import PortfolioManager from "@/components/ventures/PortfolioManager";
 import SquadManager from "@/components/collaboration/SquadManager";
 import CollaborationChannels from "@/components/collaboration/CollaborationChannels";
 import InternalMarketplace from "@/components/marketplace/InternalMarketplace";
+import TaskManager from "@/components/collaboration/TaskManager";
+import CommentSection from "@/components/collaboration/CommentSection";
+import ActivityFeed from "@/components/collaboration/ActivityFeed";
 
 export default function VentureManagement() {
   const [user, setUser] = useState(null);
@@ -213,6 +216,8 @@ export default function VentureManagement() {
         <Tabs defaultValue="ventures" className="space-y-6">
           <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto">
             <TabsTrigger value="ventures">Ventures</TabsTrigger>
+            <TabsTrigger value="tasks">Tarefas</TabsTrigger>
+            <TabsTrigger value="activity">Atividades</TabsTrigger>
             <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
             <TabsTrigger value="collaboration">Colaboração</TabsTrigger>
             <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
@@ -233,6 +238,14 @@ export default function VentureManagement() {
               }}
               onRefresh={refetch}
             />
+          </TabsContent>
+
+          <TabsContent value="tasks">
+            <TaskManager ventureId={null} ventures={ventures} />
+          </TabsContent>
+
+          <TabsContent value="activity">
+            <ActivityFeed ventureId={null} limit={50} />
           </TabsContent>
 
           <TabsContent value="portfolios">
