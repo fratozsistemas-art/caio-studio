@@ -289,17 +289,31 @@ export default function VentureManagement() {
             <KPIManager ventures={ventures} />
           </TabsContent>
 
-          <TabsContent value="talents" className="space-y-6">
-            <TalentManager ventures={ventures} />
-            <TalentPerformance 
-              talents={talents}
-              onUpdate={() => refetch()}
-            />
-            <TalentAnalysis 
-              talents={talents}
-              ventures={ventures}
-            />
-            <SkillRecommendations talents={talents} />
+          <TabsContent value="talents">
+            <Tabs defaultValue="management" className="space-y-6">
+              <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger value="management">Gerenciar</TabsTrigger>
+                <TabsTrigger value="performance">Performance</TabsTrigger>
+                <TabsTrigger value="recommendations">Recomendações IA</TabsTrigger>
+                <TabsTrigger value="analysis">Análise de Gaps</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="management">
+                <TalentManager ventures={ventures} />
+              </TabsContent>
+
+              <TabsContent value="performance">
+                <TalentPerformance talents={talents} />
+              </TabsContent>
+
+              <TabsContent value="recommendations">
+                <SkillRecommendations ventures={ventures} talents={talents} />
+              </TabsContent>
+
+              <TabsContent value="analysis">
+                <TalentAnalysis talents={talents} ventures={ventures} />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="financial">
