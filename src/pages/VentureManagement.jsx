@@ -6,6 +6,7 @@ import { Plus, TrendingUp, Users, Target } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionTitle from "@/components/ui/SectionTitle";
+import { createPageUrl } from "@/utils";
 import VentureList from "@/components/ventures/VentureList";
 import VentureForm from "@/components/ventures/VentureForm";
 import KPIManager from "@/components/ventures/KPIManager";
@@ -31,14 +32,19 @@ export default function VentureManagement() {
   React.useEffect(() => {
     const checkAuth = async () => {
       try {
+        const isAuth = await base44.auth.isAuthenticated();
+        if (!isAuth) {
+          window.location.href = createPageUrl('Login') + '?next=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
         const currentUser = await base44.auth.me();
         if (!currentUser || currentUser.role !== 'admin') {
-          window.location.href = '/';
+          window.location.href = createPageUrl('Home');
           return;
         }
         setUser(currentUser);
       } catch (error) {
-        window.location.href = '/';
+        window.location.href = createPageUrl('Login') + '?next=' + encodeURIComponent(window.location.pathname);
       } finally {
         setLoading(false);
       }
