@@ -271,18 +271,123 @@ export default function Portfolio() {
   return (
     <main className="min-h-screen py-24 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-16">
+        {/* Hero Section */}
+        <div className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            <span className="text-sm font-medium tracking-[0.3em] uppercase text-[#C7A763] mb-6 block">
+              Portfolio
+            </span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white font-montserrat leading-tight mb-8">
+              Um Sistema Operacional para Criação de Ventures
+            </h1>
+            <p className="text-slate-300 text-xl md:text-2xl leading-relaxed mb-12">
+              Transformando complexidade em clareza estratégica através da união entre 
+              inteligência humana e artificial.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Problem Statement - OTTO Style */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <GlowCard glowColor="mixed" className="p-10 md:p-14">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-white font-montserrat mb-6">
+                O Desafio que Estamos Resolvendo
+              </h2>
+              <div className="space-y-4 text-slate-300 text-lg leading-relaxed">
+                <p>
+                  Ventures tradicionais falham não por falta de capital ou tecnologia. 
+                  Elas falham por <strong className="text-white">decisões mal estruturadas</strong> sobre 
+                  estratégia, pessoas e execução.
+                </p>
+                <p>
+                  Fundadores são pressionados a decidir em cenários onde:
+                </p>
+                <ul className="space-y-2 ml-6 list-disc text-slate-400">
+                  <li>As informações são fragmentadas e contraditórias</li>
+                  <li>Os riscos são irreversíveis e complexos</li>
+                  <li>As consequências afetam cultura, financeiro e posicionamento</li>
+                </ul>
+                <p className="pt-4">
+                  O verdadeiro gargalo não é IA ou dinheiro. É <strong className="text-[#C7A763]">
+                  clareza decisória sob incerteza extrema</strong>.
+                </p>
+              </div>
+            </div>
+          </GlowCard>
+        </motion.div>
+
+        {/* Portfolio Approach */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <div className="text-center mb-12">
+            <SectionTitle
+              subtitle="Nossa Abordagem"
+              title="6 Camadas Estratégicas"
+              accent="cyan"
+            />
+            <p className="text-slate-400 text-lg mt-6 max-w-2xl mx-auto">
+              Cada camada do portfolio foi desenhada para criar sinergias, compartilhar 
+              recursos e amplificar o impacto coletivo.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {layers.filter(l => l.id !== 'all').map((layer, idx) => (
+              <motion.div
+                key={layer.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <GlowCard 
+                  glowColor={idx % 2 === 0 ? "cyan" : "gold"} 
+                  className="p-6 h-full"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center flex-shrink-0">
+                      <layer.icon className="w-6 h-6 text-[#C7A763]" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        {layer.label}
+                      </h3>
+                      <p className="text-sm text-slate-400 leading-relaxed">
+                        {ventures.filter(v => v.layer === layer.id).length} ventures
+                      </p>
+                    </div>
+                  </div>
+                </GlowCard>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Ventures Explorer Section */}
+        <div className="mb-12">
           <SectionTitle
-            subtitle="Portfolio"
-            title="Nosso Ecossistema de Ventures"
+            subtitle="Explore"
+            title="Nossas Ventures"
             accent="gold"
             align="left"
           />
-          <p className="text-slate-400 text-lg mt-6 max-w-2xl">
-            Cada venture representa uma peça única do nosso sistema operacional, 
-            trabalhando em sincronia para criar valor exponencial.
-          </p>
         </div>
 
         {/* Search & Filters Section */}
