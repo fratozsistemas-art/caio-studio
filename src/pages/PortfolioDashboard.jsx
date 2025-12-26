@@ -13,6 +13,8 @@ import DashboardCustomizer from "@/components/dashboard/DashboardCustomizer";
 import VentureHeatmap from "@/components/dashboard/VentureHeatmap";
 import ResourceAllocation from "@/components/dashboard/ResourceAllocation";
 import CustomAlertManager from "@/components/dashboard/CustomAlertManager";
+import AIInsightsDashboard from "@/components/analytics/AIInsightsDashboard";
+import VenturePerformanceSummary from "@/components/analytics/VenturePerformanceSummary";
 import { toast } from "sonner";
 import { createPageUrl } from "@/utils";
 
@@ -260,18 +262,34 @@ export default function PortfolioDashboard() {
             <PortfolioCharts data={portfolioData} type="financial" />
           </TabsContent>
 
-          <TabsContent value="insights">
-            <GlowCard glowColor="mixed" className="p-8">
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600/20 to-indigo-600/20 border border-purple-500/30 flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="w-8 h-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">Insights Consolidados</h3>
-                <p className="text-slate-400 mb-6">
-                  Análises agregadas do portfolio serão geradas aqui com base em todas as ventures
-                </p>
+          <TabsContent value="insights" className="space-y-6">
+            <AIInsightsDashboard
+              ventures={portfolioData?.ventures || []}
+              financials={portfolioData?.financials || []}
+              kpis={portfolioData?.kpis || []}
+              talents={portfolioData?.talents || []}
+            />
+
+            <div className="mt-8">
+              <h3 className="text-white font-semibold mb-4">Performance Summaries por Venture</h3>
+              <div className="space-y-6">
+                {portfolioData?.ventures?.slice(0, 3).map((venture) => {
+                  const ventureFinancials = portfolioData.financials.filter(f => f.venture_id === venture.id);
+                  const ventureKPIs = portfolioData.kpis.filter(k => k.venture_id === venture.id);
+                  const ventureTalents = portfolioData.talents.filter(t => t.venture_id === venture.id);
+
+                  return (
+                    <VenturePerformanceSummary
+                      key={venture.id}
+                      venture={venture}
+                      financials={ventureFinancials}
+                      kpis={ventureKPIs}
+                      talents={ventureTalents}
+                    />
+                  );
+                })}
               </div>
-            </GlowCard>
+            </div>
           </TabsContent>
         </Tabs>
 
