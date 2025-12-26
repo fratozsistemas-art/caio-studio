@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, ExternalLink, Globe } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, Globe, Linkedin } from 'lucide-react';
 import GlowCard from "@/components/ui/GlowCard";
 import { Button } from "@/components/ui/button";
+import { createPageUrl } from "@/utils";
 
 export default function VentureCard({ venture, index }) {
   const statusColors = {
@@ -19,7 +21,8 @@ export default function VentureCard({ venture, index }) {
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
     >
-      <GlowCard glowColor={venture.layer === 'startup' ? 'cyan' : 'gold'} className="h-full group">
+      <Link to={createPageUrl('VentureDetail') + '?id=' + venture.id}>
+        <GlowCard glowColor={venture.layer === 'startup' ? 'cyan' : 'gold'} className="h-full group cursor-pointer">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
@@ -58,28 +61,40 @@ export default function VentureCard({ venture, index }) {
           <div className="pt-4 border-t border-white/10">
             <div className="flex items-center justify-between">
               <span className="text-xs text-slate-500">{venture.category}</span>
-              {venture.website ? (
-                <a 
-                  href={venture.website} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1.5 text-xs text-[#C7A763] hover:text-[#D4B474] transition-colors font-medium"
-                >
-                  <Globe className="w-3.5 h-3.5" />
-                  Visitar Site
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              ) : (
-                <button className="flex items-center gap-1 text-sm text-[#C7A763] opacity-0 group-hover:opacity-100 transition-opacity">
-                  Detalhes
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                {venture.linkedin_url && (
+                  <a 
+                    href={venture.linkedin_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1 text-xs text-[#0077B5] hover:text-[#0099D5] transition-colors font-medium"
+                  >
+                    <Linkedin className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {venture.website ? (
+                  <a 
+                    href={venture.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1 text-xs text-[#C7A763] hover:text-[#D4B474] transition-colors font-medium"
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                  </a>
+                ) : (
+                  <span className="flex items-center gap-1 text-xs text-[#C7A763] opacity-0 group-hover:opacity-100 transition-opacity">
+                    Ver detalhes
+                    <ArrowUpRight className="w-3 h-3" />
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </GlowCard>
+      </Link>
     </motion.div>
   );
 }

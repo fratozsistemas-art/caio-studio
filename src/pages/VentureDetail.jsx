@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { ArrowLeft, TrendingUp, Users, DollarSign, Calendar, Target, Flame } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Users, DollarSign, Calendar, Target, Flame, Globe, Linkedin, ExternalLink } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { createPageUrl } from "@/utils";
 import GlowCard from "@/components/ui/GlowCard";
@@ -14,35 +14,39 @@ import VentureTalentAllocation from "@/components/ventures/VentureTalentAllocati
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
   const ventureId = searchParams.get('id');
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const checkAdmin = async () => {
+    const checkAuth = async () => {
       try {
-        const user = await base44.auth.me();
-        setIsAdmin(user?.role === 'admin');
-        if (!user || user.role !== 'admin') {
-          window.location.href = createPageUrl('Home');
-        }
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
       } catch {
-        window.location.href = createPageUrl('Home');
+        // Allow public access to venture details
       }
     };
-    checkAdmin();
+    checkAuth();
   }, []);
 
   const { data: venture } = useQuery({
     queryKey: ['venture', ventureId],
     queryFn: async () => {
-      const res = await base44.functions.invoke('secureEntityQuery', {
-        entity_name: 'Venture',
-        operation: 'get',
-        id: ventureId
-      });
-      return res.data?.data;
+      if (user?.role === 'admin') {
+        const res = await base44.functions.invoke('secureEntityQuery', {
+          entity_name: 'Venture',
+          operation: 'get',
+          id: ventureId
+        });
+        return res.data?.data;
+      } else {
+        const ventures = await base44.entities.Venture.list();
+        return ventures.find(v => v.id === ventureId);
+      }
     },
-    enabled: !!ventureId && isAdmin
+    enabled: !!ventureId
   });
+
+  const isAdmin = user?.role === 'admin';
 
   const { data: financials } = useQuery({
     queryKey: ['ventureFinancials', ventureId],
@@ -95,9 +99,9 @@ export default function VentureDetail() {
     <div className="min-h-screen bg-[#06101F] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            <Link to={createPageUrl('VentureManagement')}>
+            <Link to={isAdmin ? createPageUrl('VentureManagement') : createPageUrl('Portfolio')}>
               <Button variant="ghost" size="sm" className="text-white/70 hover:text-white">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar
@@ -106,6 +110,32 @@ export default function VentureDetail() {
             <div>
               <h1 className="text-3xl font-bold text-white">{venture.name}</h1>
               <p className="text-slate-400 mt-1">{venture.description}</p>
+              <div className="flex items-center gap-3 mt-2">
+                {venture.website && (
+                  <a 
+                    href={venture.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm text-[#C7A763] hover:text-[#D4B474] transition-colors"
+                  >
+                    <Globe className="w-4 h-4" />
+                    Website
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+                {venture.linkedin_url && (
+                  <a 
+                    href={venture.linkedin_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm text-[#0077B5] hover:text-[#0099D5] transition-colors"
+                  >
+                    <Linkedin className="w-4 h-4" />
+                    LinkedIn
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex gap-2">
@@ -118,7 +148,8 @@ export default function VentureDetail() {
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats - Only for Admin */}
+        {isAdmin && (
         <div className="grid md:grid-cols-4 gap-4">
           <GlowCard glowColor="gold" className="p-4">
             <div className="flex items-center gap-3">
@@ -168,22 +199,44 @@ export default function VentureDetail() {
             </div>
           </GlowCard>
         </div>
+        )}
 
-        {/* Metrics Overview */}
-        <VentureMetricsOverview 
+        {/* Public Info Card */}
+        {!isAdmin && (
+          <GlowCard glowColor="mixed" className="p-8">
+            <div className="text-center space-y-4">
+              <div className="text-lg text-white">
+                Esta é uma página pública de venture. 
+              </div>
+              <div className="text-slate-400">
+                Para acessar métricas detalhadas, KPIs e informações financeiras, 
+                é necessário ter permissões de administrador.
+              </div>
+              {venture.category && (
+                <div className="pt-4 border-t border-white/10">
+                  <span className="text-sm text-slate-500">Categoria: </span>
+                  <span className="text-white">{venture.category}</span>
+                </div>
+              )}
+            </div>
+          </GlowCard>
+        )}
+
+        {/* Metrics Overview - Admin Only */}
+        {isAdmin && <VentureMetricsOverview 
           venture={venture}
           financials={financials || []}
           kpis={kpis || []}
-        />
+        />}
 
-        {/* Talent Allocation */}
-        <VentureTalentAllocation
+        {/* Talent Allocation - Admin Only */}
+        {isAdmin && <VentureTalentAllocation
           ventureId={ventureId}
           talents={talents || []}
-        />
+        />}
 
-        {/* OKR Manager */}
-        <VentureOKRManager ventureId={ventureId} />
+        {/* OKR Manager - Admin Only */}
+        {isAdmin && <VentureOKRManager ventureId={ventureId} />}
       </div>
     </div>
   );
