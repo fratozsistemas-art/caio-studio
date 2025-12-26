@@ -5,9 +5,11 @@ import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Target } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GlowCard from "@/components/ui/GlowCard";
 import KPIForm from "./KPIForm";
 import KPIChart from "./KPIChart";
+import AIKPISuggestions from "./AIKPISuggestions";
 
 export default function KPIManager({ ventures }) {
   const [selectedVenture, setSelectedVenture] = useState(ventures[0]?.id || null);
@@ -41,30 +43,36 @@ export default function KPIManager({ ventures }) {
   }, {});
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Select value={selectedVenture} onValueChange={setSelectedVenture}>
-          <SelectTrigger className="w-64 bg-white/5 border-white/10 text-white">
-            <SelectValue placeholder="Selecione uma venture" />
-          </SelectTrigger>
-          <SelectContent>
-            {ventures.map(venture => (
-              <SelectItem key={venture.id} value={venture.id}>
-                {venture.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <Tabs defaultValue="manage" className="space-y-6">
+      <TabsList className="bg-white/5 border border-white/10">
+        <TabsTrigger value="manage">Gerenciar KPIs</TabsTrigger>
+        <TabsTrigger value="suggestions">Sugestões IA</TabsTrigger>
+      </TabsList>
 
-        <Button
-          onClick={() => setShowKPIForm(true)}
-          disabled={!selectedVenture}
-          className="bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F]"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Adicionar KPI
-        </Button>
-      </div>
+      <TabsContent value="manage" className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Select value={selectedVenture} onValueChange={setSelectedVenture}>
+            <SelectTrigger className="w-64 bg-white/5 border-white/10 text-white">
+              <SelectValue placeholder="Selecione uma venture" />
+            </SelectTrigger>
+            <SelectContent>
+              {ventures.map(venture => (
+                <SelectItem key={venture.id} value={venture.id}>
+                  {venture.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Button
+            onClick={() => setShowKPIForm(true)}
+            disabled={!selectedVenture}
+            className="bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F]"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Adicionar KPI
+          </Button>
+        </div>
 
       {selectedVenture && (
         <>
@@ -136,17 +144,22 @@ export default function KPIManager({ ventures }) {
         </>
       )}
 
-      {showKPIForm && (
-        <KPIForm
-          ventureId={selectedVenture}
-          ventureName={venture?.name}
-          onClose={() => setShowKPIForm(false)}
-          onSuccess={() => {
-            setShowKPIForm(false);
-            refetch();
-          }}
-        />
-      )}
-    </div>
+        {showKPIForm && (
+          <KPIForm
+            ventureId={selectedVenture}
+            ventureName={venture?.name}
+            onClose={() => setShowKPIForm(false)}
+            onSuccess={() => {
+              setShowKPIForm(false);
+              refetch();
+            }}
+          />
+        )}
+      </TabsContent>
+
+      <TabsContent value="suggestions">
+        <AIKPISuggestions ventures={ventures} />
+      </TabsContent>
+    </Tabs>
   );
 }
