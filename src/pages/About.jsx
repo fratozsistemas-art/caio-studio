@@ -101,7 +101,7 @@ export default function About() {
           >
             <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
               <iframe
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                src="https://www.youtube.com/embed/0b4Dl-tGm6c"
                 title="CAIO Vision Presentation"
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
