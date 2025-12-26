@@ -14,6 +14,7 @@ import VentureHeatmap from "@/components/dashboard/VentureHeatmap";
 import ResourceAllocation from "@/components/dashboard/ResourceAllocation";
 import CustomAlertManager from "@/components/dashboard/CustomAlertManager";
 import { toast } from "sonner";
+import { createPageUrl } from "@/utils";
 
 export default function PortfolioDashboard() {
   const [user, setUser] = useState(null);
@@ -30,14 +31,19 @@ export default function PortfolioDashboard() {
   React.useEffect(() => {
     const checkAuth = async () => {
       try {
+        const isAuth = await base44.auth.isAuthenticated();
+        if (!isAuth) {
+          base44.auth.redirectToLogin(window.location.pathname);
+          return;
+        }
         const currentUser = await base44.auth.me();
         if (!currentUser || currentUser.role !== 'admin') {
-          window.location.href = '/';
+          window.location.href = createPageUrl('Home');
           return;
         }
         setUser(currentUser);
       } catch (error) {
-        window.location.href = '/';
+        base44.auth.redirectToLogin(window.location.pathname);
       } finally {
         setLoading(false);
       }
