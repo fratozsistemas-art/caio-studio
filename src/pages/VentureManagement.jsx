@@ -9,6 +9,7 @@ import SectionTitle from "@/components/ui/SectionTitle";
 import { createPageUrl } from "@/utils";
 import VentureList from "@/components/ventures/VentureList";
 import VentureForm from "@/components/ventures/VentureForm";
+import VentureWizard from "@/components/ventures/VentureWizard";
 import KPIManager from "@/components/ventures/KPIManager";
 import TalentManager from "@/components/ventures/TalentManager";
 import TalentAnalysis from "@/components/ventures/TalentAnalysis";
@@ -30,6 +31,7 @@ export default function VentureManagement() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showVentureForm, setShowVentureForm] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
   const [selectedVenture, setSelectedVenture] = useState(null);
 
   React.useEffect(() => {
@@ -155,16 +157,25 @@ export default function VentureManagement() {
             accent="cyan"
             align="left"
           />
-          <Button
-            onClick={() => {
-              setSelectedVenture(null);
-              setShowVentureForm(true);
-            }}
-            className="bg-gradient-to-r from-[#00D4FF] to-[#0099CC] text-[#06101F] font-semibold"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Nova Venture
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowWizard(true)}
+              className="bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F] font-semibold"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nova Venture (Wizard)
+            </Button>
+            <Button
+              onClick={() => {
+                setSelectedVenture(null);
+                setShowVentureForm(true);
+              }}
+              variant="outline"
+              className="border-white/10 text-white"
+            >
+              Formulário Rápido
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -307,6 +318,17 @@ export default function VentureManagement() {
             <VentureAnalytics ventures={ventures} />
           </TabsContent>
         </Tabs>
+
+        {/* Venture Wizard */}
+        {showWizard && (
+          <VentureWizard
+            onClose={() => setShowWizard(false)}
+            onSuccess={() => {
+              setShowWizard(false);
+              refetch();
+            }}
+          />
+        )}
 
         {/* Venture Form Modal */}
         {showVentureForm && (
