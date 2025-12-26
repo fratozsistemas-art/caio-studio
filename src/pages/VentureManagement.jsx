@@ -18,6 +18,7 @@ import TalentPerformance from "@/components/ventures/TalentPerformance";
 import VentureAnalytics from "@/components/ventures/VentureAnalytics";
 import FinancialModeling from "@/components/ventures/FinancialModeling";
 import FinancialScenarios from "@/components/ventures/FinancialScenarios";
+import AIFinancialForecasting from "@/components/ventures/AIFinancialForecasting";
 import NotificationsAlerts from "@/components/ventures/NotificationsAlerts";
 import PortfolioManager from "@/components/ventures/PortfolioManager";
 import SquadManager from "@/components/collaboration/SquadManager";
@@ -317,7 +318,20 @@ export default function VentureManagement() {
           </TabsContent>
 
           <TabsContent value="financial">
-            <FinancialModeling ventures={ventures} />
+            <Tabs defaultValue="modeling" className="space-y-6">
+              <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger value="modeling">Modelagem</TabsTrigger>
+                <TabsTrigger value="forecasting">Previsão IA</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="modeling">
+                <FinancialModeling ventures={ventures} />
+              </TabsContent>
+
+              <TabsContent value="forecasting">
+                <AIFinancialForecasting ventures={ventures} />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="scenarios">

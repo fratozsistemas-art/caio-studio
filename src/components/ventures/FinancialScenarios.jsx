@@ -70,21 +70,27 @@ export default function FinancialScenarios({ ventureId }) {
       };
 
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Você é um CFO experiente. Crie uma modelagem financeira detalhada para o seguinte cenário:
+        prompt: `Você é um CFO experiente com expertise em modelagem financeira e análise de cenários estratégicos. Crie uma simulação financeira detalhada e realista.
+        
+CONTEXTO:
+Venture ID: ${ventureId}
 
-TIPO: ${scenarioType}
-CENÁRIO: ${scenarioPrompts[scenarioType]}
-PREMISSAS ADICIONAIS: ${JSON.stringify(formData.assumptions)}
+TIPO DE CENÁRIO: ${scenarioType}
+DESCRIÇÃO: ${scenarioPrompts[scenarioType]}
+PREMISSAS CUSTOMIZADAS: ${formData.description}
+VARIÁVEIS DEFINIDAS: ${JSON.stringify(formData.assumptions)}
 
-Forneça projeções mensais para 12 meses incluindo:
-- Receita projetada
-- Despesas
-- Investimento necessário
-- Cash flow
-- Break-even point
-- ROI esperado
-- Métricas chave
-- Riscos e considerações`,
+TAREFA:
+Simule este cenário com análise de mercado e dados reais quando possível.
+Considere:
+1. Condições de mercado atuais e tendências da indústria
+2. Benchmarks de empresas similares
+3. Impactos de fatores macroeconômicos
+4. Sazonalidade e ciclos de negócio
+5. Riscos específicos do cenário
+
+Forneça projeções mensais detalhadas para 12 meses com métricas realistas.`,
+        add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
@@ -121,7 +127,9 @@ Forneça projeções mensais para 12 meses incluindo:
             recommendations: {
               type: "array",
               items: { type: "string" }
-            }
+            },
+            market_conditions: { type: "string" },
+            sensitivity_analysis: { type: "string" }
           }
         }
       });
