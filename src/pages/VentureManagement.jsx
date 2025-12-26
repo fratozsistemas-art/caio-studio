@@ -18,6 +18,8 @@ import FinancialModeling from "@/components/ventures/FinancialModeling";
 import FinancialScenarios from "@/components/ventures/FinancialScenarios";
 import NotificationsAlerts from "@/components/ventures/NotificationsAlerts";
 import PortfolioManager from "@/components/ventures/PortfolioManager";
+import SquadManager from "@/components/collaboration/SquadManager";
+import CollaborationChannels from "@/components/collaboration/CollaborationChannels";
 
 export default function VentureManagement() {
   const [user, setUser] = useState(null);
@@ -98,6 +100,33 @@ export default function VentureManagement() {
   const kpis = kpisResponse?.data || [];
   const talents = talentsResponse?.data || [];
 
+  const { data: portfoliosResponse } = useQuery({
+    queryKey: ['venturePortfolios'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VenturePortfolio',
+        operation: 'list'
+      });
+      return response.data;
+    },
+    enabled: !!user
+  });
+
+  const { data: squadsResponse } = useQuery({
+    queryKey: ['ventureSquads'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureSquad',
+        operation: 'list'
+      });
+      return response.data;
+    },
+    enabled: !!user
+  });
+
+  const portfolios = portfoliosResponse?.data || [];
+  const squadsData = squadsResponse?.data || [];
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -175,9 +204,10 @@ export default function VentureManagement() {
 
         {/* Tabs */}
         <Tabs defaultValue="ventures" className="space-y-6">
-          <TabsList className="bg-white/5 border border-white/10">
+          <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto">
             <TabsTrigger value="ventures">Ventures</TabsTrigger>
             <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
+            <TabsTrigger value="collaboration">Colaboração</TabsTrigger>
             <TabsTrigger value="kpis">KPIs & Metas</TabsTrigger>
             <TabsTrigger value="talents">Talentos & Skills</TabsTrigger>
             <TabsTrigger value="financial">Modelagem Financeira</TabsTrigger>
@@ -202,6 +232,17 @@ export default function VentureManagement() {
               ventures={ventures}
               financials={financials}
               kpis={kpis}
+            />
+          </TabsContent>
+
+          <TabsContent value="collaboration" className="space-y-6">
+            <SquadManager 
+              ventures={ventures}
+              talents={talents}
+            />
+            <CollaborationChannels 
+              portfolios={portfolios}
+              squads={squadsData}
             />
           </TabsContent>
 
