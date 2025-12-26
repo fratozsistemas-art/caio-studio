@@ -1,122 +1,83 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Sparkles, Loader2, TrendingUp, Book, Award } from 'lucide-react';
+import { Brain, Users, Zap, TrendingUp, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GlowCard from "@/components/ui/GlowCard";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
-export default function SkillRecommendations({ talents }) {
-  const [selectedTalent, setSelectedTalent] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default function SkillRecommendations({ ventures, talents }) {
+  const [selectedVentureId, setSelectedVentureId] = useState('');
+  const [taskDescription, setTaskDescription] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
   const [recommendations, setRecommendations] = useState(null);
 
-  const generateRecommendations = async () => {
-    if (!selectedTalent) {
-      toast.error('Selecione um talento');
+  const venture = ventures.find(v => v.id === selectedVentureId);
+
+  const getRecommendations = async () => {
+    if (!selectedVentureId && !taskDescription) {
+      toast.error('Selecione uma venture ou descreva uma tarefa');
       return;
     }
 
-    const talent = talents.find(t => t.id === selectedTalent);
-    if (!talent) return;
-
-    setLoading(true);
+    setAnalyzing(true);
     try {
+      // Prepare talent data
+      const talentData = talents.map(t => ({
+        name: t.talent_name,
+        role: t.role,
+        skills: t.skills || [],
+        level: t.level,
+        allocation: t.allocation,
+        performance_score: t.performance_score || 0
+      }));
+
+      const prompt = `
+Analise os talentos disponíveis e recomende os mais adequados:
+
+${venture ? `VENTURE: ${venture.name} (${venture.layer} - ${venture.category})` : ''}
+${taskDescription ? `TAREFA/NECESSIDADE: ${taskDescription}` : ''}
+
+TALENTOS DISPONÍVEIS:
+${talentData.map(t => `
+- ${t.name} (${t.role}, ${t.level})
+  Skills: ${t.skills.join(', ')}
+  Alocação: ${t.allocation}%
+  Performance: ${t.performance_score}/100
+`).join('\n')}
+
+Forneça recomendações em JSON:
+- top_matches (array de objetos com: talent_name, match_score, reasoning, suggested_role)
+- skill_alignment (análise de skills)
+- allocation_recommendations (sugestões de alocação)
+- alternative_suggestions (backups)
+`;
+
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Você é um especialista em desenvolvimento de carreira e tendências de mercado tech.
-
-PERFIL DO TALENTO:
-- Nome: ${talent.talent_name}
-- Role: ${talent.role}
-- Level: ${talent.level}
-- Skills Atuais: ${talent.skills?.join(', ')}
-- Performance Score: ${talent.performance_score || 'N/A'}
-
-Com base em tendências de mercado 2025, necessidades futuras de venture studios, e o perfil atual do talento, forneça:
-
-1. SKILLS EMERGENTES: Liste 5-7 skills emergentes que este talento deveria desenvolver, considerando sua trajetória de carreira e o mercado.
-
-2. RECURSOS DE APRENDIZADO: Para cada skill sugerida, recomende recursos práticos (cursos, certificações, projetos práticos).
-
-3. ROADMAP DE DESENVOLVIMENTO: Estruture um plano de desenvolvimento de 6-12 meses, priorizando skills por trimestre.
-
-4. CERTIFICAÇÕES RELEVANTES: Sugira certificações profissionais que agregariam valor ao perfil.
-
-5. PROJETOS PRÁTICOS: Sugira projetos hands-on que o talento pode fazer para desenvolver as skills recomendadas.
-
-Seja específico e prático, considerando o nível atual do talento.`,
-        add_context_from_internet: true,
+        prompt,
         response_json_schema: {
           type: "object",
           properties: {
-            emerging_skills: {
+            top_matches: {
               type: "array",
               items: {
                 type: "object",
                 properties: {
-                  skill: { type: "string" },
-                  relevance: { type: "string" },
-                  market_demand: { type: "string" },
-                  time_to_learn: { type: "string" }
+                  talent_name: { type: "string" },
+                  match_score: { type: "number" },
+                  reasoning: { type: "string" },
+                  suggested_role: { type: "string" }
                 }
               }
             },
-            learning_resources: {
+            skill_alignment: { type: "string" },
+            allocation_recommendations: { type: "string" },
+            alternative_suggestions: {
               type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  skill: { type: "string" },
-                  resources: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        name: { type: "string" },
-                        type: { type: "string" },
-                        url: { type: "string" },
-                        duration: { type: "string" }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            development_roadmap: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  quarter: { type: "string" },
-                  focus_skills: { type: "array", items: { type: "string" } },
-                  milestones: { type: "array", items: { type: "string" } }
-                }
-              }
-            },
-            certifications: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  provider: { type: "string" },
-                  relevance: { type: "string" },
-                  estimated_cost: { type: "string" }
-                }
-              }
-            },
-            practical_projects: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  project: { type: "string" },
-                  skills_developed: { type: "array", items: { type: "string" } },
-                  complexity: { type: "string" },
-                  description: { type: "string" }
-                }
-              }
+              items: { type: "string" }
             }
           }
         }
@@ -125,233 +86,137 @@ Seja específico e prático, considerando o nível atual do talento.`,
       setRecommendations(response);
       toast.success('Recomendações geradas!');
     } catch (error) {
-      toast.error('Erro ao gerar recomendações: ' + error.message);
+      toast.error('Erro: ' + error.message);
     } finally {
-      setLoading(false);
+      setAnalyzing(false);
     }
+  };
+
+  const getMatchColor = (score) => {
+    if (score >= 80) return 'text-green-400';
+    if (score >= 60) return 'text-yellow-400';
+    return 'text-orange-400';
   };
 
   return (
     <div className="space-y-6">
-      <GlowCard glowColor="gold" className="p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Sparkles className="w-5 h-5 text-[#C7A763]" />
-          <h3 className="text-xl font-bold text-white">Recomendações de Desenvolvimento</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <Brain className="w-5 h-5 text-[#C7A763]" />
+        <h3 className="text-lg font-semibold text-white">Recomendações de Talentos com IA</h3>
+      </div>
+
+      <GlowCard glowColor="gold" className="p-6 space-y-4">
+        <Select value={selectedVentureId} onValueChange={setSelectedVentureId}>
+          <SelectTrigger className="bg-white/5 border-white/10 text-white">
+            <SelectValue placeholder="Selecione uma venture (opcional)" />
+          </SelectTrigger>
+          <SelectContent>
+            {ventures.map(v => (
+              <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <div>
+          <label className="text-sm text-slate-300 mb-2 block">
+            Descreva a tarefa ou necessidade
+          </label>
+          <Textarea
+            value={taskDescription}
+            onChange={(e) => setTaskDescription(e.target.value)}
+            placeholder="Ex: Precisamos de um desenvolvedor full-stack com experiência em React e Node.js para construir um dashboard..."
+            className="bg-white/5 border-white/10 text-white"
+            rows={4}
+          />
         </div>
 
-        <div className="flex gap-3">
-          <Select value={selectedTalent} onValueChange={setSelectedTalent}>
-            <SelectTrigger className="flex-1 bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="Selecione um talento" />
-            </SelectTrigger>
-            <SelectContent>
-              {talents.map(t => (
-                <SelectItem key={t.id} value={t.id}>
-                  {t.talent_name} - {t.role}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            onClick={generateRecommendations}
-            disabled={loading || !selectedTalent}
-            className="bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F]"
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Sparkles className="w-4 h-4" />
-            )}
-          </Button>
-        </div>
+        <Button
+          onClick={getRecommendations}
+          disabled={analyzing || (!selectedVentureId && !taskDescription)}
+          className="w-full bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F]"
+        >
+          {analyzing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Analisando...
+            </>
+          ) : (
+            <>
+              <Brain className="w-4 h-4 mr-2" />
+              Gerar Recomendações
+            </>
+          )}
+        </Button>
       </GlowCard>
 
-      {/* Emerging Skills */}
-      {recommendations?.emerging_skills && (
-        <GlowCard glowColor="cyan" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingUp className="w-5 h-5 text-[#00D4FF]" />
-            <h4 className="text-lg font-bold text-white">Skills Emergentes</h4>
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            {recommendations.emerging_skills.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-white font-semibold">{item.skill}</span>
-                  <span className="text-xs bg-[#00D4FF]/20 text-[#00D4FF] px-2 py-1 rounded">
-                    {item.time_to_learn}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-2">{item.relevance}</p>
-                <div className="text-xs text-slate-500">Demanda: {item.market_demand}</div>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
-      )}
+      {recommendations && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <h4 className="text-white font-semibold flex items-center gap-2">
+            <Zap className="w-4 h-4 text-[#00D4FF]" />
+            Top Matches
+          </h4>
 
-      {/* Learning Resources */}
-      {recommendations?.learning_resources && (
-        <GlowCard glowColor="mixed" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Book className="w-5 h-5 text-purple-400" />
-            <h4 className="text-lg font-bold text-white">Recursos de Aprendizado</h4>
-          </div>
-          <div className="space-y-4">
-            {recommendations.learning_resources.map((item, i) => (
-              <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10">
-                <h5 className="text-white font-semibold mb-3">{item.skill}</h5>
-                <div className="space-y-2">
-                  {item.resources?.map((resource, j) => (
-                    <div key={j} className="flex items-center justify-between p-2 rounded-lg bg-white/5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
-                          {resource.type}
-                        </span>
-                        <span className="text-sm text-white">{resource.name}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">{resource.duration}</span>
-                        {resource.url && (
-                          <a
-                            href={resource.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-[#00D4FF] hover:underline"
-                          >
-                            Link
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+          {recommendations.top_matches?.map((match, index) => (
+            <GlowCard key={index} glowColor="cyan" className="p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h5 className="text-white font-medium">{match.talent_name}</h5>
+                    <span className={`text-sm font-bold ${getMatchColor(match.match_score)}`}>
+                      {match.match_score}% match
+                    </span>
+                  </div>
+                  <div className="text-sm text-[#00D4FF] mb-2">{match.suggested_role}</div>
+                  <p className="text-sm text-slate-300">{match.reasoning}</p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className={`text-2xl font-bold ${getMatchColor(match.match_score)}`}>
+                    {match.match_score}
+                  </div>
+                  <div className="text-xs text-slate-400">score</div>
                 </div>
               </div>
-            ))}
-          </div>
-        </GlowCard>
-      )}
+            </GlowCard>
+          ))}
 
-      {/* Development Roadmap */}
-      {recommendations?.development_roadmap && (
-        <GlowCard glowColor="gold" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingUp className="w-5 h-5 text-[#C7A763]" />
-            <h4 className="text-lg font-bold text-white">Roadmap de Desenvolvimento</h4>
-          </div>
-          <div className="space-y-4">
-            {recommendations.development_roadmap.map((quarter, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.15 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <h5 className="text-[#C7A763] font-semibold mb-3">{quarter.quarter}</h5>
-                <div className="mb-3">
-                  <span className="text-xs text-slate-400 block mb-2">Foco em Skills:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {quarter.focus_skills?.map((skill, j) => (
-                      <span key={j} className="text-xs bg-[#C7A763]/20 text-[#C7A763] px-2 py-1 rounded">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-400 block mb-2">Milestones:</span>
-                  <ul className="space-y-1">
-                    {quarter.milestones?.map((milestone, j) => (
-                      <li key={j} className="text-sm text-slate-300 flex items-start gap-2">
-                        <span className="text-[#C7A763]">•</span>
-                        <span>{milestone}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
-      )}
+          <GlowCard glowColor="mixed" className="p-4">
+            <h5 className="text-white font-medium mb-2 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-[#C7A763]" />
+              Análise de Skills
+            </h5>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              {recommendations.skill_alignment}
+            </p>
+          </GlowCard>
 
-      {/* Certifications */}
-      {recommendations?.certifications && (
-        <GlowCard glowColor="cyan" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Award className="w-5 h-5 text-[#00D4FF]" />
-            <h4 className="text-lg font-bold text-white">Certificações Recomendadas</h4>
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            {recommendations.certifications.map((cert, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="text-white font-semibold">{cert.name}</div>
-                    <div className="text-xs text-slate-400">{cert.provider}</div>
-                  </div>
-                  <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">
-                    {cert.estimated_cost}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400">{cert.relevance}</p>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
-      )}
+          <GlowCard glowColor="gold" className="p-4">
+            <h5 className="text-white font-medium mb-2 flex items-center gap-2">
+              <Users className="w-4 h-4 text-[#C7A763]" />
+              Recomendações de Alocação
+            </h5>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              {recommendations.allocation_recommendations}
+            </p>
+          </GlowCard>
 
-      {/* Practical Projects */}
-      {recommendations?.practical_projects && (
-        <GlowCard glowColor="mixed" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Sparkles className="w-5 h-5 text-yellow-400" />
-            <h4 className="text-lg font-bold text-white">Projetos Práticos</h4>
-          </div>
-          <div className="space-y-3">
-            {recommendations.practical_projects.map((project, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-white font-semibold">{project.project}</span>
-                  <span className={`text-xs px-2 py-1 rounded ${
-                    project.complexity === 'high' ? 'bg-red-500/20 text-red-400' :
-                    project.complexity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                    'bg-green-500/20 text-green-400'
-                  }`}>
-                    {project.complexity}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-2">{project.description}</p>
-                <div className="flex flex-wrap gap-1">
-                  {project.skills_developed?.map((skill, j) => (
-                    <span key={j} className="text-xs bg-white/5 px-2 py-1 rounded text-white/60">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
+          {recommendations.alternative_suggestions?.length > 0 && (
+            <GlowCard glowColor="cyan" className="p-4">
+              <h5 className="text-white font-medium mb-2">Alternativas</h5>
+              <ul className="space-y-1">
+                {recommendations.alternative_suggestions.map((alt, i) => (
+                  <li key={i} className="text-sm text-slate-300 flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-[#00D4FF]" />
+                    {alt}
+                  </li>
+                ))}
+              </ul>
+            </GlowCard>
+          )}
+        </motion.div>
       )}
     </div>
   );

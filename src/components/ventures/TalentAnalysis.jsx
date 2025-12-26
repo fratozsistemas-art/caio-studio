@@ -1,101 +1,89 @@
 import React, { useState } from 'react';
+import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Brain, Loader2, Target, TrendingUp, Users, Lightbulb } from 'lucide-react';
+import { Target, AlertTriangle, TrendingUp, Users, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import GlowCard from "@/components/ui/GlowCard";
-import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
 export default function TalentAnalysis({ talents, ventures }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
 
-  const analyzeTalentAllocation = async () => {
+  const analyzeSkillGaps = async () => {
     setAnalyzing(true);
     try {
-      // Prepare data
-      const talentData = talents.map(t => ({
-        name: t.talent_name,
-        current_venture: ventures.find(v => v.id === t.venture_id)?.name,
-        role: t.role,
-        level: t.level,
-        skills: t.skills,
-        allocation: t.allocation,
-        performance_score: t.performance_score
+      // Aggregate all skills
+      const allSkills = [...new Set(talents.flatMap(t => t.skills || []))];
+      
+      // Calculate skill coverage
+      const skillCoverage = allSkills.map(skill => ({
+        skill,
+        count: talents.filter(t => t.skills?.includes(skill)).length,
+        levels: talents.filter(t => t.skills?.includes(skill)).map(t => t.level)
       }));
 
-      const ventureData = ventures.map(v => ({
-        name: v.name,
-        layer: v.layer,
-        status: v.status,
-        category: v.category,
-        team_size: v.team_size
-      }));
+      // Prepare data for AI analysis
+      const venturesByLayer = ventures.reduce((acc, v) => {
+        acc[v.layer] = (acc[v.layer] || 0) + 1;
+        return acc;
+      }, {});
+
+      const prompt = `
+Analise os gaps de skills da organização:
+
+PORTFOLIO:
+${Object.entries(venturesByLayer).map(([layer, count]) => `- ${count} ${layer}`).join('\n')}
+
+TALENTOS (${talents.length} total):
+${talents.map(t => `
+- ${t.talent_name} (${t.level} ${t.role})
+  Skills: ${(t.skills || []).join(', ')}
+  Alocação: ${t.allocation}%
+  Performance: ${t.performance_score || 'N/A'}
+`).join('\n')}
+
+COBERTURA DE SKILLS:
+${skillCoverage.map(s => `${s.skill}: ${s.count} pessoas (${s.levels.join(', ')})`).join('\n')}
+
+Forneça análise em JSON:
+- critical_gaps (skills críticos faltando)
+- skill_saturation (skills com excesso)
+- development_priorities (prioridades de desenvolvimento)
+- hiring_recommendations (contratações recomendadas)
+- skill_distribution (distribuição por senioridade)
+`;
 
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Você é um especialista em gestão de talentos e alocação de recursos humanos.
-
-TALENTOS DISPONÍVEIS:
-${JSON.stringify(talentData, null, 2)}
-
-VENTURES NO PORTFOLIO:
-${JSON.stringify(ventureData, null, 2)}
-
-Analise e forneça:
-
-1. REALOCAÇÕES SUGERIDAS: Liste talentos que poderiam ser melhor alocados em outras ventures, explicando os critérios (match de skills, nível de senioridade, performance, necessidades da venture).
-
-2. GAPS DE SKILLS: Identifique skills críticas que estão faltando no portfolio para atender às necessidades das ventures.
-
-3. OPORTUNIDADES DE OTIMIZAÇÃO: Identifique talentos subutilizados ou oportunidades de cross-functional teams.
-
-4. DESENVOLVIMENTO PRIORITÁRIO: Sugira quais talentos devem desenvolver quais skills para aumentar a versatilidade do time.
-
-5. RECOMENDAÇÕES DE CONTRATAÇÃO: Baseado nos gaps, sugira perfis específicos para novas contratações (role, level, skills essenciais).
-
-Seja específico e prático nas recomendações.`,
+        prompt,
         response_json_schema: {
           type: "object",
           properties: {
-            reallocations: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  talent_name: { type: "string" },
-                  current_venture: { type: "string" },
-                  suggested_venture: { type: "string" },
-                  reason: { type: "string" },
-                  impact_score: { type: "number" }
-                }
-              }
-            },
-            skill_gaps: {
+            critical_gaps: {
               type: "array",
               items: {
                 type: "object",
                 properties: {
                   skill: { type: "string" },
-                  ventures_affected: { type: "array", items: { type: "string" } },
-                  priority: { type: "string" },
-                  description: { type: "string" }
+                  impact: { type: "string" },
+                  urgency: { type: "string" }
                 }
               }
             },
-            optimization_opportunities: {
-              type: "array",
-              items: { type: "string" }
-            },
-            development_priorities: {
+            skill_saturation: {
               type: "array",
               items: {
                 type: "object",
                 properties: {
-                  talent_name: { type: "string" },
-                  skills_to_develop: { type: "array", items: { type: "string" } },
-                  rationale: { type: "string" }
+                  skill: { type: "string" },
+                  count: { type: "number" },
+                  recommendation: { type: "string" }
                 }
               }
+            },
+            development_priorities: {
+              type: "array",
+              items: { type: "string" }
             },
             hiring_recommendations: {
               type: "array",
@@ -103,13 +91,12 @@ Seja específico e prático nas recomendações.`,
                 type: "object",
                 properties: {
                   role: { type: "string" },
-                  level: { type: "string" },
-                  essential_skills: { type: "array", items: { type: "string" } },
-                  target_ventures: { type: "array", items: { type: "string" } },
-                  priority: { type: "string" }
+                  priority: { type: "string" },
+                  rationale: { type: "string" }
                 }
               }
-            }
+            },
+            skill_distribution: { type: "string" }
           }
         }
       });
@@ -117,221 +104,146 @@ Seja específico e prático nas recomendações.`,
       setAnalysis(response);
       toast.success('Análise concluída!');
     } catch (error) {
-      toast.error('Erro ao analisar: ' + error.message);
+      toast.error('Erro: ' + error.message);
     } finally {
       setAnalyzing(false);
     }
   };
 
+  const urgencyColors = {
+    high: 'text-red-400',
+    medium: 'text-yellow-400',
+    low: 'text-green-400'
+  };
+
   return (
     <div className="space-y-6">
-      <GlowCard glowColor="purple" className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Brain className="w-5 h-5 text-purple-400" />
-            <h3 className="text-xl font-bold text-white">Análise Inteligente de Talentos</h3>
-          </div>
-          <Button
-            onClick={analyzeTalentAllocation}
-            disabled={analyzing || !talents.length}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
-          >
-            {analyzing ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Analisando...
-              </>
-            ) : (
-              <>
-                <Brain className="w-4 h-4 mr-2" />
-                Analisar Alocação
-              </>
-            )}
-          </Button>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Target className="w-5 h-5 text-[#00D4FF]" />
+          <h3 className="text-lg font-semibold text-white">Análise de Gaps de Skills</h3>
         </div>
+        <Button
+          onClick={analyzeSkillGaps}
+          disabled={analyzing}
+          className="bg-gradient-to-r from-[#00D4FF] to-[#0099CC] text-[#06101F]"
+        >
+          {analyzing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Analisando...
+            </>
+          ) : (
+            'Analisar Gaps'
+          )}
+        </Button>
+      </div>
 
-        {!analysis && !analyzing && (
-          <div className="text-center py-8 text-slate-400">
-            <Brain className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">Clique para analisar a alocação de talentos com IA</p>
-          </div>
-        )}
-      </GlowCard>
-
-      {/* Reallocations */}
-      {analysis?.reallocations && analysis.reallocations.length > 0 && (
-        <GlowCard glowColor="cyan" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Target className="w-5 h-5 text-[#00D4FF]" />
-            <h4 className="text-lg font-bold text-white">Realocações Sugeridas</h4>
-          </div>
-          <div className="space-y-3">
-            {analysis.reallocations.map((realloc, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <span className="text-white font-semibold">{realloc.talent_name}</span>
-                    <div className="text-xs text-slate-400 mt-1">
-                      {realloc.current_venture} → {realloc.suggested_venture}
+      {analysis && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          {/* Critical Gaps */}
+          {analysis.critical_gaps?.length > 0 && (
+            <GlowCard glowColor="cyan" className="p-6">
+              <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-400" />
+                Gaps Críticos
+              </h4>
+              <div className="space-y-3">
+                {analysis.critical_gaps.map((gap, i) => (
+                  <div key={i} className="p-4 rounded-lg bg-white/5 border border-red-400/20">
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <span className="text-white font-medium">{gap.skill}</span>
+                      <span className={`text-xs font-bold uppercase ${urgencyColors[gap.urgency?.toLowerCase()] || 'text-slate-400'}`}>
+                        {gap.urgency}
+                      </span>
                     </div>
+                    <p className="text-sm text-slate-300">{gap.impact}</p>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-[#00D4FF]">
-                      Impacto: {realloc.impact_score}/10
+                ))}
+              </div>
+            </GlowCard>
+          )}
+
+          {/* Hiring Recommendations */}
+          {analysis.hiring_recommendations?.length > 0 && (
+            <GlowCard glowColor="gold" className="p-6">
+              <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Users className="w-5 h-5 text-[#C7A763]" />
+                Recomendações de Contratação
+              </h4>
+              <div className="space-y-3">
+                {analysis.hiring_recommendations.map((rec, i) => (
+                  <div key={i} className="p-4 rounded-lg bg-white/5 border border-[#C7A763]/20">
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <span className="text-white font-medium">{rec.role}</span>
+                      <span className={`text-xs font-bold uppercase ${urgencyColors[rec.priority?.toLowerCase()] || 'text-slate-400'}`}>
+                        {rec.priority}
+                      </span>
                     </div>
+                    <p className="text-sm text-slate-300">{rec.rationale}</p>
                   </div>
-                </div>
-                <p className="text-sm text-slate-400">{realloc.reason}</p>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
-      )}
+                ))}
+              </div>
+            </GlowCard>
+          )}
 
-      {/* Skill Gaps */}
-      {analysis?.skill_gaps && analysis.skill_gaps.length > 0 && (
-        <GlowCard glowColor="gold" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingUp className="w-5 h-5 text-[#C7A763]" />
-            <h4 className="text-lg font-bold text-white">Gaps de Skills Críticos</h4>
-          </div>
-          <div className="space-y-3">
-            {analysis.skill_gaps.map((gap, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-white font-semibold">{gap.skill}</span>
-                  <span className={`text-xs px-2 py-1 rounded ${
-                    gap.priority === 'high' ? 'bg-red-500/20 text-red-400' :
-                    gap.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                    'bg-green-500/20 text-green-400'
-                  }`}>
-                    {gap.priority}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-2">{gap.description}</p>
-                <div className="flex flex-wrap gap-1">
-                  {gap.ventures_affected?.map((v, j) => (
-                    <span key={j} className="text-xs bg-white/5 px-2 py-1 rounded text-white/60">
-                      {v}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
-      )}
+          {/* Development Priorities */}
+          {analysis.development_priorities?.length > 0 && (
+            <GlowCard glowColor="mixed" className="p-6">
+              <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-[#00D4FF]" />
+                Prioridades de Desenvolvimento
+              </h4>
+              <ul className="space-y-2">
+                {analysis.development_priorities.map((priority, i) => (
+                  <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
+                    <span className="text-[#C7A763] font-bold">{i + 1}.</span>
+                    {priority}
+                  </li>
+                ))}
+              </ul>
+            </GlowCard>
+          )}
 
-      {/* Optimization Opportunities */}
-      {analysis?.optimization_opportunities && analysis.optimization_opportunities.length > 0 && (
-        <GlowCard glowColor="mixed" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Lightbulb className="w-5 h-5 text-yellow-400" />
-            <h4 className="text-lg font-bold text-white">Oportunidades de Otimização</h4>
-          </div>
-          <ul className="space-y-2">
-            {analysis.optimization_opportunities.map((opp, i) => (
-              <motion.li
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="text-sm text-slate-300 flex items-start gap-2"
-              >
-                <span className="text-yellow-400 mt-1">•</span>
-                <span>{opp}</span>
-              </motion.li>
-            ))}
-          </ul>
-        </GlowCard>
-      )}
-
-      {/* Development Priorities */}
-      {analysis?.development_priorities && analysis.development_priorities.length > 0 && (
-        <GlowCard glowColor="cyan" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingUp className="w-5 h-5 text-[#00D4FF]" />
-            <h4 className="text-lg font-bold text-white">Prioridades de Desenvolvimento</h4>
-          </div>
-          <div className="space-y-3">
-            {analysis.development_priorities.map((dev, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="font-semibold text-white mb-2">{dev.talent_name}</div>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {dev.skills_to_develop?.map((skill, j) => (
-                    <span key={j} className="text-xs bg-[#00D4FF]/20 text-[#00D4FF] px-2 py-1 rounded">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-slate-400">{dev.rationale}</p>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
-      )}
-
-      {/* Hiring Recommendations */}
-      {analysis?.hiring_recommendations && analysis.hiring_recommendations.length > 0 && (
-        <GlowCard glowColor="gold" className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Users className="w-5 h-5 text-[#C7A763]" />
-            <h4 className="text-lg font-bold text-white">Recomendações de Contratação</h4>
-          </div>
-          <div className="space-y-3">
-            {analysis.hiring_recommendations.map((hire, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <span className="text-white font-semibold">{hire.role}</span>
-                    <span className="text-slate-400 text-sm ml-2">({hire.level})</span>
+          {/* Skill Saturation */}
+          {analysis.skill_saturation?.length > 0 && (
+            <GlowCard glowColor="cyan" className="p-6">
+              <h4 className="text-white font-semibold mb-4">Skills com Saturação</h4>
+              <div className="space-y-3">
+                {analysis.skill_saturation.map((sat, i) => (
+                  <div key={i} className="p-3 rounded-lg bg-white/5">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-white font-medium">{sat.skill}</span>
+                      <span className="text-sm text-[#00D4FF]">{sat.count} pessoas</span>
+                    </div>
+                    <p className="text-xs text-slate-400">{sat.recommendation}</p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded ${
-                    hire.priority === 'high' ? 'bg-red-500/20 text-red-400' :
-                    hire.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                    'bg-green-500/20 text-green-400'
-                  }`}>
-                    {hire.priority}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {hire.essential_skills?.map((skill, j) => (
-                    <span key={j} className="text-xs bg-[#C7A763]/20 text-[#C7A763] px-2 py-1 rounded">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-                <div className="text-xs text-slate-500">
-                  Para: {hire.target_ventures?.join(', ')}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </GlowCard>
+                ))}
+              </div>
+            </GlowCard>
+          )}
+
+          {/* Distribution Analysis */}
+          {analysis.skill_distribution && (
+            <GlowCard glowColor="gold" className="p-6">
+              <h4 className="text-white font-semibold mb-3">Distribuição por Senioridade</h4>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                {analysis.skill_distribution}
+              </p>
+            </GlowCard>
+          )}
+        </motion.div>
+      )}
+
+      {!analysis && !analyzing && (
+        <div className="text-center py-12 text-slate-400">
+          <Target className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <p>Clique em "Analisar Gaps" para identificar oportunidades</p>
+        </div>
       )}
     </div>
   );
