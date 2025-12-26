@@ -6,6 +6,7 @@ import Portfolio from './pages/Portfolio';
 import PortfolioDashboard from './pages/PortfolioDashboard';
 import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
+import CollaborationHub from './pages/CollaborationHub';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "PortfolioDashboard": PortfolioDashboard,
     "VentureDetail": VentureDetail,
     "VentureManagement": VentureManagement,
+    "CollaborationHub": CollaborationHub,
 }
 
 export const pagesConfig = {

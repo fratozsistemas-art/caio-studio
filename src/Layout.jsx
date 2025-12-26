@@ -9,6 +9,7 @@ import { base44 } from "@/api/base44Client";
 const navigation = [
   { name: "Home", page: "Home" },
   { name: "Portfolio", page: "Portfolio" },
+  { name: "Colaboração", page: "CollaborationHub" },
   { name: "Plataformas", page: "Platforms" },
   { name: "Sobre", page: "About" }
 ];
