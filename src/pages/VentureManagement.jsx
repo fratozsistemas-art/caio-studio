@@ -20,6 +20,7 @@ import NotificationsAlerts from "@/components/ventures/NotificationsAlerts";
 import PortfolioManager from "@/components/ventures/PortfolioManager";
 import SquadManager from "@/components/collaboration/SquadManager";
 import CollaborationChannels from "@/components/collaboration/CollaborationChannels";
+import InternalMarketplace from "@/components/marketplace/InternalMarketplace";
 
 export default function VentureManagement() {
   const [user, setUser] = useState(null);
@@ -208,6 +209,7 @@ export default function VentureManagement() {
             <TabsTrigger value="ventures">Ventures</TabsTrigger>
             <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
             <TabsTrigger value="collaboration">Colaboração</TabsTrigger>
+            <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
             <TabsTrigger value="kpis">KPIs & Metas</TabsTrigger>
             <TabsTrigger value="talents">Talentos & Skills</TabsTrigger>
             <TabsTrigger value="financial">Modelagem Financeira</TabsTrigger>
@@ -243,6 +245,13 @@ export default function VentureManagement() {
             <CollaborationChannels 
               portfolios={portfolios}
               squads={squadsData}
+            />
+          </TabsContent>
+
+          <TabsContent value="marketplace">
+            <InternalMarketplace 
+              ventures={ventures}
+              talents={talents}
             />
           </TabsContent>
 
