@@ -10,6 +10,7 @@ import CollaborationHub from './pages/CollaborationHub';
 import PermissionsManagement from './pages/PermissionsManagement';
 import AIVentureCreator from './pages/AIVentureCreator';
 import StakeholderJourney from './pages/StakeholderJourney';
+import AdminHub from './pages/AdminHub';
 import __Layout from './Layout.jsx';
 
 
@@ -26,6 +27,7 @@ export const PAGES = {
     "PermissionsManagement": PermissionsManagement,
     "AIVentureCreator": AIVentureCreator,
     "StakeholderJourney": StakeholderJourney,
+    "AdminHub": AdminHub,
 }
 
 export const pagesConfig = {
