@@ -6,8 +6,12 @@ import { Brain, TrendingUp, AlertTriangle, Sparkles, Loader2, Target } from 'luc
 import { Button } from "@/components/ui/button";
 import GlowCard from "@/components/ui/GlowCard";
 import { toast } from "sonner";
+import { useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "@/translations";
 
 export default function AIInsightsDashboard({ ventures, financials, kpis, talents }) {
+  const { language } = useLanguage();
+  const t = useTranslation(language);
   const [insights, setInsights] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
 
@@ -144,10 +148,10 @@ Forneça análise objetiva e baseada em dados.`;
           <div>
             <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
               <Brain className="w-5 h-5 text-[#C7A763]" />
-              AI Insights Dashboard
+              {t.ai.insights.title}
             </h3>
             <p className="text-slate-400 text-sm">
-              Análise automática do portfolio com identificação de tendências, anomalias e oportunidades
+              {t.ai.insights.description}
             </p>
           </div>
           <Button
@@ -158,12 +162,12 @@ Forneça análise objetiva e baseada em dados.`;
             {analyzing ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Analisando...
+                {t.ai.insights.generating}
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4 mr-2" />
-                Gerar Insights
+                {t.ai.insights.generate}
               </>
             )}
           </Button>
@@ -313,9 +317,9 @@ Forneça análise objetiva e baseada em dados.`;
           <div className="text-center space-y-4">
             <Brain className="w-16 h-16 mx-auto text-[#C7A763] opacity-30" />
             <div>
-              <h3 className="text-white font-semibold mb-2">AI Insights não gerados</h3>
+              <h3 className="text-white font-semibold mb-2">{t.ai.insights.notGenerated}</h3>
               <p className="text-slate-400 text-sm">
-                Clique em "Gerar Insights" para análise automática do portfolio
+                {t.ai.insights.clickToGenerate}
               </p>
             </div>
           </div>

@@ -5,8 +5,12 @@ import { Brain, TrendingUp, TrendingDown, Loader2, CheckCircle2, AlertCircle } f
 import { Button } from "@/components/ui/button";
 import GlowCard from "@/components/ui/GlowCard";
 import { toast } from "sonner";
+import { useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "@/translations";
 
 export default function VenturePerformanceSummary({ venture, financials, kpis, talents }) {
+  const { language } = useLanguage();
+  const t = useTranslation(language);
   const [summary, setSummary] = useState(null);
   const [generating, setGenerating] = useState(false);
 
@@ -97,35 +101,35 @@ Considere dados de mercado e benchmarks da indústria ${venture.category}.`;
       bg: 'bg-green-500/20',
       border: 'border-green-500/30',
       icon: CheckCircle2,
-      label: 'Excelente'
+      label: t.ai.performance.status.excellent
     },
     good: {
       color: 'text-blue-400',
       bg: 'bg-blue-500/20',
       border: 'border-blue-500/30',
       icon: CheckCircle2,
-      label: 'Bom'
+      label: t.ai.performance.status.good
     },
     attention: {
       color: 'text-yellow-400',
       bg: 'bg-yellow-500/20',
       border: 'border-yellow-500/30',
       icon: AlertCircle,
-      label: 'Atenção'
+      label: t.ai.performance.status.attention
     },
     critical: {
       color: 'text-red-400',
       bg: 'bg-red-500/20',
       border: 'border-red-500/30',
       icon: AlertCircle,
-      label: 'Crítico'
+      label: t.ai.performance.status.critical
     }
   };
 
   const riskConfig = {
-    low: { color: 'text-green-400', label: 'Baixo' },
-    medium: { color: 'text-yellow-400', label: 'Médio' },
-    high: { color: 'text-red-400', label: 'Alto' }
+    low: { color: 'text-green-400', label: t.ai.performance.risk.low },
+    medium: { color: 'text-yellow-400', label: t.ai.performance.risk.medium },
+    high: { color: 'text-red-400', label: t.ai.performance.risk.high }
   };
 
   return (
@@ -133,7 +137,7 @@ Considere dados de mercado e benchmarks da indústria ${venture.category}.`;
       <div className="flex items-center justify-between">
         <h4 className="text-white font-semibold flex items-center gap-2">
           <Brain className="w-5 h-5 text-[#C7A763]" />
-          Performance Summary - {venture.name}
+          {t.ai.performance.title} - {venture.name}
         </h4>
         <Button
           onClick={generateSummary}
@@ -146,7 +150,7 @@ Considere dados de mercado e benchmarks da indústria ${venture.category}.`;
           ) : (
             <Brain className="w-4 h-4 mr-2" />
           )}
-          {summary ? 'Atualizar' : 'Gerar Resumo'}
+          {summary ? t.ai.performance.update : t.ai.performance.generate}
         </Button>
       </div>
 

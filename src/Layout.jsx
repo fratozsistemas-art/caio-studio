@@ -2,20 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from "@/utils";
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Brain, ArrowUpRight } from 'lucide-react';
+import { Menu, X, Brain, ArrowUpRight, Globe } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
+import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "@/translations";
 
-const navigation = [
-  { name: "Home", page: "Home" },
-  { name: "Portfolio", page: "Portfolio" },
-  { name: "Colaboração", page: "CollaborationHub" },
-  { name: "Plataformas", page: "Platforms" },
-  { name: "Sobre", page: "About" }
-];
+function LayoutContent({ children, currentPageName }) {
+  const { language, toggleLanguage } = useLanguage();
+  const t = useTranslation(language);
+  
+  const navigation = [
+    { name: t.nav.home, page: "Home" },
+    { name: t.nav.portfolio, page: "Portfolio" },
+    { name: t.nav.collaboration, page: "CollaborationHub" },
+    { name: t.nav.platforms, page: "Platforms" },
+    { name: t.nav.about, page: "About" }
+  ];
 
-export default function Layout({ children, currentPageName }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -135,7 +140,7 @@ export default function Layout({ children, currentPageName }) {
                     : 'text-white/70 hover:text-white'
                 }`}
               >
-                Dashboard
+                {t.nav.dashboard}
                 {currentPageName === "PortfolioDashboard" && (
                   <motion.div
                     layoutId="activeNav"
@@ -145,7 +150,17 @@ export default function Layout({ children, currentPageName }) {
                 )}
               </Link>
             )}
-          </div>
+
+            {/* Language Toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              title="Change language"
+            >
+              <Globe className="w-4 h-4" />
+              <span className="text-xs font-medium">{language === 'pt-BR' ? 'PT' : 'EN'}</span>
+            </button>
+            </div>
 
           {/* CTA Button */}
           <div className="hidden md:block">
@@ -154,7 +169,7 @@ export default function Layout({ children, currentPageName }) {
                 size="sm"
                 className="bg-gradient-to-r from-[#C7A763] to-[#A88B4A] hover:from-[#D4B474] hover:to-[#B99B5A] text-[#06101F] font-semibold px-5 rounded-full"
               >
-                Contato
+                {t.nav.contact}
                 <ArrowUpRight className="ml-1 w-4 h-4" />
               </Button>
             </Link>
@@ -205,9 +220,18 @@ export default function Layout({ children, currentPageName }) {
                         : 'text-white/70'
                     }`}
                   >
-                    Dashboard
+                    {t.nav.dashboard}
                   </Link>
                 )}
+
+                <button
+                  onClick={toggleLanguage}
+                  className="flex items-center gap-2 py-3 text-lg font-medium text-white/70"
+                >
+                  <Globe className="w-5 h-5" />
+                  {language === 'pt-BR' ? 'English' : 'Português'}
+                </button>
+
                 <Link 
                   to={createPageUrl("About")}
                   className="block"
@@ -215,7 +239,7 @@ export default function Layout({ children, currentPageName }) {
                   <Button 
                     className="w-full bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F] font-semibold rounded-full mt-4"
                   >
-                    Contato
+                    {t.nav.contact}
                     <ArrowUpRight className="ml-1 w-4 h-4" />
                   </Button>
                 </Link>
@@ -245,14 +269,13 @@ export default function Layout({ children, currentPageName }) {
                 </div>
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-                An Operating System for Venture Creation. Transformando complexidade 
-                em clareza estratégica através da união entre inteligência humana e artificial.
+                {t.footer.description}
               </p>
             </div>
 
             {/* Navigation */}
             <div>
-              <h4 className="text-white font-semibold mb-4">Navegação</h4>
+              <h4 className="text-white font-semibold mb-4">{t.footer.navigation}</h4>
               <ul className="space-y-3">
                 {navigation.map((item) => (
                   <li key={item.page}>
@@ -269,7 +292,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Contact */}
             <div>
-              <h4 className="text-white font-semibold mb-4">Contato</h4>
+              <h4 className="text-white font-semibold mb-4">{t.footer.contact}</h4>
               <ul className="space-y-3 text-sm text-slate-400">
                 <li>contato@caiovision.com</li>
                 <li>São Paulo, Brasil</li>
@@ -280,16 +303,24 @@ export default function Layout({ children, currentPageName }) {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} CAIO Vision Venture Studio. Todos os direitos reservados.
+              © {new Date().getFullYear()} CAIO Vision Venture Studio. {t.footer.rights}
             </p>
             <div className="flex items-center gap-6">
               <span className="text-xs text-slate-500">
-                Strategic insight at <span className="text-[#C7A763]">thought speed</span>
+                {t.footer.tagline} <span className="text-[#C7A763]">{t.footer.speed}</span>
               </span>
             </div>
           </div>
         </div>
       </footer>
     </div>
-  );
-}
+    );
+    }
+
+    export default function Layout({ children, currentPageName }) {
+    return (
+    <LanguageProvider>
+    <LayoutContent children={children} currentPageName={currentPageName} />
+    </LanguageProvider>
+    );
+    }
