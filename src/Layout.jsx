@@ -167,8 +167,18 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                 >
                   CRM
                 </Link>
-              </>
-            )}
+                <Link
+                  to={createPageUrl("ContentHub")}
+                  className={`relative px-3 py-2 text-sm font-medium transition-all rounded-lg ${
+                    currentPageName === "ContentHub" 
+                      ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  Conteúdo
+                </Link>
+                </>
+                )}
 
                   {/* Language Toggle */}
                   <button
@@ -262,8 +272,18 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                     >
                       CRM
                     </Link>
-                  </>
-                )}
+                    <Link
+                      to={createPageUrl("ContentHub")}
+                      className={`block px-3 py-2.5 text-base font-medium rounded-lg transition-all ${
+                        currentPageName === "ContentHub" 
+                          ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                          : 'text-white/70 hover:bg-white/5'
+                      }`}
+                    >
+                      Conteúdo
+                    </Link>
+                    </>
+                    )}
 
                 <button
                   onClick={toggleLanguage}
