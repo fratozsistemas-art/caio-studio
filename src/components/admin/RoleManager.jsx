@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GlowCard from "@/components/ui/GlowCard";
 import FieldPermissionsEditor from "@/components/admin/FieldPermissionsEditor";
+import RoleInitializer from "@/components/admin/RoleInitializer";
 import { toast } from "sonner";
 
 const permissionCategories = {
@@ -231,6 +232,8 @@ export default function RoleManager() {
           Novo Role
         </Button>
       </div>
+
+      {(!roles || roles.length === 0) && <RoleInitializer />}
 
       {showForm && (
         <GlowCard glowColor="gold" className="p-6">
