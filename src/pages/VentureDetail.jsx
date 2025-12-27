@@ -3,13 +3,14 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { ArrowLeft, TrendingUp, Users, DollarSign, Calendar, Target, Flame, Globe, Linkedin, ExternalLink } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Users, DollarSign, Calendar, Target, Flame, Globe, Linkedin, ExternalLink, Tag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { createPageUrl } from "@/utils";
 import GlowCard from "@/components/ui/GlowCard";
 import VentureMetricsOverview from "@/components/ventures/VentureMetricsOverview";
 import VentureOKRManager from "@/components/ventures/VentureOKRManager";
 import VentureTalentAllocation from "@/components/ventures/VentureTalentAllocation";
+import RelatedVentures from "@/components/portfolio/RelatedVentures";
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -201,25 +202,76 @@ export default function VentureDetail() {
         </div>
         )}
 
-        {/* Public Info Card */}
+        {/* Public Info Card with Extended Details */}
         {!isAdmin && (
-          <GlowCard glowColor="mixed" className="p-8">
-            <div className="text-center space-y-4">
-              <div className="text-lg text-white">
-                Esta é uma página pública de venture. 
-              </div>
-              <div className="text-slate-400">
-                Para acessar métricas detalhadas, KPIs e informações financeiras, 
-                é necessário ter permissões de administrador.
-              </div>
-              {venture.category && (
-                <div className="pt-4 border-t border-white/10">
-                  <span className="text-sm text-slate-500">Categoria: </span>
-                  <span className="text-white">{venture.category}</span>
+          <div className="space-y-6">
+            <GlowCard glowColor="mixed" className="p-8">
+              <div className="space-y-6">
+                <div className="text-center space-y-4">
+                  <div className="text-lg text-white">
+                    {venture.name} - {venture.layer}
+                  </div>
+                  <div className="text-slate-400">
+                    {venture.description}
+                  </div>
                 </div>
-              )}
-            </div>
-          </GlowCard>
+
+                {/* Extended Public Information */}
+                <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-white/10">
+                  {venture.category && (
+                    <div>
+                      <span className="text-sm text-slate-500 block mb-1">Categoria</span>
+                      <span className="text-white font-medium">{venture.category}</span>
+                    </div>
+                  )}
+                  
+                  {venture.founded_date && (
+                    <div>
+                      <span className="text-sm text-slate-500 block mb-1">Fundada em</span>
+                      <span className="text-white font-medium">
+                        {new Date(venture.founded_date).toLocaleDateString('pt-BR')}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {venture.team_size && (
+                    <div>
+                      <span className="text-sm text-slate-500 block mb-1">Tamanho do Time</span>
+                      <span className="text-white font-medium">{venture.team_size} pessoas</span>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <span className="text-sm text-slate-500 block mb-1">Status</span>
+                    <span className="text-white font-medium capitalize">{venture.status}</span>
+                  </div>
+                </div>
+
+                {/* Tags */}
+                {venture.tags && venture.tags.length > 0 && (
+                  <div className="pt-6 border-t border-white/10">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Tag className="w-4 h-4 text-slate-400" />
+                      <span className="text-sm text-slate-500">Tags</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {venture.tags.map((tag, idx) => (
+                        <span 
+                          key={idx}
+                          className="px-3 py-1 rounded-full bg-white/5 text-slate-300 text-sm"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </GlowCard>
+
+            {/* Related Ventures for Public */}
+            <RelatedVentures currentVenture={venture} />
+          </div>
         )}
 
         {/* Metrics Overview - Admin Only */}
@@ -237,6 +289,9 @@ export default function VentureDetail() {
 
         {/* OKR Manager - Admin Only */}
         {isAdmin && <VentureOKRManager ventureId={ventureId} />}
+
+        {/* Related Ventures for Admin */}
+        {isAdmin && <RelatedVentures currentVenture={venture} />}
       </div>
     </div>
   );

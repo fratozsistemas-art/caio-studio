@@ -5,6 +5,7 @@ import OperatingSystemSection from '@/components/home/OperatingSystemSection';
 import VideoSection from '@/components/home/VideoSection';
 import CTASection from '@/components/home/CTASection';
 import YouTubeSection from '@/components/youtube/YouTubeSection';
+import FeaturedVentures from '@/components/portfolio/FeaturedVentures';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <HeroSection />
       <VideoSection />
       <OperatingSystemSection />
+      <FeaturedVentures />
       <PortfolioPreview />
       <YouTubeSection 
         title="Conteúdo e Insights"
