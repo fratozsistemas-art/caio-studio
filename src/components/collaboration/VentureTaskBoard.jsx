@@ -24,6 +24,8 @@ import GlowCard from '@/components/ui/GlowCard';
 import { toast } from 'sonner';
 import TaskCalendar from './TaskCalendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useVenturePermissions } from './useVenturePermissions';
+import { Lock } from 'lucide-react';
 
 const statusColumns = [
   { id: 'todo', label: 'A Fazer', color: 'cyan' },
@@ -44,6 +46,7 @@ export default function VentureTaskBoard({ ventureId, ventureName }) {
   const [selectedStatus, setSelectedStatus] = useState('todo');
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
+  const { canView, canEdit } = useVenturePermissions(ventureId, 'tasks');
 
   const [newTask, setNewTask] = useState({
     title: '',
@@ -130,6 +133,15 @@ export default function VentureTaskBoard({ ventureId, ventureName }) {
     });
   };
 
+  if (!canView) {
+    return (
+      <GlowCard className="p-8 text-center">
+        <Lock className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+        <p className="text-slate-400">Você não tem permissão para visualizar as tarefas desta venture.</p>
+      </GlowCard>
+    );
+  }
+
   if (isLoading) {
     return (
       <GlowCard className="p-6">
@@ -152,13 +164,14 @@ export default function VentureTaskBoard({ ventureId, ventureName }) {
           <p className="text-sm text-slate-400">{tasks?.length || 0} tarefas no total</p>
         </div>
 
-        <Dialog open={showNewTask} onOpenChange={setShowNewTask}>
-          <DialogTrigger asChild>
-            <Button className="bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]">
-              <Plus className="w-4 h-4 mr-2" />
-              Nova Tarefa
-            </Button>
-          </DialogTrigger>
+        {canEdit && (
+          <Dialog open={showNewTask} onOpenChange={setShowNewTask}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]">
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Tarefa
+              </Button>
+            </DialogTrigger>
           <DialogContent className="bg-[#0a1628] border-white/10">
             <DialogHeader>
               <DialogTitle className="text-white">Criar Nova Tarefa</DialogTitle>
@@ -241,6 +254,7 @@ export default function VentureTaskBoard({ ventureId, ventureName }) {
             </div>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       {/* Tabs for Board and Calendar Views */}

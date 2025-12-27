@@ -16,6 +16,8 @@ import VentureChat from "@/components/collaboration/VentureChat";
 import VentureTaskBoard from "@/components/collaboration/VentureTaskBoard";
 import VentureDocuments from "@/components/collaboration/VentureDocuments";
 import PublicComments from "@/components/ventures/PublicComments";
+import ThreadedChat from "@/components/collaboration/ThreadedChat";
+import PermissionsManager from "@/components/collaboration/PermissionsManager";
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -295,7 +297,7 @@ export default function VentureDetail() {
         {/* OKR Manager - Admin Only */}
         {isAdmin && <VentureOKRManager ventureId={ventureId} />}
 
-        {/* Collaboration Section - Admin Only */}
+        {/* Collaboration Section - Authenticated Users Only */}
         {isAdmin && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold text-white mb-6 font-montserrat">Colaboração</h2>
@@ -303,7 +305,7 @@ export default function VentureDetail() {
               <TabsList className="bg-white/5 border border-white/10">
                 <TabsTrigger value="chat">
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Chat
+                  Chat por Tópicos
                 </TabsTrigger>
                 <TabsTrigger value="tasks">
                   <CheckSquare className="w-4 h-4 mr-2" />
@@ -313,10 +315,13 @@ export default function VentureDetail() {
                   <FileText className="w-4 h-4 mr-2" />
                   Documentos
                 </TabsTrigger>
+                <TabsTrigger value="permissions">
+                  Permissões
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="chat">
-                <VentureChat ventureId={ventureId} ventureName={venture.name} />
+                <ThreadedChat ventureId={ventureId} ventureName={venture.name} />
               </TabsContent>
 
               <TabsContent value="tasks">
@@ -325,6 +330,10 @@ export default function VentureDetail() {
 
               <TabsContent value="documents">
                 <VentureDocuments ventureId={ventureId} ventureName={venture.name} />
+              </TabsContent>
+
+              <TabsContent value="permissions">
+                <PermissionsManager ventureId={ventureId} />
               </TabsContent>
             </Tabs>
           </div>

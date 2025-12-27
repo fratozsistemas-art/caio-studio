@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dialog";
 import GlowCard from '@/components/ui/GlowCard';
 import { toast } from 'sonner';
+import { useVenturePermissions } from './useVenturePermissions';
+import { Lock } from 'lucide-react';
 
 const categories = [
   { value: 'financial', label: 'Financeiro', color: 'text-green-400' },
@@ -37,6 +39,7 @@ export default function VentureDocuments({ ventureId, ventureName }) {
   const [filterCategory, setFilterCategory] = useState('all');
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
+  const { canView, canEdit } = useVenturePermissions(ventureId, 'documents');
 
   const [newDoc, setNewDoc] = useState({
     title: '',
@@ -148,6 +151,15 @@ export default function VentureDocuments({ ventureId, ventureName }) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
+  if (!canView) {
+    return (
+      <GlowCard className="p-8 text-center">
+        <Lock className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+        <p className="text-slate-400">Você não tem permissão para visualizar os documentos desta venture.</p>
+      </GlowCard>
+    );
+  }
+
   if (isLoading) {
     return (
       <GlowCard className="p-6">
@@ -179,13 +191,14 @@ export default function VentureDocuments({ ventureId, ventureName }) {
             </SelectContent>
           </Select>
 
-          <Dialog open={showUpload} onOpenChange={setShowUpload}>
-            <DialogTrigger asChild>
-              <Button className="bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]">
-                <Upload className="w-4 h-4 mr-2" />
-                Upload
-              </Button>
-            </DialogTrigger>
+          {canEdit && (
+            <Dialog open={showUpload} onOpenChange={setShowUpload}>
+              <DialogTrigger asChild>
+                <Button className="bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload
+                </Button>
+              </DialogTrigger>
             <DialogContent className="bg-[#0a1628] border-white/10">
               <DialogHeader>
                 <DialogTitle className="text-white">Enviar Documento</DialogTitle>
@@ -252,6 +265,7 @@ export default function VentureDocuments({ ventureId, ventureName }) {
               </div>
             </DialogContent>
           </Dialog>
+          )}
         </div>
       </div>
 
