@@ -97,6 +97,19 @@ export default function VentureDetail() {
     enabled: !!ventureId && isAdmin
   });
 
+  const { data: tasks } = useQuery({
+    queryKey: ['ventureTasks', ventureId],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureTask',
+        operation: 'filter',
+        query: { venture_id: ventureId }
+      });
+      return res.data?.data || [];
+    },
+    enabled: !!ventureId && isAdmin
+  });
+
   if (!venture) {
     return (
       <div className="min-h-screen bg-[#06101F] p-6 flex items-center justify-center">
