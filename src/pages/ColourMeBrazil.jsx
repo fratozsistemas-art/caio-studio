@@ -447,6 +447,32 @@ export default function ColourMeBrazil() {
         </div>
       </section>
 
+      {/* Video Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <SectionTitle
+            subtitle="APRESENTAÇÃO EM VÍDEO"
+            title="Assista à História do Projeto"
+            accent="cyan"
+            align="center"
+          />
+
+          <div className="mt-12">
+            <GlowCard glowColor="cyan" className="p-2">
+              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src="https://www.youtube.com/embed/Q1NYAokK29I"
+                  className="absolute top-0 left-0 w-full h-full rounded-lg"
+                  title="Colour Me Brazil Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </GlowCard>
+          </div>
+        </div>
+      </section>
+
       {/* Embedded PDF Viewer */}
       <section className="py-20 px-6 bg-gradient-to-b from-[#C7A763]/5 to-transparent">
         <div className="max-w-7xl mx-auto">
