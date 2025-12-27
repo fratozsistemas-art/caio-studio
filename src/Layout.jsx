@@ -369,7 +369,7 @@ function LayoutContent({ children, currentPageName }) {
             <div>
               <h4 className="text-white font-semibold mb-4">{t.footer.navigation}</h4>
               <ul className="space-y-3">
-                {navigation.map((item) => (
+                {publicNavigation.map((item) => (
                   <li key={item.page}>
                     <Link
                       to={createPageUrl(item.page)}
