@@ -12,6 +12,7 @@ import RoleManager from "@/components/admin/RoleManager";
 import UserRoleAssignment from "@/components/admin/UserRoleAssignment";
 import PermissionAuditLog from "@/components/admin/PermissionAuditLog";
 import CollaborationChannels from "@/components/collaboration/CollaborationChannels";
+import YouTubeSyncManager from "@/components/admin/YouTubeSyncManager";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -179,6 +180,10 @@ export default function AdminHub() {
               <Settings className="w-4 h-4 mr-2" />
               Insights IA
             </TabsTrigger>
+            <TabsTrigger value="content">
+              <Settings className="w-4 h-4 mr-2" />
+              Conteúdo
+            </TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab */}
@@ -248,6 +253,31 @@ export default function AdminHub() {
               kpis={portfolioData?.kpis || []}
               talents={portfolioData?.talents || []}
             />
+          </TabsContent>
+
+          {/* Content Tab */}
+          <TabsContent value="content" className="space-y-6">
+            <SectionTitle
+              title="Gestão de Conteúdo"
+              subtitle="YouTube e Integrações"
+              accent="gold"
+              align="left"
+            />
+            <div className="grid lg:grid-cols-2 gap-6">
+              <YouTubeSyncManager />
+              
+              <GlowCard glowColor="gold" className="p-6">
+                <h3 className="text-white font-semibold mb-2">Sobre a Integração</h3>
+                <p className="text-slate-400 text-sm mb-4">
+                  Os vídeos do canal @artificiallysmarter são sincronizados automaticamente e categorizados por IA.
+                </p>
+                <ul className="text-slate-500 text-xs space-y-2">
+                  <li>• Vídeos exibidos na Home (3 mais recentes)</li>
+                  <li>• Filtrados por categoria nas páginas específicas</li>
+                  <li>• Sincronização sob demanda via botão acima</li>
+                </ul>
+              </GlowCard>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
