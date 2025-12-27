@@ -17,6 +17,7 @@ import CRMHub from './pages/CRMHub';
 import ColourMeBrazil from './pages/ColourMeBrazil';
 import InnovaAcademy from './pages/InnovaAcademy';
 import ContentHub from './pages/ContentHub';
+import CommunicationHub from './pages/CommunicationHub';
 import __Layout from './Layout.jsx';
 
 
@@ -40,6 +41,7 @@ export const PAGES = {
     "ColourMeBrazil": ColourMeBrazil,
     "InnovaAcademy": InnovaAcademy,
     "ContentHub": ContentHub,
+    "CommunicationHub": CommunicationHub,
 }
 
 export const pagesConfig = {
