@@ -7,8 +7,24 @@ export const translations = {
       collaboration: 'Colaboração',
       platforms: 'Plataformas',
       about: 'Sobre',
+      contact: 'Contato',
       dashboard: 'Dashboard',
-      contact: 'Contato'
+      admin: 'Admin',
+      leads: 'Leads',
+      automation: 'Automação',
+      crm: 'CRM',
+      content: 'Conteúdo',
+      communication: 'Comunicação',
+      feedback: 'Feedback',
+      talent: 'Talentos',
+      login: 'Entrar',
+      logout: 'Sair',
+      profile: 'Perfil'
+    },
+    theme: {
+      light: 'Claro',
+      dark: 'Escuro',
+      toggle: 'Alternar tema'
     },
     
     // Home Page
@@ -218,8 +234,24 @@ export const translations = {
       collaboration: 'Collaboration',
       platforms: 'Platforms',
       about: 'About',
+      contact: 'Contact',
       dashboard: 'Dashboard',
-      contact: 'Contact'
+      admin: 'Admin',
+      leads: 'Leads',
+      automation: 'Automation',
+      crm: 'CRM',
+      content: 'Content',
+      communication: 'Communication',
+      feedback: 'Feedback',
+      talent: 'Talent',
+      login: 'Sign In',
+      logout: 'Sign Out',
+      profile: 'Profile'
+    },
+    theme: {
+      light: 'Light',
+      dark: 'Dark',
+      toggle: 'Toggle theme'
     },
 
     // Home Page
