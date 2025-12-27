@@ -150,17 +150,36 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                 )}
               </Link>
             )}
+            {isAdmin && (
+              <Link
+                to={createPageUrl("PermissionsManagement")}
+                className={`relative text-sm font-medium transition-colors ${
+                  currentPageName === "PermissionsManagement" 
+                    ? 'text-[#C7A763]' 
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                Permissões
+                {currentPageName === "PermissionsManagement" && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+              </Link>
+            )}
 
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-              title="Change language"
-            >
-              <Globe className="w-4 h-4" />
-              <span className="text-xs font-medium">{language === 'pt-BR' ? 'PT' : 'EN'}</span>
-            </button>
-            </div>
+                  {/* Language Toggle */}
+                  <button
+                    onClick={toggleLanguage}
+                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    title="Change language"
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span className="text-xs font-medium">{language === 'pt-BR' ? 'PT' : 'EN'}</span>
+                  </button>
+                </div>
 
           {/* CTA Button */}
           <div className="hidden md:block">

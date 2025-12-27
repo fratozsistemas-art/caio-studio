@@ -7,6 +7,7 @@ import PortfolioDashboard from './pages/PortfolioDashboard';
 import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
 import CollaborationHub from './pages/CollaborationHub';
+import PermissionsManagement from './pages/PermissionsManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +21,7 @@ export const PAGES = {
     "VentureDetail": VentureDetail,
     "VentureManagement": VentureManagement,
     "CollaborationHub": CollaborationHub,
+    "PermissionsManagement": PermissionsManagement,
 }
 
 export const pagesConfig = {
