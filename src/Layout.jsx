@@ -9,6 +9,7 @@ import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
 import { useTranslation } from "@/components/translations";
 import Sidebar from "@/components/layout/Sidebar";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 function LayoutContent({ children, currentPageName }) {
   const { language, toggleLanguage } = useLanguage();
