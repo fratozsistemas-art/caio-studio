@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dialog";
 import GlowCard from '@/components/ui/GlowCard';
 import { toast } from 'sonner';
+import TaskCalendar from './TaskCalendar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const statusColumns = [
   { id: 'todo', label: 'A Fazer', color: 'cyan' },
@@ -241,8 +243,15 @@ export default function VentureTaskBoard({ ventureId, ventureName }) {
         </Dialog>
       </div>
 
-      {/* Kanban Board */}
-      <div className="grid lg:grid-cols-4 gap-4">
+      {/* Tabs for Board and Calendar Views */}
+      <Tabs defaultValue="board" className="space-y-4">
+        <TabsList className="bg-white/5 border border-white/10">
+          <TabsTrigger value="board">Quadro Kanban</TabsTrigger>
+          <TabsTrigger value="calendar">Calendário</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="board">
+          <div className="grid lg:grid-cols-4 gap-4">
         {statusColumns.map((column) => (
           <div key={column.id}>
             <GlowCard glowColor={column.color} className="p-4">
@@ -306,7 +315,13 @@ export default function VentureTaskBoard({ ventureId, ventureName }) {
             </GlowCard>
           </div>
         ))}
-      </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <TaskCalendar tasks={tasks} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

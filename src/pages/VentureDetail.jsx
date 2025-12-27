@@ -15,6 +15,7 @@ import RelatedVentures from "@/components/portfolio/RelatedVentures";
 import VentureChat from "@/components/collaboration/VentureChat";
 import VentureTaskBoard from "@/components/collaboration/VentureTaskBoard";
 import VentureDocuments from "@/components/collaboration/VentureDocuments";
+import PublicComments from "@/components/ventures/PublicComments";
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -329,8 +330,13 @@ export default function VentureDetail() {
           </div>
         )}
 
-        {/* Related Ventures for Admin */}
-        {isAdmin && <RelatedVentures currentVenture={venture} />}
+        {/* Public Comments Section */}
+        <div className="mt-8">
+          <PublicComments ventureId={ventureId} ventureName={venture.name} />
+        </div>
+
+        {/* Related Ventures */}
+        <RelatedVentures currentVenture={venture} />
       </div>
     </div>
   );

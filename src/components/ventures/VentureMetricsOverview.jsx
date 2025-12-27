@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, AlertCircle } from 'lucide-react';
 import GlowCard from "@/components/ui/GlowCard";
+import KPIHistoryChart from "./KPIHistoryChart";
 
 export default function VentureMetricsOverview({ venture, financials, kpis }) {
   // Calculate financial metrics
@@ -148,6 +149,9 @@ export default function VentureMetricsOverview({ venture, financials, kpis }) {
           </LineChart>
         </ResponsiveContainer>
       </GlowCard>
+
+      {/* KPI History Chart */}
+      {kpis.length > 0 && <KPIHistoryChart kpis={kpis} />}
 
       {/* KPI Performance */}
       {kpis.length > 0 && (

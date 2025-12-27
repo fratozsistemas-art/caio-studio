@@ -2,13 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rocket, TrendingUp, Cpu, Zap, Grid, Search, X, Filter, Palette, Network } from 'lucide-react';
+import { Rocket, TrendingUp, Cpu, Zap, Grid, Search, X, Filter, Palette, Network, Eye } from 'lucide-react';
 import SectionTitle from "@/components/ui/SectionTitle";
 import VentureCard from "@/components/portfolio/VentureCard";
+import VentureQuickView from "@/components/portfolio/VentureQuickView";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import GlowCard from "@/components/ui/GlowCard";
+import { AnimatePresence } from 'framer-motion';
 
 const ventures = [
   // Startup Projects
@@ -209,6 +211,7 @@ export default function Portfolio() {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [quickViewVenture, setQuickViewVenture] = useState(null);
 
   // Fetch ventures from database
   const { data: dbVentures, isLoading } = useQuery({
@@ -650,16 +653,37 @@ export default function Portfolio() {
 
         {/* Portfolio Grid */}
         {filteredVentures.length > 0 ? (
-          <motion.div 
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-            layout
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredVentures.map((venture, index) => (
-                <VentureCard key={venture.name} venture={venture} index={index} />
-              ))}
-            </AnimatePresence>
-          </motion.div>
+        <>
+        <motion.div 
+        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+        layout
+        >
+        <AnimatePresence mode="popLayout">
+        {filteredVentures.map((venture, index) => (
+          <div key={venture.name} className="relative group">
+            <VentureCard venture={venture} index={index} />
+            <button
+              onClick={() => setQuickViewVenture(venture)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
+              title="Visualização rápida"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          </div>
+        ))}
+        </AnimatePresence>
+        </motion.div>
+
+        {/* Quick View Modal */}
+        <AnimatePresence>
+        {quickViewVenture && (
+        <VentureQuickView 
+          venture={quickViewVenture} 
+          onClose={() => setQuickViewVenture(null)} 
+        />
+        )}
+        </AnimatePresence>
+        </>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
