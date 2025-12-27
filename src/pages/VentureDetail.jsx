@@ -18,6 +18,7 @@ import VentureDocuments from "@/components/collaboration/VentureDocuments";
 import PublicComments from "@/components/ventures/PublicComments";
 import ThreadedChat from "@/components/collaboration/ThreadedChat";
 import PermissionsManager from "@/components/collaboration/PermissionsManager";
+import ExternalIntegrations from "@/components/collaboration/ExternalIntegrations";
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -318,6 +319,9 @@ export default function VentureDetail() {
                 <TabsTrigger value="permissions">
                   Permissões
                 </TabsTrigger>
+                <TabsTrigger value="integrations">
+                  Integrações
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="chat">
@@ -334,6 +338,10 @@ export default function VentureDetail() {
 
               <TabsContent value="permissions">
                 <PermissionsManager ventureId={ventureId} />
+              </TabsContent>
+
+              <TabsContent value="integrations">
+                <ExternalIntegrations ventureId={ventureId} />
               </TabsContent>
             </Tabs>
           </div>

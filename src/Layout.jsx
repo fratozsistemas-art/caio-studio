@@ -86,121 +86,86 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
       {/* Header */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled 
-            ? 'bg-[#06101F]/90 backdrop-blur-xl border-b border-white/10 py-4' 
-            : 'bg-transparent py-6'
+            ? 'bg-[#06101F]/95 backdrop-blur-xl border-b border-white/5 py-3' 
+            : 'bg-[#06101F]/80 backdrop-blur-md py-4'
         }`}
       >
         <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <Link 
             to={createPageUrl("Home")} 
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-2.5 group"
           >
-            <div className="relative w-10 h-10">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#00D4FF] to-[#C7A763] rounded-xl opacity-20 group-hover:opacity-40 transition-opacity" />
-              <div className="relative w-full h-full rounded-xl border border-white/20 flex items-center justify-center bg-[#06101F]">
-                <Brain className="w-5 h-5 text-[#C7A763]" />
+            <div className="relative w-9 h-9">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#00D4FF] to-[#C7A763] rounded-lg opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="relative w-full h-full rounded-lg border border-white/10 flex items-center justify-center bg-[#06101F]">
+                <Brain className="w-4 h-4 text-[#C7A763]" />
               </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold font-montserrat tracking-tight">CAIO VISION</span>
-              <span className="text-xs text-[#C7A763] -mt-1 tracking-wider">VENTURE STUDIO</span>
+            <div className="flex flex-col leading-none">
+              <span className="text-sm font-bold font-montserrat tracking-tight text-white">CAIO VISION</span>
+              <span className="text-[10px] text-[#C7A763] tracking-[0.15em] uppercase">Venture Studio</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-1">
             {navigation.map((item) => (
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}
-                className={`relative text-sm font-medium transition-colors ${
+                className={`relative px-3 py-2 text-sm font-medium transition-all rounded-lg ${
                   currentPageName === item.page 
-                    ? 'text-[#C7A763]' 
-                    : 'text-white/70 hover:text-white'
+                    ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
                 }`}
               >
                 {item.name}
-                {currentPageName === item.page && (
-                  <motion.div
-                    layoutId="activeNav"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
               </Link>
             ))}
             {isAdmin && (
               <>
                 <Link
                   to={createPageUrl("AdminHub")}
-                  className={`relative text-sm font-medium transition-colors ${
+                  className={`relative px-3 py-2 text-sm font-medium transition-all rounded-lg ${
                     currentPageName === "AdminHub" 
-                      ? 'text-[#C7A763]' 
-                      : 'text-white/70 hover:text-white'
+                      ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   Admin
-                  {currentPageName === "AdminHub" && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
                 </Link>
                 <Link
                   to={createPageUrl("LeadManagement")}
-                  className={`relative text-sm font-medium transition-colors ${
+                  className={`relative px-3 py-2 text-sm font-medium transition-all rounded-lg ${
                     currentPageName === "LeadManagement" 
-                      ? 'text-[#C7A763]' 
-                      : 'text-white/70 hover:text-white'
+                      ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   Leads
-                  {currentPageName === "LeadManagement" && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
                 </Link>
                 <Link
                   to={createPageUrl("LeadAutomation")}
-                  className={`relative text-sm font-medium transition-colors ${
+                  className={`relative px-3 py-2 text-sm font-medium transition-all rounded-lg ${
                     currentPageName === "LeadAutomation" 
-                      ? 'text-[#C7A763]' 
-                      : 'text-white/70 hover:text-white'
+                      ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   Automação
-                  {currentPageName === "LeadAutomation" && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
                 </Link>
                 <Link
                   to={createPageUrl("CRMHub")}
-                  className={`relative text-sm font-medium transition-colors ${
+                  className={`relative px-3 py-2 text-sm font-medium transition-all rounded-lg ${
                     currentPageName === "CRMHub" 
-                      ? 'text-[#C7A763]' 
-                      : 'text-white/70 hover:text-white'
+                      ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   CRM
-                  {currentPageName === "CRMHub" && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
                 </Link>
               </>
             )}
@@ -208,36 +173,36 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                   {/* Language Toggle */}
                   <button
                     onClick={toggleLanguage}
-                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all border border-white/10"
                     title="Change language"
                   >
-                    <Globe className="w-4 h-4" />
+                    <Globe className="w-3.5 h-3.5" />
                     <span className="text-xs font-medium">{language === 'pt-BR' ? 'PT' : 'EN'}</span>
                   </button>
-                </div>
+                  </div>
 
           {/* CTA Button */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <Link to={createPageUrl("About")}>
               <Button 
                 size="sm"
-                className="bg-[#D4B474] hover:bg-[#E5C585] text-[#06101F] font-semibold px-5 rounded-full shadow-lg"
+                className="bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] font-semibold px-4 py-2 rounded-lg shadow-lg transition-all"
               >
                 {t.nav.contact}
-                <ArrowUpRight className="ml-1 w-4 h-4" />
+                <ArrowUpRight className="ml-1.5 w-3.5 h-3.5" />
               </Button>
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-white/5 transition-colors border border-white/10"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             ) : (
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             )}
           </button>
         </nav>
@@ -249,52 +214,74 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-[#06101F]/95 backdrop-blur-xl border-b border-white/10"
+              className="lg:hidden bg-[#06101F]/98 backdrop-blur-xl border-b border-white/5"
             >
-              <div className="px-6 py-6 space-y-4">
+              <div className="px-6 py-6 space-y-2">
                 {navigation.map((item) => (
                   <Link
                     key={item.page}
                     to={createPageUrl(item.page)}
-                    className={`block py-3 text-lg font-medium transition-colors ${
+                    className={`block px-3 py-2.5 text-base font-medium rounded-lg transition-all ${
                       currentPageName === item.page 
-                        ? 'text-[#C7A763]' 
-                        : 'text-white/70'
+                        ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                        : 'text-white/70 hover:bg-white/5'
                     }`}
                   >
                     {item.name}
                   </Link>
                 ))}
                 {isAdmin && (
-                  <Link
-                    to={createPageUrl("AdminHub")}
-                    className={`block py-3 text-lg font-medium transition-colors ${
-                      currentPageName === "AdminHub" 
-                        ? 'text-[#C7A763]' 
-                        : 'text-white/70'
-                    }`}
-                  >
-                    Admin
-                  </Link>
+                  <>
+                    <Link
+                      to={createPageUrl("AdminHub")}
+                      className={`block px-3 py-2.5 text-base font-medium rounded-lg transition-all ${
+                        currentPageName === "AdminHub" 
+                          ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                          : 'text-white/70 hover:bg-white/5'
+                      }`}
+                    >
+                      Admin
+                    </Link>
+                    <Link
+                      to={createPageUrl("LeadManagement")}
+                      className={`block px-3 py-2.5 text-base font-medium rounded-lg transition-all ${
+                        currentPageName === "LeadManagement" 
+                          ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                          : 'text-white/70 hover:bg-white/5'
+                      }`}
+                    >
+                      Leads
+                    </Link>
+                    <Link
+                      to={createPageUrl("CRMHub")}
+                      className={`block px-3 py-2.5 text-base font-medium rounded-lg transition-all ${
+                        currentPageName === "CRMHub" 
+                          ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                          : 'text-white/70 hover:bg-white/5'
+                      }`}
+                    >
+                      CRM
+                    </Link>
+                  </>
                 )}
 
                 <button
                   onClick={toggleLanguage}
-                  className="flex items-center gap-2 py-3 text-lg font-medium text-white/70"
+                  className="flex items-center gap-2.5 px-3 py-2.5 text-base font-medium text-white/70 rounded-lg hover:bg-white/5"
                 >
-                  <Globe className="w-5 h-5" />
+                  <Globe className="w-4 h-4" />
                   {language === 'pt-BR' ? 'English' : 'Português'}
                 </button>
 
                 <Link 
                   to={createPageUrl("About")}
-                  className="block"
+                  className="block pt-2"
                 >
                   <Button 
-                    className="w-full bg-[#D4B474] hover:bg-[#E5C585] text-[#06101F] font-semibold rounded-full mt-4 shadow-lg"
+                    className="w-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] font-semibold rounded-lg shadow-lg"
                   >
                     {t.nav.contact}
-                    <ArrowUpRight className="ml-1 w-4 h-4" />
+                    <ArrowUpRight className="ml-1.5 w-4 h-4" />
                   </Button>
                 </Link>
               </div>
