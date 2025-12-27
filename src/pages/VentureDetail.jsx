@@ -20,6 +20,7 @@ import ThreadedChat from "@/components/collaboration/ThreadedChat";
 import PermissionsManager from "@/components/collaboration/PermissionsManager";
 import ExternalIntegrations from "@/components/collaboration/ExternalIntegrations";
 import TaskCalendar from "@/components/collaboration/TaskCalendar";
+import VentureLeads from "@/components/crm/VentureLeads";
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -311,6 +312,9 @@ export default function VentureDetail() {
 
         {/* OKR Manager - Admin Only */}
         {isAdmin && <VentureOKRManager ventureId={ventureId} />}
+
+        {/* CRM Integration - Leads */}
+        {isAdmin && <VentureLeads ventureId={ventureId} ventureName={venture.name} />}
 
         {/* Collaboration Section - Authenticated Users Only */}
         {isAdmin && (
