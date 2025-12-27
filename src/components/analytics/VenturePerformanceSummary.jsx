@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import GlowCard from "@/components/ui/GlowCard";
 import { toast } from "sonner";
 import { useLanguage } from "@/components/LanguageProvider";
-import { useTranslation } from "@/translations";
+import { useTranslation } from "@/components/translations";
 
 export default function VenturePerformanceSummary({ venture, financials, kpis, talents }) {
   const { language } = useLanguage();

@@ -6,7 +6,7 @@ import { Menu, X, Brain, ArrowUpRight, Globe } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
-import { useTranslation } from "@/translations";
+import { useTranslation } from "@/components/translations";
 
 function LayoutContent({ children, currentPageName }) {
   const { language, toggleLanguage } = useLanguage();
