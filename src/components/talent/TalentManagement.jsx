@@ -4,11 +4,14 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import GlowCard from "@/components/ui/GlowCard";
+import SectionTitle from "@/components/ui/SectionTitle";
 import AddTalentDialog from "./AddTalentDialog";
 import TalentDetailDialog from "./TalentDetailDialog";
-import { Users, Search, Plus, Star, MapPin, Briefcase, Linkedin, FileText, Mail, Phone } from "lucide-react";
+import TalentKPIDashboard from "./TalentKPIDashboard";
+import { Users, Search, Plus, Star, MapPin, Briefcase, Linkedin, FileText, Mail, Phone, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 
 const statusConfig = {
@@ -69,19 +72,36 @@ export default function TalentManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-2xl font-bold text-white">Gestão de Talentos</h3>
-          <p className="text-slate-400 text-sm mt-1">Banco de talentos integrado com LinkedIn e CV</p>
+      <SectionTitle
+        title="Gestão de Talentos"
+        subtitle="PIPELINE & ANALYTICS"
+        accent="gold"
+        align="left"
+      />
+
+      <Tabs defaultValue="talents" className="space-y-6">
+        <div className="flex items-center justify-between">
+          <TabsList className="bg-white/5 border border-white/10">
+            <TabsTrigger value="talents">
+              <Users className="w-4 h-4 mr-2" />
+              Talentos
+            </TabsTrigger>
+            <TabsTrigger value="analytics">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <Button
+            onClick={() => setIsAddDialogOpen(true)}
+            className="bg-[#C7A763] hover:bg-[#A88B4A]"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Adicionar Talento
+          </Button>
         </div>
-        <Button
-          onClick={() => setIsAddDialogOpen(true)}
-          className="bg-[#C7A763] hover:bg-[#A88B4A]"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Adicionar Talento
-        </Button>
-      </div>
+
+        <TabsContent value="talents" className="space-y-6">
 
       {/* Stats */}
       <div className="grid md:grid-cols-5 gap-4">
@@ -291,6 +311,13 @@ export default function TalentManagement() {
           ))}
         </div>
       )}
+
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <TalentKPIDashboard talents={talents} />
+        </TabsContent>
+      </Tabs>
 
       {/* Dialogs */}
       <AddTalentDialog
