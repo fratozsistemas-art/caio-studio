@@ -46,6 +46,35 @@ export function usePermissions() {
     enabled: !!user
   });
 
+  const getInheritedPermissions = (roleId, visited = new Set()) => {
+    if (visited.has(roleId)) return {}; // Prevent circular inheritance
+    visited.add(roleId);
+
+    const role = roles?.find(r => r.id === roleId);
+    if (!role) return {};
+
+    let permissions = { ...role.permissions };
+
+    // Inherit from parent role
+    if (role.parent_role_id) {
+      const parentPerms = getInheritedPermissions(role.parent_role_id, visited);
+      
+      // Merge parent permissions (child overrides parent)
+      Object.keys(parentPerms).forEach(category => {
+        if (!permissions[category]) {
+          permissions[category] = {};
+        }
+        Object.keys(parentPerms[category]).forEach(permission => {
+          if (permissions[category][permission] === undefined) {
+            permissions[category][permission] = parentPerms[category][permission];
+          }
+        });
+      });
+    }
+
+    return permissions;
+  };
+
   const getUserPermissions = () => {
     // Admin has all permissions
     if (isAdmin) {
@@ -63,24 +92,23 @@ export function usePermissions() {
       return null;
     }
 
-    // Merge permissions from all assigned roles
+    // Merge permissions from all assigned roles (with inheritance)
     const mergedPermissions = {};
     
     roleAssignments.forEach(assignment => {
-      const role = roles?.find(r => r.id === assignment.role_id);
-      if (role && role.permissions) {
-        Object.keys(role.permissions).forEach(category => {
-          if (!mergedPermissions[category]) {
-            mergedPermissions[category] = {};
+      const rolePerms = getInheritedPermissions(assignment.role_id);
+      
+      Object.keys(rolePerms).forEach(category => {
+        if (!mergedPermissions[category]) {
+          mergedPermissions[category] = {};
+        }
+        Object.keys(rolePerms[category]).forEach(permission => {
+          // If any role grants permission, user has it
+          if (rolePerms[category][permission]) {
+            mergedPermissions[category][permission] = true;
           }
-          Object.keys(role.permissions[category]).forEach(permission => {
-            // If any role grants permission, user has it
-            if (role.permissions[category][permission]) {
-              mergedPermissions[category][permission] = true;
-            }
-          });
         });
-      }
+      });
     });
 
     return mergedPermissions;
@@ -110,12 +138,46 @@ export function usePermissions() {
     });
   };
 
+  const canViewField = (entityType, fieldName) => {
+    if (isAdmin) return true;
+    
+    if (!roleAssignments || roleAssignments.length === 0) return false;
+
+    return roleAssignments.some(assignment => {
+      const role = roles?.find(r => r.id === assignment.role_id);
+      const fieldPerms = role?.field_permissions?.[entityType];
+      
+      if (!fieldPerms) return true; // No field restrictions = can view all
+      
+      return fieldPerms.viewable_fields?.includes(fieldName) || 
+             fieldPerms.viewable_fields?.includes('*');
+    });
+  };
+
+  const canEditField = (entityType, fieldName) => {
+    if (isAdmin) return true;
+    
+    if (!roleAssignments || roleAssignments.length === 0) return false;
+
+    return roleAssignments.some(assignment => {
+      const role = roles?.find(r => r.id === assignment.role_id);
+      const fieldPerms = role?.field_permissions?.[entityType];
+      
+      if (!fieldPerms) return true; // No field restrictions = can edit all
+      
+      return fieldPerms.editable_fields?.includes(fieldName) || 
+             fieldPerms.editable_fields?.includes('*');
+    });
+  };
+
   return {
     user,
     isAdmin,
     permissions: getUserPermissions(),
     hasPermission,
     canAccessVenture,
+    canViewField,
+    canEditField,
     roleAssignments,
     roles
   };

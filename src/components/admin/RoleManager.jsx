@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Plus, Shield, Edit, Trash2, Check, X } from 'lucide-react';
+import { Plus, Shield, Edit, Trash2, Check, X, GitBranch } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GlowCard from "@/components/ui/GlowCard";
+import FieldPermissionsEditor from "@/components/admin/FieldPermissionsEditor";
 import { toast } from "sonner";
 
 const permissionCategories = {
@@ -75,7 +77,9 @@ export default function RoleManager() {
   const [formData, setFormData] = useState({
     role_name: '',
     description: '',
+    parent_role_id: '',
     permissions: {},
+    field_permissions: {},
     priority: 1
   });
 
@@ -95,6 +99,20 @@ export default function RoleManager() {
 
   const createRoleMutation = useMutation({
     mutationFn: async (data) => {
+      const user = await base44.auth.me();
+      
+      // Create audit log
+      await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'PermissionAudit',
+        operation: 'create',
+        data: {
+          action_type: 'role_created',
+          entity_type: 'UserRole',
+          performed_by: user.email,
+          changes: { after: data }
+        }
+      });
+
       return await base44.functions.invoke('secureEntityQuery', {
         entity_name: 'UserRole',
         operation: 'create',
@@ -109,7 +127,22 @@ export default function RoleManager() {
   });
 
   const updateRoleMutation = useMutation({
-    mutationFn: async ({ id, data }) => {
+    mutationFn: async ({ id, data, oldData }) => {
+      const user = await base44.auth.me();
+      
+      // Create audit log
+      await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'PermissionAudit',
+        operation: 'create',
+        data: {
+          action_type: 'role_updated',
+          entity_type: 'UserRole',
+          entity_id: id,
+          performed_by: user.email,
+          changes: { before: oldData, after: data }
+        }
+      });
+
       return await base44.functions.invoke('secureEntityQuery', {
         entity_name: 'UserRole',
         operation: 'update',
@@ -139,7 +172,7 @@ export default function RoleManager() {
   });
 
   const resetForm = () => {
-    setFormData({ role_name: '', description: '', permissions: {}, priority: 1 });
+    setFormData({ role_name: '', description: '', parent_role_id: '', permissions: {}, field_permissions: {}, priority: 1 });
     setEditingRole(null);
     setShowForm(false);
   };
@@ -149,7 +182,9 @@ export default function RoleManager() {
     setFormData({
       role_name: role.role_name,
       description: role.description || '',
+      parent_role_id: role.parent_role_id || '',
       permissions: role.permissions || {},
+      field_permissions: role.field_permissions || {},
       priority: role.priority || 1
     });
     setShowForm(true);
@@ -175,7 +210,7 @@ export default function RoleManager() {
     }
 
     if (editingRole) {
-      updateRoleMutation.mutate({ id: editingRole.id, data: formData });
+      updateRoleMutation.mutate({ id: editingRole.id, data: formData, oldData: editingRole });
     } else {
       createRoleMutation.mutate(formData);
     }
@@ -232,6 +267,32 @@ export default function RoleManager() {
             </div>
 
             <div>
+              <Label className="text-white/70 mb-2 block flex items-center gap-2">
+                <GitBranch className="w-4 h-4" />
+                Role Pai (Herança)
+              </Label>
+              <Select
+                value={formData.parent_role_id}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, parent_role_id: value }))}
+              >
+                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Nenhum (sem herança)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Nenhum</SelectItem>
+                  {roles?.filter(r => r.id !== editingRole?.id).map(role => (
+                    <SelectItem key={role.id} value={role.id}>
+                      {role.role_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-slate-400 mt-1">
+                Herda permissões do role pai automaticamente
+              </p>
+            </div>
+
+            <div>
               <h4 className="text-white font-medium mb-4">Permissões</h4>
               <div className="space-y-4">
                 {Object.entries(permissionCategories).map(([catKey, category]) => (
@@ -252,6 +313,11 @@ export default function RoleManager() {
                 ))}
               </div>
             </div>
+
+            <FieldPermissionsEditor
+              fieldPermissions={formData.field_permissions}
+              onChange={(newFieldPerms) => setFormData(prev => ({ ...prev, field_permissions: newFieldPerms }))}
+            />
 
             <div className="flex gap-3">
               <Button onClick={resetForm} variant="outline" className="border-white/10 text-white">
@@ -285,6 +351,12 @@ export default function RoleManager() {
                     <span className="text-xs bg-[#00D4FF]/20 text-[#00D4FF] px-2 py-1 rounded">
                       Prioridade: {role.priority}
                     </span>
+                    {role.parent_role_id && (
+                      <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded flex items-center gap-1">
+                        <GitBranch className="w-3 h-3" />
+                        Herda: {roles?.find(r => r.id === role.parent_role_id)?.role_name}
+                      </span>
+                    )}
                     {role.is_system_role && (
                       <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
                         Sistema

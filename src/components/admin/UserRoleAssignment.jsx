@@ -47,6 +47,20 @@ export default function UserRoleAssignment({ ventures }) {
   const createAssignmentMutation = useMutation({
     mutationFn: async (data) => {
       const user = await base44.auth.me();
+      
+      // Create audit log
+      await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'PermissionAudit',
+        operation: 'create',
+        data: {
+          action_type: 'assignment_created',
+          entity_type: 'RoleAssignment',
+          performed_by: user.email,
+          affected_user: data.user_email,
+          changes: { after: data }
+        }
+      });
+
       return await base44.functions.invoke('secureEntityQuery', {
         entity_name: 'RoleAssignment',
         operation: 'create',
@@ -62,7 +76,23 @@ export default function UserRoleAssignment({ ventures }) {
   });
 
   const deleteAssignmentMutation = useMutation({
-    mutationFn: async (id) => {
+    mutationFn: async ({ id, assignment }) => {
+      const user = await base44.auth.me();
+      
+      // Create audit log
+      await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'PermissionAudit',
+        operation: 'create',
+        data: {
+          action_type: 'assignment_deleted',
+          entity_type: 'RoleAssignment',
+          entity_id: id,
+          performed_by: user.email,
+          affected_user: assignment.user_email,
+          changes: { before: assignment }
+        }
+      });
+
       return await base44.functions.invoke('secureEntityQuery', {
         entity_name: 'RoleAssignment',
         operation: 'delete',
@@ -234,7 +264,7 @@ export default function UserRoleAssignment({ ventures }) {
                   variant="ghost"
                   onClick={() => {
                     if (confirm('Remover esta atribuição?')) {
-                      deleteAssignmentMutation.mutate(assignment.id);
+                      deleteAssignmentMutation.mutate({ id: assignment.id, assignment });
                     }
                   }}
                   className="text-red-400 hover:text-red-300"

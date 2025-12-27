@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from "@/api/base44Client";
-import { Shield, Users } from 'lucide-react';
+import { Shield, Users, History } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionTitle from "@/components/ui/SectionTitle";
 import RoleManager from "@/components/admin/RoleManager";
 import UserRoleAssignment from "@/components/admin/UserRoleAssignment";
+import PermissionAuditLog from "@/components/admin/PermissionAuditLog";
 import { createPageUrl } from "@/utils";
 
 export default function PermissionsManagement() {
@@ -78,6 +79,10 @@ export default function PermissionsManagement() {
               <Users className="w-4 h-4 mr-2" />
               Atribuições
             </TabsTrigger>
+            <TabsTrigger value="audit">
+              <History className="w-4 h-4 mr-2" />
+              Auditoria
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="roles">
@@ -86,6 +91,10 @@ export default function PermissionsManagement() {
 
           <TabsContent value="assignments">
             <UserRoleAssignment ventures={ventures} />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <PermissionAuditLog />
           </TabsContent>
         </Tabs>
       </div>
