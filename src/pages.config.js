@@ -11,6 +11,7 @@ import PermissionsManagement from './pages/PermissionsManagement';
 import AIVentureCreator from './pages/AIVentureCreator';
 import StakeholderJourney from './pages/StakeholderJourney';
 import AdminHub from './pages/AdminHub';
+import LeadManagement from './pages/LeadManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +29,7 @@ export const PAGES = {
     "AIVentureCreator": AIVentureCreator,
     "StakeholderJourney": StakeholderJourney,
     "AdminHub": AdminHub,
+    "LeadManagement": LeadManagement,
 }
 
 export const pagesConfig = {
