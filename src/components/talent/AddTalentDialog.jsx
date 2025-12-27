@@ -279,23 +279,25 @@ export default function AddTalentDialog({ isOpen, onClose }) {
                 Arquivo selecionado: {cvFile.name}
               </div>
             )}
-            <Button
-              onClick={handleCVUpload}
-              disabled={isProcessing || !cvFile}
-              className="w-full bg-[#C7A763] hover:bg-[#A88B4A]"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Processando CV...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Processar e Adicionar
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleCVUpload}
+                disabled={isProcessing || !cvFile}
+                className="flex-1 bg-[#C7A763] hover:bg-[#A88B4A]"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processando CV...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Processar e Adicionar
+                  </>
+                )}
+              </Button>
+            </div>
             <p className="text-xs text-slate-400">
               A IA irá extrair informações do currículo automaticamente
             </p>

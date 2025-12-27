@@ -7,13 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award } from "lucide-react";
+import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award, Sparkles, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 
 export default function TalentDetailDialog({ talent, isOpen, onClose }) {
   const [editedTalent, setEditedTalent] = useState(talent);
+  const [cvSummary, setCvSummary] = useState(null);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
@@ -42,6 +44,62 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
         assigned_to: editedTalent.assigned_to
       }
     });
+  };
+
+  const handleGenerateSummary = async () => {
+    if (!talent.cv_file_url) {
+      toast.error('CV não disponível para análise');
+      return;
+    }
+
+    setGeneratingSummary(true);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analise este CV profissional e gere um resumo executivo conciso e estruturado.
+
+Informações do candidato:
+- Nome: ${talent.full_name}
+- Cargo: ${talent.current_position || 'N/A'}
+- Empresa: ${talent.current_company || 'N/A'}
+- Localização: ${talent.location || 'N/A'}
+- Experiência: ${talent.experience_years || 'N/A'} anos
+- Skills: ${talent.skills?.join(', ') || 'N/A'}
+- Formação: ${talent.education?.map(e => e.degree + ' - ' + e.institution).join('; ') || 'N/A'}
+- Idiomas: ${talent.languages?.map(l => l.language + ' (' + l.proficiency + ')').join(', ') || 'N/A'}
+- Resumo atual: ${talent.summary || 'N/A'}
+
+Retorne um objeto JSON com:
+- highlights: array de 3-5 pontos-chave (conquistas, diferenciais, expertise única)
+- fit_for_roles: array de 3-4 roles ideais baseado no perfil
+- strengths: array de 3-4 pontos fortes principais
+- considerations: array de 1-2 pontos de atenção ou gaps (se houver)
+- recommended_ventures: array de 2-3 tipos de ventures onde o candidato se encaixaria perfeitamente
+- seniority_assessment: string (junior/mid/senior/lead/executive) com justificativa
+- salary_range_estimate: string com faixa salarial estimada em BRL
+- one_liner: string com resumo de 1 linha (máx 150 caracteres)`,
+        file_urls: [talent.cv_file_url],
+        response_json_schema: {
+          type: "object",
+          properties: {
+            highlights: { type: "array", items: { type: "string" } },
+            fit_for_roles: { type: "array", items: { type: "string" } },
+            strengths: { type: "array", items: { type: "string" } },
+            considerations: { type: "array", items: { type: "string" } },
+            recommended_ventures: { type: "array", items: { type: "string" } },
+            seniority_assessment: { type: "string" },
+            salary_range_estimate: { type: "string" },
+            one_liner: { type: "string" }
+          }
+        }
+      });
+
+      setCvSummary(response);
+      toast.success('Resumo gerado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao gerar resumo: ' + error.message);
+    } finally {
+      setGeneratingSummary(false);
+    }
   };
 
   return (
@@ -95,7 +153,7 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
             )}
           </div>
 
-          {/* Links */}
+          {/* Links & CV Summary */}
           <div className="flex flex-wrap gap-3">
             {talent.linkedin_url && (
               <a href={talent.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0077B5]/20 text-[#0077B5] hover:bg-[#0077B5]/30 transition-colors">
@@ -108,6 +166,26 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
                 <FileText className="w-4 h-4" />
                 Download CV
               </a>
+            )}
+            {talent.cv_file_url && (
+              <Button
+                onClick={handleGenerateSummary}
+                disabled={generatingSummary}
+                size="sm"
+                className="bg-gradient-to-r from-[#C7A763] to-[#00D4FF] hover:from-[#A88B4A] hover:to-[#00B8E0]"
+              >
+                {generatingSummary ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Gerando...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Gerar Resumo com IA
+                  </>
+                )}
+              </Button>
             )}
             {talent.github_url && (
               <a href={talent.github_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 transition-colors">
@@ -122,6 +200,111 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
               </a>
             )}
           </div>
+
+          {/* AI-Generated CV Summary */}
+          {cvSummary && (
+            <div className="bg-gradient-to-br from-[#C7A763]/10 to-[#00D4FF]/10 border border-[#C7A763]/30 rounded-xl p-5 space-y-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-5 h-5 text-[#C7A763]" />
+                <h4 className="text-white font-semibold">Análise IA do CV</h4>
+              </div>
+
+              {/* One-liner */}
+              {cvSummary.one_liner && (
+                <div className="bg-white/5 rounded-lg p-3">
+                  <p className="text-[#C7A763] font-medium italic">"{cvSummary.one_liner}"</p>
+                </div>
+              )}
+
+              {/* Highlights */}
+              {cvSummary.highlights && cvSummary.highlights.length > 0 && (
+                <div>
+                  <h5 className="text-white text-sm font-semibold mb-2">🌟 Destaques</h5>
+                  <ul className="space-y-1.5">
+                    {cvSummary.highlights.map((item, idx) => (
+                      <li key={idx} className="text-slate-300 text-sm flex items-start gap-2">
+                        <span className="text-[#C7A763] mt-1">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Strengths */}
+              {cvSummary.strengths && cvSummary.strengths.length > 0 && (
+                <div>
+                  <h5 className="text-white text-sm font-semibold mb-2">💪 Pontos Fortes</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {cvSummary.strengths.map((item, idx) => (
+                      <span key={idx} className="px-2.5 py-1 rounded-full bg-green-400/20 text-green-300 text-xs">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Fit for Roles */}
+              {cvSummary.fit_for_roles && cvSummary.fit_for_roles.length > 0 && (
+                <div>
+                  <h5 className="text-white text-sm font-semibold mb-2">🎯 Roles Ideais</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {cvSummary.fit_for_roles.map((role, idx) => (
+                      <span key={idx} className="px-2.5 py-1 rounded-full bg-[#00D4FF]/20 text-[#00D4FF] text-xs">
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Recommended Ventures */}
+              {cvSummary.recommended_ventures && cvSummary.recommended_ventures.length > 0 && (
+                <div>
+                  <h5 className="text-white text-sm font-semibold mb-2">🚀 Ventures Recomendadas</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {cvSummary.recommended_ventures.map((venture, idx) => (
+                      <span key={idx} className="px-2.5 py-1 rounded-full bg-purple-400/20 text-purple-300 text-xs">
+                        {venture}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Seniority & Salary */}
+              <div className="grid md:grid-cols-2 gap-3">
+                {cvSummary.seniority_assessment && (
+                  <div className="bg-white/5 rounded-lg p-3">
+                    <div className="text-xs text-slate-400 mb-1">Senioridade Avaliada</div>
+                    <div className="text-white font-medium">{cvSummary.seniority_assessment}</div>
+                  </div>
+                )}
+                {cvSummary.salary_range_estimate && (
+                  <div className="bg-white/5 rounded-lg p-3">
+                    <div className="text-xs text-slate-400 mb-1">Faixa Salarial Estimada</div>
+                    <div className="text-white font-medium">{cvSummary.salary_range_estimate}</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Considerations */}
+              {cvSummary.considerations && cvSummary.considerations.length > 0 && (
+                <div>
+                  <h5 className="text-white text-sm font-semibold mb-2">⚠️ Pontos de Atenção</h5>
+                  <ul className="space-y-1.5">
+                    {cvSummary.considerations.map((item, idx) => (
+                      <li key={idx} className="text-slate-400 text-sm flex items-start gap-2">
+                        <span className="text-yellow-400 mt-1">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Summary */}
           {talent.summary && (
