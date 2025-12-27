@@ -14,6 +14,7 @@ function LayoutContent({ children, currentPageName }) {
   
   const navigation = [
     { name: t.nav.home, page: "Home" },
+    { name: "Sua Jornada", page: "StakeholderJourney" },
     { name: t.nav.portfolio, page: "Portfolio" },
     { name: t.nav.collaboration, page: "CollaborationHub" },
     { name: t.nav.platforms, page: "Platforms" },
