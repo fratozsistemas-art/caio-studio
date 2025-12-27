@@ -109,25 +109,25 @@ function LayoutContent({ children, currentPageName }) {
         }
 
         .light {
-          --background: 0 0% 100%;
-          --foreground: 222.2 84% 4.9%;
-          --card: 0 0% 100%;
-          --card-foreground: 222.2 84% 4.9%;
-          --popover: 0 0% 100%;
-          --popover-foreground: 222.2 84% 4.9%;
+          --background: 220 20% 97%;
+          --foreground: 222.2 47% 15%;
+          --card: 220 20% 98%;
+          --card-foreground: 222.2 47% 15%;
+          --popover: 220 20% 98%;
+          --popover-foreground: 222.2 47% 15%;
           --primary: 222.2 47.4% 11.2%;
           --primary-foreground: 210 40% 98%;
-          --secondary: 210 40% 96.1%;
+          --secondary: 220 15% 92%;
           --secondary-foreground: 222.2 47.4% 11.2%;
-          --muted: 210 40% 96.1%;
-          --muted-foreground: 215.4 16.3% 46.9%;
-          --accent: 210 40% 96.1%;
+          --muted: 220 15% 92%;
+          --muted-foreground: 215.4 16.3% 42%;
+          --accent: 220 15% 92%;
           --accent-foreground: 222.2 47.4% 11.2%;
           --destructive: 0 84.2% 60.2%;
           --destructive-foreground: 210 40% 98%;
-          --border: 214.3 31.8% 91.4%;
-          --input: 214.3 31.8% 91.4%;
-          --ring: 222.2 84% 4.9%;
+          --border: 220 15% 88%;
+          --input: 220 15% 88%;
+          --ring: 222.2 47% 15%;
         }
 
         /* Scrollbar styling */
