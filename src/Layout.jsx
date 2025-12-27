@@ -150,6 +150,23 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                 )}
               </Link>
             )}
+            <Link
+              to={createPageUrl("AIVentureCreator")}
+              className={`relative text-sm font-medium transition-colors ${
+                currentPageName === "AIVentureCreator" 
+                  ? 'text-[#C7A763]' 
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              IA Ventures
+              {currentPageName === "AIVentureCreator" && (
+                <motion.div
+                  layoutId="activeNav"
+                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#C7A763]"
+                  transition={{ duration: 0.3 }}
+                />
+              )}
+            </Link>
             {isAdmin && (
               <Link
                 to={createPageUrl("PermissionsManagement")}

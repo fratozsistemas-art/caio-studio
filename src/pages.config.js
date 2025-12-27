@@ -8,6 +8,7 @@ import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
 import CollaborationHub from './pages/CollaborationHub';
 import PermissionsManagement from './pages/PermissionsManagement';
+import AIVentureCreator from './pages/AIVentureCreator';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +23,7 @@ export const PAGES = {
     "VentureManagement": VentureManagement,
     "CollaborationHub": CollaborationHub,
     "PermissionsManagement": PermissionsManagement,
+    "AIVentureCreator": AIVentureCreator,
 }
 
 export const pagesConfig = {
