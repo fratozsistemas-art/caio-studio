@@ -13,6 +13,7 @@ import UserRoleAssignment from "@/components/admin/UserRoleAssignment";
 import PermissionAuditLog from "@/components/admin/PermissionAuditLog";
 import CollaborationChannels from "@/components/collaboration/CollaborationChannels";
 import YouTubeSyncManager from "@/components/admin/YouTubeSyncManager";
+import UserManagement from "@/components/admin/UserManagement";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -168,6 +169,10 @@ export default function AdminHub() {
               <BarChart3 className="w-4 h-4 mr-2" />
               Dashboard
             </TabsTrigger>
+            <TabsTrigger value="users">
+              <Users className="w-4 h-4 mr-2" />
+              Usuários
+            </TabsTrigger>
             <TabsTrigger value="permissions">
               <Shield className="w-4 h-4 mr-2" />
               Permissões
@@ -196,6 +201,17 @@ export default function AdminHub() {
             />
             <PortfolioMetrics data={portfolioData} config={{ showFinancials: true, showKPIs: true, showTalents: true, showMarket: true }} />
             <PortfolioCharts data={portfolioData} />
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <SectionTitle
+              title="Gerenciamento de Usuários"
+              subtitle="Convites, Permissões e Acessos"
+              accent="gold"
+              align="left"
+            />
+            <UserManagement />
           </TabsContent>
 
           {/* Permissions Tab */}
