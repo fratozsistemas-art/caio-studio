@@ -1,38 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from "@/api/base44Client";
+import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Brain } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import GlowCard from "@/components/ui/GlowCard";
-import { toast } from "sonner";
-import moment from 'moment';
+import { Send, Paperclip, Smile, MoreVertical, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar } from '@/components/ui/avatar';
+import GlowCard from '@/components/ui/GlowCard';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
-export default function VentureChat({ venture, currentUser }) {
+export default function VentureChat({ ventureId, ventureName }) {
   const [message, setMessage] = useState('');
-  const [summarizing, setSummarizing] = useState(false);
-  const [summary, setSummary] = useState(null);
+  const [user, setUser] = useState(null);
   const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();
 
-  const { data: commentsResponse, refetch } = useQuery({
-    queryKey: ['ventureComments', venture.id],
+  useEffect(() => {
+    const getUser = async () => {
+      const currentUser = await base44.auth.me();
+      setUser(currentUser);
+    };
+    getUser();
+  }, []);
+
+  const { data: comments, isLoading } = useQuery({
+    queryKey: ['venture-chat', ventureId],
     queryFn: async () => {
-      const response = await base44.functions.invoke('secureEntityQuery', {
+      const res = await base44.functions.invoke('secureEntityQuery', {
         entity_name: 'VentureComment',
         operation: 'filter',
-        query: { venture_id: venture.id, related_entity: null },
+        query: { venture_id: ventureId },
         sort: 'created_date'
       });
-      return response.data;
+      return res.data?.data || [];
     },
-    refetchInterval: 10000 // Refresh every 10 seconds
+    refetchInterval: 5000, // Auto-refresh every 5 seconds
+    enabled: !!ventureId
   });
 
-  const comments = commentsResponse?.data || [];
-
-  const sendMessage = useMutation({
+  const sendMessageMutation = useMutation({
     mutationFn: async (messageData) => {
       return await base44.functions.invoke('secureEntityQuery', {
         entity_name: 'VentureComment',
@@ -41,181 +49,143 @@ export default function VentureChat({ venture, currentUser }) {
       });
     },
     onSuccess: () => {
-      refetch();
+      queryClient.invalidateQueries(['venture-chat', ventureId]);
       setMessage('');
+      scrollToBottom();
+    },
+    onError: (error) => {
+      toast.error('Erro ao enviar mensagem');
+      console.error(error);
     }
   });
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-
-    await sendMessage.mutateAsync({
-      venture_id: venture.id,
-      comment: message,
-      author_email: currentUser.email,
-      author_name: currentUser.full_name
-    });
-  };
-
-  const generateSummary = async () => {
-    if (comments.length === 0) {
-      toast.error('Não há discussões para resumir');
-      return;
-    }
-
-    setSummarizing(true);
-    try {
-      const discussionText = comments
-        .map(c => `${c.author_name}: ${c.comment}`)
-        .join('\n');
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Resuma as seguintes discussões da venture "${venture.name}":
-
-${discussionText}
-
-Forneça um resumo executivo estruturado com:
-- Principais tópicos discutidos
-- Decisões tomadas
-- Ações pendentes
-- Pontos de atenção`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            main_topics: { type: "array", items: { type: "string" } },
-            decisions: { type: "array", items: { type: "string" } },
-            pending_actions: { type: "array", items: { type: "string" } },
-            attention_points: { type: "array", items: { type: "string" } }
-          }
-        }
+  const deleteMessageMutation = useMutation({
+    mutationFn: async (commentId) => {
+      return await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureComment',
+        operation: 'delete',
+        id: commentId
       });
-
-      setSummary(response);
-      toast.success('Resumo gerado!');
-    } catch (error) {
-      toast.error('Erro ao gerar resumo: ' + error.message);
-    } finally {
-      setSummarizing(false);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['venture-chat', ventureId]);
+      toast.success('Mensagem removida');
     }
+  });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom();
   }, [comments]);
 
+  const handleSend = () => {
+    if (!message.trim() || !user) return;
+
+    sendMessageMutation.mutate({
+      venture_id: ventureId,
+      comment: message.trim(),
+      author_email: user.email,
+      author_name: user.full_name,
+      related_entity: 'chat'
+    });
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <GlowCard className="p-6">
+        <div className="text-center text-slate-400">Carregando chat...</div>
+      </GlowCard>
+    );
+  }
+
   return (
-    <div className="space-y-4">
-      {summary && (
-        <GlowCard glowColor="gold" className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Brain className="w-5 h-5 text-[#C7A763]" />
-            <h4 className="text-white font-semibold">Resumo da Discussão (IA)</h4>
-          </div>
-          <div className="space-y-3 text-sm">
-            {summary.main_topics?.length > 0 && (
-              <div>
-                <div className="text-slate-400 mb-1">Principais Tópicos:</div>
-                <ul className="list-disc list-inside text-slate-300 space-y-1">
-                  {summary.main_topics.map((topic, i) => (
-                    <li key={i}>{topic}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {summary.decisions?.length > 0 && (
-              <div>
-                <div className="text-slate-400 mb-1">Decisões:</div>
-                <ul className="list-disc list-inside text-green-400 space-y-1">
-                  {summary.decisions.map((decision, i) => (
-                    <li key={i}>{decision}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {summary.pending_actions?.length > 0 && (
-              <div>
-                <div className="text-slate-400 mb-1">Ações Pendentes:</div>
-                <ul className="list-disc list-inside text-orange-400 space-y-1">
-                  {summary.pending_actions.map((action, i) => (
-                    <li key={i}>{action}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </GlowCard>
-      )}
+    <GlowCard className="flex flex-col h-[600px]">
+      {/* Header */}
+      <div className="p-4 border-b border-white/10">
+        <h3 className="text-lg font-semibold text-white">Chat - {ventureName}</h3>
+        <p className="text-xs text-slate-400">{comments?.length || 0} mensagens</p>
+      </div>
 
-      <GlowCard glowColor="cyan" className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold">Chat da Venture</h3>
-          <Button
-            onClick={generateSummary}
-            disabled={summarizing || comments.length === 0}
-            size="sm"
-            variant="outline"
-            className="border-white/10 text-white"
-          >
-            {summarizing ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Brain className="w-4 h-4 mr-2" />
-            )}
-            Resumir Discussão
-          </Button>
-        </div>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <AnimatePresence>
+          {comments?.map((comment) => (
+            <motion.div
+              key={comment.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`flex gap-3 ${comment.author_email === user?.email ? 'flex-row-reverse' : ''}`}
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C7A763]/30 to-[#00D4FF]/30 flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-semibold text-white">
+                  {comment.author_name?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                </span>
+              </div>
 
-        <div className="space-y-3 mb-4 h-96 overflow-y-auto bg-white/5 rounded-lg p-4">
-          <AnimatePresence>
-            {comments.map((comment) => (
-              <motion.div
-                key={comment.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className={`flex ${comment.author_email === currentUser.email ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
-                    comment.author_email === currentUser.email
-                      ? 'bg-[#C7A763]/20 text-white'
-                      : 'bg-white/10 text-slate-200'
-                  }`}
-                >
-                  <div className="text-xs text-slate-400 mb-1">{comment.author_name}</div>
-                  <div className="text-sm whitespace-pre-wrap">{comment.comment}</div>
-                  <div className="text-xs text-slate-500 mt-1">
-                    {moment(comment.created_date).fromNow()}
-                  </div>
+              <div className={`flex-1 max-w-[70%] ${comment.author_email === user?.email ? 'items-end' : ''}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-medium text-white">{comment.author_name}</span>
+                  <span className="text-xs text-slate-500">
+                    {format(new Date(comment.created_date), "HH:mm", { locale: ptBR })}
+                  </span>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          <div ref={messagesEndRef} />
-        </div>
 
-        <form onSubmit={handleSend} className="flex gap-2">
-          <Textarea
+                <div className={`relative group rounded-2xl p-3 ${
+                  comment.author_email === user?.email
+                    ? 'bg-[#C7A763]/20 border border-[#C7A763]/30'
+                    : 'bg-white/5 border border-white/10'
+                }`}>
+                  <p className="text-sm text-slate-200 whitespace-pre-wrap break-words">
+                    {comment.comment}
+                  </p>
+
+                  {comment.author_email === user?.email && (
+                    <button
+                      onClick={() => deleteMessageMutation.mutate(comment.id)}
+                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-3 h-3 text-red-400" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <div className="p-4 border-t border-white/10">
+        <div className="flex items-center gap-2">
+          <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="Digite sua mensagem..."
-            className="flex-1 bg-white/5 border-white/10 text-white resize-none"
-            rows={2}
+            className="flex-1 bg-white/5 border-white/10 text-white"
+            disabled={sendMessageMutation.isPending}
           />
           <Button
-            type="submit"
-            disabled={!message.trim() || sendMessage.isPending}
-            className="bg-gradient-to-r from-[#00D4FF] to-[#0099CC] text-[#06101F]"
+            onClick={handleSend}
+            disabled={!message.trim() || sendMessageMutation.isPending}
+            className="bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]"
           >
-            {sendMessage.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
+            <Send className="w-4 h-4" />
           </Button>
-        </form>
-      </GlowCard>
-    </div>
+        </div>
+      </div>
+    </GlowCard>
   );
 }

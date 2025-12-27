@@ -3,14 +3,18 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { ArrowLeft, TrendingUp, Users, DollarSign, Calendar, Target, Flame, Globe, Linkedin, ExternalLink, Tag } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Users, DollarSign, Calendar, Target, Flame, Globe, Linkedin, ExternalLink, Tag, MessageSquare, CheckSquare, FileText } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createPageUrl } from "@/utils";
 import GlowCard from "@/components/ui/GlowCard";
 import VentureMetricsOverview from "@/components/ventures/VentureMetricsOverview";
 import VentureOKRManager from "@/components/ventures/VentureOKRManager";
 import VentureTalentAllocation from "@/components/ventures/VentureTalentAllocation";
 import RelatedVentures from "@/components/portfolio/RelatedVentures";
+import VentureChat from "@/components/collaboration/VentureChat";
+import VentureTaskBoard from "@/components/collaboration/VentureTaskBoard";
+import VentureDocuments from "@/components/collaboration/VentureDocuments";
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -289,6 +293,41 @@ export default function VentureDetail() {
 
         {/* OKR Manager - Admin Only */}
         {isAdmin && <VentureOKRManager ventureId={ventureId} />}
+
+        {/* Collaboration Section - Admin Only */}
+        {isAdmin && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-white mb-6 font-montserrat">Colaboração</h2>
+            <Tabs defaultValue="chat" className="space-y-6">
+              <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger value="chat">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Chat
+                </TabsTrigger>
+                <TabsTrigger value="tasks">
+                  <CheckSquare className="w-4 h-4 mr-2" />
+                  Tarefas
+                </TabsTrigger>
+                <TabsTrigger value="documents">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Documentos
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="chat">
+                <VentureChat ventureId={ventureId} ventureName={venture.name} />
+              </TabsContent>
+
+              <TabsContent value="tasks">
+                <VentureTaskBoard ventureId={ventureId} ventureName={venture.name} />
+              </TabsContent>
+
+              <TabsContent value="documents">
+                <VentureDocuments ventureId={ventureId} ventureName={venture.name} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
 
         {/* Related Ventures for Admin */}
         {isAdmin && <RelatedVentures currentVenture={venture} />}
