@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import GlowCard from "@/components/ui/GlowCard";
-import { AnimatePresence } from 'framer-motion';
 
 const ventures = [
   // Startup Projects
