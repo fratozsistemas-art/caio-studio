@@ -14,6 +14,7 @@ import PermissionAuditLog from "@/components/admin/PermissionAuditLog";
 import CollaborationChannels from "@/components/collaboration/CollaborationChannels";
 import YouTubeSyncManager from "@/components/admin/YouTubeSyncManager";
 import UserManagement from "@/components/admin/UserManagement";
+import TalentManagement from "@/components/talent/TalentManagement";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -173,6 +174,10 @@ export default function AdminHub() {
               <Users className="w-4 h-4 mr-2" />
               Usuários
             </TabsTrigger>
+            <TabsTrigger value="talent">
+              <Users className="w-4 h-4 mr-2" />
+              Talentos
+            </TabsTrigger>
             <TabsTrigger value="permissions">
               <Shield className="w-4 h-4 mr-2" />
               Permissões
@@ -212,6 +217,11 @@ export default function AdminHub() {
               align="left"
             />
             <UserManagement />
+          </TabsContent>
+
+          {/* Talent Tab */}
+          <TabsContent value="talent" className="space-y-6">
+            <TalentManagement />
           </TabsContent>
 
           {/* Permissions Tab */}
