@@ -14,6 +14,7 @@ import AdminHub from './pages/AdminHub';
 import LeadManagement from './pages/LeadManagement';
 import LeadAutomation from './pages/LeadAutomation';
 import CRMHub from './pages/CRMHub';
+import ColourMeBrazil from './pages/ColourMeBrazil';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +35,7 @@ export const PAGES = {
     "LeadManagement": LeadManagement,
     "LeadAutomation": LeadAutomation,
     "CRMHub": CRMHub,
+    "ColourMeBrazil": ColourMeBrazil,
 }
 
 export const pagesConfig = {
