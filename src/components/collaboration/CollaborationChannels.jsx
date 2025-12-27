@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import GlowCard from "@/components/ui/GlowCard";
 import { Badge } from "@/components/ui/badge";
+import ChannelAISummary from "@/components/collaboration/ChannelAISummary";
 import { toast } from "sonner";
 
 export default function CollaborationChannels({ portfolios, squads }) {
@@ -294,16 +295,19 @@ export default function CollaborationChannels({ portfolios, squads }) {
         <GlowCard glowColor="gold" className="p-6 lg:col-span-3">
           {selectedChannel ? (
             <div className="flex flex-col h-[500px]">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    {getChannelIcon(selectedChannel.type)}
-                    <h4 className="text-lg font-bold text-white">{selectedChannel.name}</h4>
+              <div className="pb-4 border-b border-white/10 mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      {getChannelIcon(selectedChannel.type)}
+                      <h4 className="text-lg font-bold text-white">{selectedChannel.name}</h4>
+                    </div>
+                    {selectedChannel.description && (
+                      <p className="text-sm text-slate-400">{selectedChannel.description}</p>
+                    )}
                   </div>
-                  {selectedChannel.description && (
-                    <p className="text-sm text-slate-400">{selectedChannel.description}</p>
-                  )}
                 </div>
+                <ChannelAISummary channelId={selectedChannel.id} messages={messages || []} />
               </div>
 
               <ScrollArea className="flex-1 mb-4">
