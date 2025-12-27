@@ -150,10 +150,64 @@ export default function VentureMetricsOverview({ venture, financials, kpis }) {
         </ResponsiveContainer>
       </GlowCard>
 
+      {/* Interactive KPI Trends */}
+      {kpis.length > 0 && (
+        <GlowCard glowColor="mixed" className="p-6">
+          <h4 className="text-lg font-bold text-white mb-4">KPIs em Tempo Real</h4>
+          <div className="grid md:grid-cols-2 gap-4">
+            {kpis.slice(0, 4).map((kpi, i) => {
+              const progress = kpi.target_value > 0 ? (kpi.current_value / kpi.target_value * 100) : 0;
+              const isOnTrack = kpi.current_value >= kpi.target_value;
+              
+              return (
+                <motion.div
+                  key={kpi.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h5 className="text-white font-semibold mb-1">{kpi.kpi_name}</h5>
+                      <p className="text-xs text-slate-400">{kpi.description || 'Métrica de performance'}</p>
+                    </div>
+                    {isOnTrack && (
+                      <TrendingUp className="w-5 h-5 text-green-400" />
+                    )}
+                  </div>
+                  <div className="flex items-end justify-between mb-2">
+                    <div>
+                      <div className="text-3xl font-bold text-[#C7A763]">{kpi.current_value}</div>
+                      <div className="text-xs text-slate-400">de {kpi.target_value} {kpi.unit}</div>
+                    </div>
+                    <div className={`text-2xl font-bold ${isOnTrack ? 'text-green-400' : 'text-yellow-400'}`}>
+                      {progress.toFixed(0)}%
+                    </div>
+                  </div>
+                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(progress, 100)}%` }}
+                      transition={{ duration: 1, delay: i * 0.1 }}
+                      className={`h-full rounded-full ${
+                        isOnTrack 
+                          ? 'bg-gradient-to-r from-green-500 to-green-400' 
+                          : 'bg-gradient-to-r from-yellow-500 to-orange-400'
+                      }`}
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </GlowCard>
+      )}
+
       {/* KPI History Chart */}
       {kpis.length > 0 && <KPIHistoryChart kpis={kpis} />}
 
-      {/* KPI Performance */}
+      {/* KPI Performance Details */}
       {kpis.length > 0 && (
         <GlowCard glowColor="cyan" className="p-6">
           <h4 className="text-lg font-bold text-white mb-4">Performance de KPIs</h4>

@@ -19,6 +19,7 @@ import PublicComments from "@/components/ventures/PublicComments";
 import ThreadedChat from "@/components/collaboration/ThreadedChat";
 import PermissionsManager from "@/components/collaboration/PermissionsManager";
 import ExternalIntegrations from "@/components/collaboration/ExternalIntegrations";
+import TaskCalendar from "@/components/collaboration/TaskCalendar";
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -329,7 +330,10 @@ export default function VentureDetail() {
               </TabsContent>
 
               <TabsContent value="tasks">
-                <VentureTaskBoard ventureId={ventureId} ventureName={venture.name} />
+                <div className="space-y-6">
+                  <VentureTaskBoard ventureId={ventureId} ventureName={venture.name} />
+                  <TaskCalendar tasks={tasks} />
+                </div>
               </TabsContent>
 
               <TabsContent value="documents">

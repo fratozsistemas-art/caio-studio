@@ -24,6 +24,7 @@ import GlowCard from '@/components/ui/GlowCard';
 import { toast } from 'sonner';
 import { useVenturePermissions } from './useVenturePermissions';
 import { Lock } from 'lucide-react';
+import DocumentsGrid from '@/components/ventures/DocumentsGrid';
 
 const categories = [
   { value: 'financial', label: 'Financeiro', color: 'text-green-400' },
