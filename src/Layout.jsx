@@ -177,6 +177,16 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                 >
                   Conteúdo
                 </Link>
+                <Link
+                  to={createPageUrl("CommunicationHub")}
+                  className={`relative px-3 py-2 text-sm font-medium transition-all rounded-lg ${
+                    currentPageName === "CommunicationHub" 
+                      ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  Comunicação
+                </Link>
                 </>
                 )}
 
@@ -282,11 +292,21 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                     >
                       Conteúdo
                     </Link>
+                    <Link
+                      to={createPageUrl("CommunicationHub")}
+                      className={`block px-3 py-2.5 text-base font-medium rounded-lg transition-all ${
+                        currentPageName === "CommunicationHub" 
+                          ? 'text-[#C7A763] bg-[#C7A763]/10' 
+                          : 'text-white/70 hover:bg-white/5'
+                      }`}
+                    >
+                      Comunicação
+                    </Link>
                     </>
                     )}
 
-                <button
-                  onClick={toggleLanguage}
+                    <button
+                    onClick={toggleLanguage}
                   className="flex items-center gap-2.5 px-3 py-2.5 text-base font-medium text-white/70 rounded-lg hover:bg-white/5"
                 >
                   <Globe className="w-4 h-4" />
