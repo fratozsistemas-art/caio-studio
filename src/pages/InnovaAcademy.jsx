@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from "@/utils";
 import GlowCard from "@/components/ui/GlowCard";
 import SectionTitle from "@/components/ui/SectionTitle";
+import YouTubeVideoGrid from "@/components/youtube/YouTubeVideoGrid";
 
 export default function InnovaAcademy() {
   const programs = [
@@ -255,6 +256,21 @@ export default function InnovaAcademy() {
                 Aplicação imediata do conhecimento em projetos reais
               </p>
             </GlowCard>
+          </div>
+        </div>
+      </section>
+
+      {/* YouTube Content Section */}
+      <section className="py-20 px-6 bg-gradient-to-b from-[#00D4FF]/5 to-transparent">
+        <div className="max-w-7xl mx-auto">
+          <SectionTitle
+            subtitle="APRENDA MAIS"
+            title="Vídeos e Tutoriais"
+            accent="cyan"
+            align="center"
+          />
+          <div className="mt-12">
+            <YouTubeVideoGrid category="education" limit={6} />
           </div>
         </div>
       </section>
