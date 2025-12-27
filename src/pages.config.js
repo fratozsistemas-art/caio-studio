@@ -15,6 +15,7 @@ import LeadManagement from './pages/LeadManagement';
 import LeadAutomation from './pages/LeadAutomation';
 import CRMHub from './pages/CRMHub';
 import ColourMeBrazil from './pages/ColourMeBrazil';
+import InnovaAcademy from './pages/InnovaAcademy';
 import __Layout from './Layout.jsx';
 
 
@@ -36,6 +37,7 @@ export const PAGES = {
     "LeadAutomation": LeadAutomation,
     "CRMHub": CRMHub,
     "ColourMeBrazil": ColourMeBrazil,
+    "InnovaAcademy": InnovaAcademy,
 }
 
 export const pagesConfig = {
