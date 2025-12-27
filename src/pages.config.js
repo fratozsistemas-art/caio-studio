@@ -13,6 +13,7 @@ import StakeholderJourney from './pages/StakeholderJourney';
 import AdminHub from './pages/AdminHub';
 import LeadManagement from './pages/LeadManagement';
 import LeadAutomation from './pages/LeadAutomation';
+import CRMHub from './pages/CRMHub';
 import __Layout from './Layout.jsx';
 
 
@@ -32,6 +33,7 @@ export const PAGES = {
     "AdminHub": AdminHub,
     "LeadManagement": LeadManagement,
     "LeadAutomation": LeadAutomation,
+    "CRMHub": CRMHub,
 }
 
 export const pagesConfig = {
