@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Rocket, TrendingUp, Cpu, Zap, Grid, Search, X, Filter, Palette, Network } from 'lucide-react';
 import SectionTitle from "@/components/ui/SectionTitle";
@@ -205,23 +207,49 @@ export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Fetch ventures from database
+  const { data: dbVentures, isLoading } = useQuery({
+    queryKey: ['ventures'],
+    queryFn: () => base44.entities.Venture.list('-created_date', 100)
+  });
+
+  // Combine database and hardcoded ventures
+  const allVentures = useMemo(() => {
+    const combined = [...(dbVentures || []), ...ventures];
+    const unique = combined.reduce((acc, current) => {
+      const exists = acc.find(v => v.name === current.name);
+      if (!exists) {
+        return [...acc, current];
+      }
+      return acc;
+    }, []);
+    return unique;
+  }, [dbVentures]);
 
   // Extract all unique tags from ventures
   const allTags = useMemo(() => {
     const tagsSet = new Set();
-    ventures.forEach(venture => {
+    allVentures.forEach(venture => {
       venture.tags?.forEach(tag => tagsSet.add(tag));
     });
     return Array.from(tagsSet).sort();
-  }, []);
+  }, [allVentures]);
 
   // Extract all unique statuses
   const allStatuses = useMemo(() => {
     const statusSet = new Set();
-    ventures.forEach(venture => statusSet.add(venture.status));
+    allVentures.forEach(venture => statusSet.add(venture.status));
     return Array.from(statusSet);
-  }, []);
+  }, [allVentures]);
+
+  // Extract all unique categories
+  const allCategories = useMemo(() => {
+    const cats = new Set(allVentures.map(v => v.category).filter(Boolean));
+    return Array.from(cats).sort();
+  }, [allVentures]);
 
   const toggleTag = (tag) => {
     setSelectedTags(prev => 
@@ -235,17 +263,21 @@ export default function Portfolio() {
     setSearchQuery("");
     setSelectedTags([]);
     setSelectedStatus("all");
+    setSelectedCategory("all");
     setActiveLayer("all");
   };
 
   // Advanced filtering logic
   const filteredVentures = useMemo(() => {
-    return ventures.filter(venture => {
+    return allVentures.filter(venture => {
       // Layer filter
       const matchesLayer = activeLayer === "all" || venture.layer === activeLayer;
       
       // Status filter
       const matchesStatus = selectedStatus === "all" || venture.status === selectedStatus;
+      
+      // Category filter
+      const matchesCategory = selectedCategory === "all" || venture.category === selectedCategory;
       
       // Tag filter
       const matchesTags = selectedTags.length === 0 || 
@@ -258,13 +290,14 @@ export default function Portfolio() {
         venture.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
         venture.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      return matchesLayer && matchesStatus && matchesTags && matchesSearch;
+      return matchesLayer && matchesStatus && matchesCategory && matchesTags && matchesSearch;
     });
-  }, [activeLayer, selectedStatus, selectedTags, searchQuery]);
+  }, [allVentures, activeLayer, selectedStatus, selectedCategory, selectedTags, searchQuery]);
 
   const activeFiltersCount = 
     (activeLayer !== "all" ? 1 : 0) +
     (selectedStatus !== "all" ? 1 : 0) +
+    (selectedCategory !== "all" ? 1 : 0) +
     selectedTags.length +
     (searchQuery ? 1 : 0);
 
@@ -370,7 +403,7 @@ export default function Portfolio() {
                         {layer.label}
                       </h3>
                       <p className="text-sm text-slate-400 leading-relaxed">
-                        {ventures.filter(v => v.layer === layer.id).length} ventures
+                        {allVentures.filter(v => v.layer === layer.id).length} ventures
                       </p>
                     </div>
                   </div>
@@ -611,7 +644,7 @@ export default function Portfolio() {
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-6">
           <div className="text-sm text-slate-400">
-            Mostrando <span className="text-[#C7A763] font-semibold">{filteredVentures.length}</span> de <span className="text-white">{ventures.length}</span> ventures
+            Mostrando <span className="text-[#C7A763] font-semibold">{filteredVentures.length}</span> de <span className="text-white">{allVentures.length}</span> ventures
           </div>
         </div>
 
