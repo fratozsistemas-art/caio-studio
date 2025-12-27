@@ -21,7 +21,7 @@ export default function VentureCard({ venture, index }) {
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
     >
-      <Link to={createPageUrl('VentureDetail') + '?id=' + venture.id}>
+      <Link to={venture.custom_page || createPageUrl('VentureDetail') + '?id=' + venture.id}>
         <GlowCard glowColor={venture.layer === 'startup' ? 'cyan' : 'gold'} className="h-full group cursor-pointer">
         <div className="p-6">
           {/* Header */}
