@@ -186,7 +186,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             <Link to={createPageUrl("About")}>
               <Button 
                 size="sm"
-                className="bg-gradient-to-r from-[#C7A763] to-[#A88B4A] hover:from-[#D4B474] hover:to-[#B99B5A] text-[#06101F] font-semibold px-5 rounded-full"
+                className="bg-[#D4B474] hover:bg-[#E5C585] text-[#06101F] font-semibold px-5 rounded-full shadow-lg"
               >
                 {t.nav.contact}
                 <ArrowUpRight className="ml-1 w-4 h-4" />
@@ -256,7 +256,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                   className="block"
                 >
                   <Button 
-                    className="w-full bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F] font-semibold rounded-full mt-4"
+                    className="w-full bg-[#D4B474] hover:bg-[#E5C585] text-[#06101F] font-semibold rounded-full mt-4 shadow-lg"
                   >
                     {t.nav.contact}
                     <ArrowUpRight className="ml-1 w-4 h-4" />

@@ -181,7 +181,7 @@ export default function PortfolioDashboard() {
             <Button
               onClick={() => setShowCustomizer(true)}
               variant="outline"
-              className="border-white/10 text-white"
+              className="border-2 border-white bg-transparent hover:bg-white/10 text-white font-medium"
             >
               <Settings className="w-4 h-4 mr-2" />
               Customizar
@@ -190,7 +190,7 @@ export default function PortfolioDashboard() {
               onClick={() => exportReport('pdf')}
               disabled={exporting}
               variant="outline"
-              className="border-white/10 text-white"
+              className="border-2 border-[#D4B474] bg-transparent hover:bg-[#D4B474]/10 text-[#D4B474] font-medium"
             >
               <FileText className="w-4 h-4 mr-2" />
               PDF
@@ -198,7 +198,7 @@ export default function PortfolioDashboard() {
             <Button
               onClick={() => exportReport('csv')}
               disabled={exporting}
-              className="bg-gradient-to-r from-[#00D4FF] to-[#0099CC] text-[#06101F]"
+              className="bg-[#00D4FF] hover:bg-[#00B8E6] text-[#06101F] font-semibold shadow-lg"
             >
               <Download className="w-4 h-4 mr-2" />
               CSV
