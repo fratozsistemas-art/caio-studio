@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, ThumbsUp, Flag, Shield } from 'lucide-react';
+import { MessageSquare, Send, ThumbsUp, Flag, Shield, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import GlowCard from '@/components/ui/GlowCard';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -15,6 +16,7 @@ export default function PublicComments({ ventureId, ventureName }) {
   const [comment, setComment] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const queryClient = useQueryClient();
 
@@ -72,16 +74,16 @@ export default function PublicComments({ ventureId, ventureName }) {
       return;
     }
 
-    if (!isAuthenticated && (!name.trim() || !email.trim())) {
-      toast.error('Por favor, preencha nome e email');
+    if (!isAuthenticated && !isAnonymous && (!name.trim() || !email.trim())) {
+      toast.error('Por favor, preencha nome e email ou comente anonimamente');
       return;
     }
 
     submitCommentMutation.mutate({
       venture_id: ventureId,
       comment: comment.trim(),
-      author_name: name.trim(),
-      author_email: email.trim(),
+      author_name: isAnonymous ? 'Anônimo' : name.trim(),
+      author_email: isAnonymous ? 'anonymous@system' : email.trim(),
       related_entity: 'public_feedback'
     });
   };
@@ -102,23 +104,37 @@ export default function PublicComments({ ventureId, ventureName }) {
         {/* Comment Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isAuthenticated && (
-            <div className="grid md:grid-cols-2 gap-4">
-              <Input
-                placeholder="Seu nome *"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="bg-white/5 border-white/10 text-white"
-                required
-              />
-              <Input
-                type="email"
-                placeholder="Seu email *"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-white/5 border-white/10 text-white"
-                required
-              />
-            </div>
+            <>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center gap-2">
+                  <EyeOff className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm text-white">Comentar anonimamente</span>
+                </div>
+                <Switch
+                  checked={isAnonymous}
+                  onCheckedChange={setIsAnonymous}
+                />
+              </div>
+              {!isAnonymous && (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="Seu nome *"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-white/5 border-white/10 text-white"
+                    required
+                  />
+                  <Input
+                    type="email"
+                    placeholder="Seu email *"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-white/5 border-white/10 text-white"
+                    required
+                  />
+                </div>
+              )}
+            </>
           )}
 
           <Textarea
@@ -167,9 +183,13 @@ export default function PublicComments({ ventureId, ventureName }) {
                 <GlowCard className="p-4">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C7A763]/30 to-[#00D4FF]/30 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm font-semibold text-white">
-                        {c.author_name?.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                      </span>
+                      {c.author_name === 'Anônimo' ? (
+                        <EyeOff className="w-5 h-5 text-slate-400" />
+                      ) : (
+                        <span className="text-sm font-semibold text-white">
+                          {c.author_name?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex-1">
