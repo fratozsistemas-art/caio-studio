@@ -188,7 +188,9 @@ Provide deep, actionable insights based on the document content.`;
           status: 'todo',
           priority: task.priority,
           assigned_to: user.email,
-          due_date: task.estimated_due_date
+          due_date: task.estimated_due_date,
+          related_entity: 'document',
+          related_entity_id: document.id
         }));
         promises.push(base44.entities.VentureTask.bulkCreate(tasks));
       }
