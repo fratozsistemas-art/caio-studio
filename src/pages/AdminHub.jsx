@@ -21,6 +21,7 @@ import CodeAuditDashboard from "@/components/admin/CodeAuditDashboard";
 import TalentSkillMatrix from "@/components/talent/TalentSkillMatrix";
 import PerformanceTemplateManager from "@/components/talent/PerformanceTemplateManager";
 import TeamPerformanceInsights from "@/components/talent/TeamPerformanceInsights";
+import FileManager from "@/components/admin/FileManager";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -353,6 +354,17 @@ export default function AdminHub() {
               kpis={portfolioData?.kpis || []}
               talents={portfolioData?.talents || []}
             />
+          </TabsContent>
+
+          {/* Arquivos Tab */}
+          <TabsContent value="arquivos" className="space-y-6">
+            <SectionTitle
+              title="Gestão de Arquivos"
+              subtitle="Central de Documentos e Mídias"
+              accent="cyan"
+              align="left"
+            />
+            <FileManager />
           </TabsContent>
 
           {/* Content Tab */}
