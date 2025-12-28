@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award, Sparkles, Loader2, Plus, X, MessageSquare, Target } from "lucide-react";
+import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award, Sparkles, Loader2, Plus, X, MessageSquare, Target, Trophy } from "lucide-react";
+import BadgeShowcase from '@/components/gamification/BadgeShowcase';
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -538,6 +539,10 @@ Retorne um objeto JSON com:
                   <Sparkles className="w-4 h-4 mr-2" />
                   Onboarding
                 </TabsTrigger>
+                <TabsTrigger value="badges">
+                  <Trophy className="w-4 h-4 mr-2" />
+                  Conquistas
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="feedback" className="mt-4">
@@ -550,6 +555,10 @@ Retorne um objeto JSON com:
 
               <TabsContent value="onboarding" className="mt-4">
                 <OnboardingChecklist talentId={talent.id} />
+              </TabsContent>
+
+              <TabsContent value="badges" className="mt-4">
+                <BadgeShowcase talentId={talent.id} />
               </TabsContent>
             </Tabs>
           </div>

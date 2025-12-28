@@ -19,6 +19,7 @@ import InnovaAcademy from './pages/InnovaAcademy';
 import ContentHub from './pages/ContentHub';
 import CommunicationHub from './pages/CommunicationHub';
 import FeedbackHub from './pages/FeedbackHub';
+import GamificationHub from './pages/GamificationHub';
 import __Layout from './Layout.jsx';
 
 
@@ -44,6 +45,7 @@ export const PAGES = {
     "ContentHub": ContentHub,
     "CommunicationHub": CommunicationHub,
     "FeedbackHub": FeedbackHub,
+    "GamificationHub": GamificationHub,
 }
 
 export const pagesConfig = {
