@@ -17,6 +17,7 @@ import UserManagement from "@/components/admin/UserManagement";
 import TalentManagement from "@/components/talent/TalentManagement";
 import DocumentKnowledgeExtractor from "@/components/knowledge/DocumentKnowledgeExtractor";
 import RoleSkillManager from "@/components/admin/RoleSkillManager";
+import CodeAuditDashboard from "@/components/admin/CodeAuditDashboard";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -196,6 +197,10 @@ export default function AdminHub() {
               <Settings className="w-4 h-4 mr-2" />
               Cargos & Skills
             </TabsTrigger>
+            <TabsTrigger value="code-audit">
+              <Shield className="w-4 h-4 mr-2" />
+              Code Auditor
+            </TabsTrigger>
             <TabsTrigger value="content">
               <Settings className="w-4 h-4 mr-2" />
               Conteúdo
@@ -280,6 +285,11 @@ export default function AdminHub() {
               align="left"
             />
             <RoleSkillManager />
+          </TabsContent>
+
+          {/* Code Audit Tab */}
+          <TabsContent value="code-audit" className="space-y-6">
+            <CodeAuditDashboard />
           </TabsContent>
 
           {/* AI Insights Tab */}
