@@ -12,6 +12,7 @@ import {
   Mail,
   MessageCircle,
   TrendingUp,
+  Trophy,
   X
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
@@ -26,7 +27,8 @@ export default function Sidebar({ isOpen, onClose, isAdmin, language }) {
   const userMenuItems = [
     { name: t.nav.dashboard, page: "PortfolioDashboard", icon: LayoutDashboard },
     { name: t.nav.collaboration, page: "CollaborationHub", icon: MessageSquare },
-    { name: t.nav.feedback, page: "FeedbackHub", icon: MessageCircle }
+    { name: t.nav.feedback, page: "FeedbackHub", icon: MessageCircle },
+    { name: 'Gamificação', page: "GamificationHub", icon: Trophy }
   ];
 
   const adminMenuItems = [
