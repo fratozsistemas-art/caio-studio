@@ -23,6 +23,8 @@ import PermissionsManager from "@/components/collaboration/PermissionsManager";
 import ExternalIntegrations from "@/components/collaboration/ExternalIntegrations";
 import TaskCalendar from "@/components/collaboration/TaskCalendar";
 import VentureLeads from "@/components/crm/VentureLeads";
+import VentureDashboard from "@/components/ventures/VentureDashboard";
+import { LayoutDashboard } from 'lucide-react';
 
 export default function VentureDetail() {
   const [searchParams] = useSearchParams();
@@ -336,8 +338,12 @@ export default function VentureDetail() {
         {isAdmin && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold text-white mb-6 font-montserrat">Colaboração</h2>
-            <Tabs defaultValue="chat" className="space-y-6">
+            <Tabs defaultValue="dashboard" className="space-y-6">
               <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger value="dashboard">
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
+                </TabsTrigger>
                 <TabsTrigger value="chat">
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Chat por Tópicos
@@ -357,6 +363,10 @@ export default function VentureDetail() {
                   Integrações
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="dashboard">
+                <VentureDashboard ventureId={ventureId} ventureName={venture.name} />
+              </TabsContent>
 
               <TabsContent value="chat">
                 <ThreadedChat ventureId={ventureId} ventureName={venture.name} />
