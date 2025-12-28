@@ -10,6 +10,7 @@ import LeadInteractions from "@/components/crm/LeadInteractions";
 import MeetingCalendar from "@/components/crm/MeetingCalendar";
 import TaskManagement from "@/components/crm/TaskManagement";
 import ReminderCenter from "@/components/crm/ReminderCenter";
+import InteractiveLeadFunnel from "@/components/crm/InteractiveLeadFunnel";
 import { createPageUrl } from "@/utils";
 
 export default function CRMHub() {
@@ -167,10 +168,14 @@ export default function CRMHub() {
           </GlowCard>
         </div>
 
-        <Tabs defaultValue="interactions" className="space-y-6">
+        <Tabs defaultValue="funnel" className="space-y-6">
           <TabsList className="bg-white/5 border border-white/10">
-            <TabsTrigger value="interactions">
+            <TabsTrigger value="funnel">
               <TrendingUp className="w-4 h-4 mr-2" />
+              Funil Interativo
+            </TabsTrigger>
+            <TabsTrigger value="interactions">
+              <Users className="w-4 h-4 mr-2" />
               Interações
             </TabsTrigger>
             <TabsTrigger value="meetings">
@@ -186,6 +191,10 @@ export default function CRMHub() {
               Lembretes
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="funnel">
+            <InteractiveLeadFunnel leads={leads} />
+          </TabsContent>
 
           <TabsContent value="interactions">
             <LeadInteractions 
