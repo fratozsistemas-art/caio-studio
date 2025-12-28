@@ -22,6 +22,9 @@ import CodeAuditDashboard from "@/components/admin/CodeAuditDashboard";
 import TalentSkillMatrix from "@/components/talent/TalentSkillMatrix";
 import PerformanceTemplateManager from "@/components/talent/PerformanceTemplateManager";
 import TeamPerformanceInsights from "@/components/talent/TeamPerformanceInsights";
+import PerformanceReportGenerator from "@/components/talent/PerformanceReportGenerator";
+import UpskillingRecommendations from "@/components/talent/UpskillingRecommendations";
+import CareerProgressionPath from "@/components/talent/CareerProgressionPath";
 import FileManager from "@/components/admin/FileManager";
 import LinkedInProfile from "@/components/profile/LinkedInProfile";
 import { createPageUrl } from "@/utils";
@@ -288,6 +291,9 @@ export default function AdminHub() {
               <TabsList className="bg-white/5 border border-white/10">
                 <TabsTrigger value="templates">Templates</TabsTrigger>
                 <TabsTrigger value="insights">Insights IA</TabsTrigger>
+                <TabsTrigger value="reports">Relatórios</TabsTrigger>
+                <TabsTrigger value="upskilling">Upskilling</TabsTrigger>
+                <TabsTrigger value="career">Progressão</TabsTrigger>
               </TabsList>
 
               <TabsContent value="templates">
@@ -296,6 +302,18 @@ export default function AdminHub() {
 
               <TabsContent value="insights">
                 <TeamPerformanceInsights />
+              </TabsContent>
+
+              <TabsContent value="reports">
+                <PerformanceReportGenerator />
+              </TabsContent>
+
+              <TabsContent value="upskilling">
+                <UpskillingRecommendations />
+              </TabsContent>
+
+              <TabsContent value="career">
+                <CareerProgressionPath />
               </TabsContent>
             </Tabs>
           </TabsContent>
