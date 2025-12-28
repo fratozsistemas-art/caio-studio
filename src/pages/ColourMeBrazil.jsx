@@ -1,499 +1,250 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Globe, Heart, BookOpen, Palette, Leaf, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from "@/utils";
-import GlowCard from "@/components/ui/GlowCard";
-import SectionTitle from "@/components/ui/SectionTitle";
+import { Book, Globe, Shield, Smartphone, Award, Github, ExternalLink, ChevronRight, Sparkles, Users, Target, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import GlowCard from '@/components/ui/GlowCard';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 export default function ColourMeBrazil() {
-  const legends = [
-    {
-      title: "A Vitória-Régia: A Estrela da Lua",
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800",
-      description: "Lenda do folclore amazônico"
-    },
-    {
-      title: "O Curupira: O Guardião com Pés para Trás",
-      image: "https://images.unsplash.com/photo-1511497584788-876760111969?w=800",
-      description: "Protetor da floresta"
-    },
-    {
-      title: "A Cobra Grande: A Serpente Gigante do Rio",
-      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800",
-      description: "Mistérios do Rio Amazonas"
-    },
-    {
-      title: "A Iara: A Sereia do Rio",
-      image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800",
-      description: "Encanto das águas"
-    },
-    {
-      title: "O Mapinguari: O Gigante Gentil da Floresta",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800",
-      description: "Guardião ancestral"
-    },
-    {
-      title: "O Uirapuru: O Pássaro que Traz Desejos",
-      image: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=800",
-      description: "Melodia mágica"
-    }
-  ];
-
   const features = [
     {
-      icon: BookOpen,
-      title: "Estrutura Orientada a Dados",
-      description: "Conteúdo definido em JSON, separando dados da lógica da aplicação"
+      icon: Book,
+      title: "Interactive Learning",
+      description: "Engaging stories about Brazilian culture, folklore, and the Amazon rainforest"
     },
     {
       icon: Globe,
-      title: "Escalabilidade",
-      description: "Novos livros e páginas podem ser adicionados sem alterar o código"
+      title: "Bilingual Content",
+      description: "Full support for English and Portuguese with text-to-speech"
     },
     {
-      icon: Leaf,
-      title: "Performance Offline",
-      description: "Pré-carregamento de ativos para experiência offline robusta"
+      icon: Shield,
+      title: "Child Safety First",
+      description: "COPPA and LGPD compliant with parental consent and minimal data collection"
     },
     {
-      icon: Palette,
-      title: "Flexibilidade de Conteúdo",
-      description: "Múltiplos tipos de página (story, coloring, text, credits)"
+      icon: Smartphone,
+      title: "Progressive Web App",
+      description: "Install on any device, works offline, feels like a native app"
     }
   ];
 
-  const timeline = [
-    { year: "2003-2011", role: "Environment & Sustainability Manager", company: "CNI" },
-    { year: "2011-2016", role: "Senior Environmental Lawyer", company: "KLA Law" },
-    { year: "2016-2020", role: "Environmental and Permitting Manager", company: "Ramboll Brasil" },
-    { year: "2021-2022", role: "Environmental & Permitting Manager", company: "Fortescue Future Industries" },
-    { year: "2022-2025", role: "Consultora ESG/Compliance", company: "Independente" }
+  const techStack = [
+    { name: "React 18", category: "Frontend" },
+    { name: "Tailwind CSS", category: "Styling" },
+    { name: "Base44 SDK", category: "Backend" },
+    { name: "Supabase", category: "Storage" },
+    { name: "Stripe", category: "Payments" }
+  ];
+
+  const milestones = [
+    { label: "UI/UX Quality", value: 88, color: "cyan" },
+    { label: "PWA Implementation", value: 96, color: "gold" },
+    { label: "Accessibility", value: 89, color: "cyan" },
+    { label: "Deployment Ready", value: 93, color: "gold" }
   ];
 
   return (
-    <main className="min-h-screen bg-[#06101F] text-white">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#C7A763]/10 to-transparent" />
+      <section className="relative py-20 px-6 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#00D4FF]/5 via-transparent to-[#C7A763]/5" />
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <Link to={createPageUrl("Portfolio")} className="inline-flex items-center gap-2 text-[#C7A763] hover:text-[#E5C585] mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Voltar ao Portfolio
-          </Link>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="grid lg:grid-cols-2 gap-12 items-center"
+            className="text-center max-w-4xl mx-auto"
           >
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C7A763]/10 border border-[#C7A763]/20 mb-6">
-                <Heart className="w-4 h-4 text-[#C7A763]" />
-                <span className="text-sm text-[#C7A763]">Cultural Legacy Project</span>
-              </div>
-              
-              <h1 className="text-5xl lg:text-6xl font-bold font-montserrat mb-6">
-                Colour Me <span className="text-[#C7A763]">Brazil</span>
-              </h1>
-              
-              <p className="text-xl text-slate-300 leading-relaxed mb-8">
-                Uma coleção de livros infantis e experiências digitais que convidam crianças de todo o mundo a explorar as ricas tradições, festivais, animais e sabores que tornam a cultura brasileira tão única.
-              </p>
-
-              <div className="flex flex-wrap gap-3">
-                <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-xs text-slate-400">Primeira Obra</div>
-                  <div className="text-sm font-medium">Tales of the Amazon</div>
-                </div>
-                <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-xs text-slate-400">Formato</div>
-                  <div className="text-sm font-medium">Livro + Digital</div>
-                </div>
-              </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C7A763]/10 border border-[#C7A763]/20 mb-6">
+              <Sparkles className="w-4 h-4 text-[#C7A763]" />
+              <span className="text-sm text-[#C7A763] font-medium">Interactive Learning Platform</span>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="relative"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800"
-                alt="Colour Me Brazil"
-                className="rounded-2xl shadow-2xl w-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#06101F] to-transparent rounded-2xl" />
-            </motion.div>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 font-montserrat">
+              Colour Me <span className="text-[#C7A763]">Brazil</span>
+            </h1>
+            
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+              An interactive learning platform for children aged 6-12, celebrating Brazilian culture, 
+              folklore, and the Amazon rainforest through bilingual educational content.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+              {["COPPA Compliant", "GDPR Ready", "LGPD Ready", "PWA Ready"].map((badge) => (
+                <div key={badge} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-500 font-medium">{badge}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="bg-[#C7A763] hover:bg-[#A88B4A] text-background gap-2"
+                onClick={() => window.open('https://colourmebrazil.com', '_blank')}
+              >
+                Visit Website
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="gap-2"
+                onClick={() => window.open('https://github.com/fratozsistemas-art/colour-me-brazil', '_blank')}
+              >
+                <Github className="w-4 h-4" />
+                View on GitHub
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Creator Section */}
-      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-[#C7A763]/5">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle
-            subtitle="SOBRE A CRIADORA"
-            title="Grace Nogueira"
-            accent="gold"
-            align="center"
-          />
-
-          <div className="grid lg:grid-cols-2 gap-12 mt-12">
-            <GlowCard glowColor="gold" className="p-8">
-              <h3 className="text-2xl font-bold text-white mb-4">
-                A Especialista em ESG e Licenciamento Ambiental
-              </h3>
-              <p className="text-slate-300 leading-relaxed mb-6">
-                Liderança no licenciamento ambiental para projetos industriais de grande escala, 
-                incluindo o primeiro projeto de Hidrogênio Verde (GH2) em larga escala a obter 
-                licença ambiental no Brasil (Fortescue Future Industries).
-              </p>
-
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#C7A763] mt-2" />
-                  <p className="text-slate-400">Conformidade regulatória e planejamento de uso do solo</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#C7A763] mt-2" />
-                  <p className="text-slate-400">Coordenação com IBAMA, autoridades estaduais e municipais</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#C7A763] mt-2" />
-                  <p className="text-slate-400">Avaliação de risco e comunicação estratégica com stakeholders</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#C7A763] mt-2" />
-                  <p className="text-slate-400">Estruturação de governança ESG para clientes multinacionais</p>
-                </div>
-              </div>
-            </GlowCard>
-
-            <GlowCard glowColor="mixed" className="p-8">
-              <h3 className="text-2xl font-bold text-white mb-6">
-                A Dupla Formação: A Semente da Síntese
-              </h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#00D4FF]/10 flex items-center justify-center">
-                      <Users className="w-4 h-4 text-[#00D4FF]" />
-                    </div>
-                    <h4 className="font-semibold text-white">Direito</h4>
-                  </div>
-                  <ul className="space-y-2 text-sm text-slate-400">
-                    <li>• Bacharel em Direito - Universidade Presbiteriana Mackenzie, 1991</li>
-                    <li>• LL.M. in Environmental Law - University of London, 1997</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#C7A763]/10 flex items-center justify-center">
-                      <BookOpen className="w-4 h-4 text-[#C7A763]" />
-                    </div>
-                    <h4 className="font-semibold text-white">Línguas e Literatura</h4>
-                  </div>
-                  <ul className="space-y-2 text-sm text-slate-400">
-                    <li>• Bacharel em Línguas e Literatura (Português-Inglês) - USP, 1991</li>
-                  </ul>
-                </div>
-
-                <div className="pt-4 border-t border-white/10">
-                  <h4 className="font-semibold text-white mb-2">Educação Executiva</h4>
-                  <p className="text-sm text-slate-400">
-                    Cursos em Gestão de Projetos (Austrália), Gestão de Negócios (Costa Rica) 
-                    e Governança (Reino Unido)
-                  </p>
-                </div>
-              </div>
-            </GlowCard>
-          </div>
-        </div>
-      </section>
-
-      {/* Career Timeline */}
+      {/* Features Section */}
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <SectionTitle
-            subtitle="TRAJETÓRIA"
-            title="Uma Carreira de Duas Décadas Dedicada à Sustentabilidade no Brasil"
-            accent="cyan"
-            align="center"
-          />
-
-          <div className="mt-12 relative">
-            <div className="absolute left-0 lg:left-1/2 transform lg:-translate-x-1/2 h-full w-0.5 bg-gradient-to-b from-[#00D4FF] to-[#C7A763]" />
-            
-            <div className="space-y-12">
-              {timeline.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  className={`flex flex-col lg:flex-row gap-6 ${i % 2 === 0 ? 'lg:flex-row-reverse' : ''}`}
-                >
-                  <div className="flex-1" />
-                  <div className="relative flex items-center justify-center">
-                    <div className="w-4 h-4 rounded-full bg-[#C7A763] ring-4 ring-[#06101F]" />
-                  </div>
-                  <div className="flex-1">
-                    <GlowCard glowColor={i % 2 === 0 ? "cyan" : "gold"} className="p-5">
-                      <div className="text-[#C7A763] font-bold mb-2">{item.year}</div>
-                      <h4 className="text-white font-semibold mb-1">{item.role}</h4>
-                      <p className="text-slate-400 text-sm">{item.company}</p>
-                    </GlowCard>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Project Origin */}
-      <section className="py-20 px-6 bg-gradient-to-b from-[#C7A763]/5 to-transparent">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl font-bold text-white mb-6 font-montserrat">
-                Protegendo a Amazônia Física. <br />
-                <span className="text-[#C7A763]">Preservando sua Alma Cultural.</span>
-              </h2>
-              
-              <p className="text-slate-300 leading-relaxed mb-6">
-                "Em algum lugar ao longo do caminho, meu amor por escrever foi guardado."
-              </p>
-              
-              <p className="text-slate-300 leading-relaxed mb-6">
-                Anos depois, os ventos da vida me levaram para o campo do direito... Avance algumas décadas, 
-                e me encontrei na Austrália, recentemente divorciada... Foi lá que redescobri dois antigos 
-                amores: a escrita e a dança. Eles se tornaram meu santuário.
-              </p>
-
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Globe className="w-5 h-5 text-[#00D4FF] flex-shrink-0 mt-1" />
-                  <p className="text-slate-300">
-                    A curiosidade das pessoas ao seu redor sobre o Brasil, especialmente a Amazônia
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Heart className="w-5 h-5 text-[#C7A763] flex-shrink-0 mt-1" />
-                  <p className="text-slate-300">
-                    A alegria contagiante de compartilhar um simples "brigadeiro" em uma festa de aniversário
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-[#C7A763]/10 to-[#00D4FF]/10 border border-[#C7A763]/20">
-                <p className="text-[#C7A763] italic text-lg">
-                  "Percebi que queria compartilhar o Brasil — não apenas seus lugares, 
-                  mas suas cores, seus sons, sua alma."
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800"
-                alt="Amazon Rainforest"
-                className="rounded-2xl shadow-2xl"
-              />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Tales of the Amazon */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle
-            subtitle="PRIMEIRA OBRA"
-            title="Tales of the Amazon"
+            subtitle="KEY FEATURES"
+            title="Built for Learning, Safety, and Engagement"
             accent="gold"
-            align="center"
+            className="mb-16"
           />
 
-          <p className="text-center text-slate-300 max-w-3xl mx-auto mt-6 mb-12">
-            Um livro de histórias e colorir que explora as lendas mágicas da floresta amazônica
-          </p>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {legends.map((legend, i) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
               <motion.div
-                key={i}
+                key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <GlowCard glowColor="mixed" className="overflow-hidden h-full">
-                  <img
-                    src={legend.image}
-                    alt={legend.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-5">
-                    <h4 className="text-white font-semibold mb-2">{legend.title}</h4>
-                    <p className="text-slate-400 text-sm">{legend.description}</p>
+                <GlowCard glowColor="gold" className="p-6 h-full">
+                  <feature.icon className="w-10 h-10 text-[#C7A763] mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </GlowCard>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tech Stack Section */}
+      <section className="py-20 px-6 bg-accent/30">
+        <div className="max-w-7xl mx-auto">
+          <SectionTitle
+            subtitle="TECHNOLOGY"
+            title="Modern Tech Stack"
+            accent="cyan"
+            className="mb-16"
+          />
+
+          <div className="grid md:grid-cols-5 gap-4">
+            {techStack.map((tech, index) => (
+              <motion.div
+                key={tech.name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <GlowCard glowColor="cyan" className="p-4 text-center">
+                  <div className="text-xs text-[#00D4FF] mb-2">{tech.category}</div>
+                  <div className="font-semibold">{tech.name}</div>
+                </GlowCard>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Readiness Metrics */}
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <SectionTitle
+            subtitle="PROJECT STATUS"
+            title="Deployment Readiness: 93/100"
+            accent="gold"
+            className="mb-16"
+          />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {milestones.map((milestone, index) => (
+              <motion.div
+                key={milestone.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GlowCard glowColor={milestone.color} className="p-6">
+                  <div className="text-4xl font-bold mb-2 text-[#C7A763]">{milestone.value}%</div>
+                  <div className="text-sm text-muted-foreground mb-4">{milestone.label}</div>
+                  <div className="w-full bg-border rounded-full h-2">
+                    <div 
+                      className="bg-[#C7A763] h-2 rounded-full transition-all duration-1000"
+                      style={{ width: `${milestone.value}%` }}
+                    />
                   </div>
                 </GlowCard>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <GlowCard glowColor="gold" className="p-8 text-center">
-            <Palette className="w-12 h-12 text-[#C7A763] mx-auto mb-4" />
-            <p className="text-slate-300 text-lg italic max-w-3xl mx-auto">
-              "E assim veio a ideia: que melhor maneira de fazer isso do que através dos olhos das crianças, 
-              com um livro de colorir onde cada página se torna uma jornada — e cada lápis de cor, um passaporte?"
-            </p>
+      {/* Target Audience */}
+      <section className="py-20 px-6 bg-accent/30">
+        <div className="max-w-5xl mx-auto">
+          <GlowCard glowColor="mixed" className="p-12">
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div>
+                <Users className="w-12 h-12 text-[#00D4FF] mx-auto mb-4" />
+                <div className="text-3xl font-bold mb-2">6-12</div>
+                <div className="text-muted-foreground">Age Range</div>
+              </div>
+              <div>
+                <Target className="w-12 h-12 text-[#C7A763] mx-auto mb-4" />
+                <div className="text-3xl font-bold mb-2">50K+</div>
+                <div className="text-muted-foreground">Target Schools</div>
+              </div>
+              <div>
+                <Award className="w-12 h-12 text-[#00D4FF] mx-auto mb-4" />
+                <div className="text-3xl font-bold mb-2">2</div>
+                <div className="text-muted-foreground">Languages</div>
+              </div>
+            </div>
           </GlowCard>
         </div>
       </section>
 
-      {/* Technical Architecture */}
-      <section className="py-20 px-6 bg-gradient-to-b from-[#00D4FF]/5 to-transparent">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle
-            subtitle="ARQUITETURA"
-            title="Flexível, Escalável e Pronta para o Futuro"
-            accent="cyan"
-            align="center"
-          />
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <GlowCard glowColor="cyan" className="p-6 h-full">
-                  <feature.icon className="w-8 h-8 text-[#00D4FF] mb-4" />
-                  <h4 className="text-white font-semibold mb-2">{feature.title}</h4>
-                  <p className="text-slate-400 text-sm">{feature.description}</p>
-                </GlowCard>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <p className="text-slate-300 text-lg mb-6">
-              Construindo uma experiência digital com ferramentas modernas
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              {['Vue.js', 'React', 'shadcn/ui', 'Framer Motion', '@base44/sdk'].map((tech, i) => (
-                <div key={i} className="px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-                  <span className="text-[#00D4FF] font-medium">{tech}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final Message */}
+      {/* CTA Section */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <GlowCard glowColor="mixed" className="p-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 font-montserrat">
-                A Advogada Garante a Existência. <br />
-                <span className="text-[#C7A763]">A Artista Garante o Legado.</span>
-              </h2>
-              
-              <p className="text-slate-300 leading-relaxed mb-8">
-                A profunda experiência de Grace Nogueira em navegar por complexos processos de 
-                licenciamento ambiental e em desenvolver estruturas ESG para corporações não é apenas 
-                um item em seu currículo. É a base que confere uma autoridade e um propósito inigualáveis 
-                ao 'Colour Me Brazil'. Ela não está apenas contando histórias sobre a Amazônia; 
-                ela passou a vida profissional inteira trabalhando para protegê-la.
-              </p>
-
-              <div className="inline-block p-8 rounded-2xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20">
-                <p className="text-2xl font-bold text-white mb-4">
-                  Você está cordialmente convidado.
-                </p>
-                <p className="text-xl text-[#C7A763] mb-2">A COLORIR.</p>
-                <p className="text-xl text-[#00D4FF] mb-2">A explorar.</p>
-                <p className="text-xl text-white">A sonhar.</p>
-                <p className="text-slate-400 mt-6 italic">
-                  Grace Nogueira, Criadora de 'Colour Me Brazil'
-                </p>
-              </div>
-            </GlowCard>
+            <h2 className="text-4xl font-bold mb-6">Ready for Launch</h2>
+            <p className="text-xl text-muted-foreground mb-8">
+              Colour Me Brazil is production-ready and set to launch in Q1 2026.
+              Join us in bringing Brazilian culture to children worldwide.
+            </p>
+            <Button 
+              size="lg" 
+              className="bg-[#C7A763] hover:bg-[#A88B4A] text-background gap-2"
+              onClick={() => window.open('https://colourmebrazil.com', '_blank')}
+            >
+              Learn More
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </motion.div>
         </div>
       </section>
-
-      {/* Video Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <SectionTitle
-            subtitle="APRESENTAÇÃO EM VÍDEO"
-            title="Assista à História do Projeto"
-            accent="cyan"
-            align="center"
-          />
-
-          <div className="mt-12">
-            <GlowCard glowColor="cyan" className="p-2">
-              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                <iframe
-                  src="https://www.youtube.com/embed/Q1NYAokK29I"
-                  className="absolute top-0 left-0 w-full h-full rounded-lg"
-                  title="Colour Me Brazil Video"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </GlowCard>
-          </div>
-        </div>
-      </section>
-
-      {/* Embedded PDF Viewer */}
-      <section className="py-20 px-6 bg-gradient-to-b from-[#C7A763]/5 to-transparent">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle
-            subtitle="APRESENTAÇÃO COMPLETA"
-            title="Conheça Mais Sobre o Projeto"
-            accent="gold"
-            align="center"
-          />
-
-          <div className="mt-12">
-            <GlowCard glowColor="gold" className="p-2">
-              <iframe
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/694bb237ea2a9785983b9883/254b03dc8_Corporate_Expertise_Creative_Legacy.pdf"
-                className="w-full h-[600px] rounded-lg"
-                title="Colour Me Brazil Presentation"
-              />
-            </GlowCard>
-          </div>
-        </div>
-      </section>
-    </main>
+    </div>
   );
 }
