@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
-import { Upload, FileText, Download, Trash2, Eye, Tag, Filter } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Upload, FileText, Download, Trash2, Eye, Tag, Filter, Sparkles } from 'lucide-react';
+import DocumentAIAnalysis from '@/components/ventures/DocumentAIAnalysis';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -49,6 +50,7 @@ export default function VentureDocuments({ ventureId, ventureName }) {
     tags: '',
     file: null
   });
+  const [analyzingDoc, setAnalyzingDoc] = useState(null);
 
   React.useEffect(() => {
     const getUser = async () => {
@@ -322,6 +324,13 @@ export default function VentureDocuments({ ventureId, ventureName }) {
                         Download
                       </a>
                       <button
+                        onClick={() => setAnalyzingDoc(doc)}
+                        className="text-xs text-[#C7A763] hover:text-[#D4B474] flex items-center gap-1"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        Analyze
+                      </button>
+                      <button
                         onClick={() => deleteDocMutation.mutate(doc.id)}
                         className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1"
                       >
@@ -343,6 +352,17 @@ export default function VentureDocuments({ ventureId, ventureName }) {
           <p className="text-slate-400">Nenhum documento encontrado</p>
         </div>
       )}
+
+      {/* AI Analysis Modal */}
+      <AnimatePresence>
+        {analyzingDoc && (
+          <DocumentAIAnalysis
+            document={analyzingDoc}
+            ventureId={ventureId}
+            onClose={() => setAnalyzingDoc(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
