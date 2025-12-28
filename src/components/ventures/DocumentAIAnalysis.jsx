@@ -167,8 +167,12 @@ Provide deep, actionable insights based on the document content.`;
       // Create selected KPIs
       if (selectedInsights.kpis.length > 0) {
         const kpis = selectedInsights.kpis.map(kpi => ({
-          ...kpi,
           venture_id: ventureId,
+          kpi_name: kpi.kpi_name,
+          kpi_type: kpi.kpi_type,
+          current_value: kpi.current_value,
+          target_value: kpi.target_value,
+          unit: kpi.unit,
           measurement_date: new Date().toISOString().split('T')[0],
           notes: `Auto-generated from document analysis: ${document.title}. ${kpi.rationale}`
         }));
@@ -178,12 +182,13 @@ Provide deep, actionable insights based on the document content.`;
       // Create selected tasks
       if (selectedInsights.tasks.length > 0) {
         const tasks = selectedInsights.tasks.map(task => ({
-          ...task,
           venture_id: ventureId,
-          assigned_to: user.email,
+          title: task.title,
+          description: `${task.description}\n\nRationale: ${task.rationale}\n\nSource: AI analysis of "${document.title}"`,
           status: 'todo',
-          due_date: task.estimated_due_date,
-          description: `${task.description}\n\nRationale: ${task.rationale}\n\nSource: AI analysis of "${document.title}"`
+          priority: task.priority,
+          assigned_to: user.email,
+          due_date: task.estimated_due_date
         }));
         promises.push(base44.entities.VentureTask.bulkCreate(tasks));
       }
