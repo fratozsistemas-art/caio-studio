@@ -8,10 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award, Sparkles, Loader2, Plus, X } from "lucide-react";
+import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award, Sparkles, Loader2, Plus, X, MessageSquare, Target } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import FeedbackCollection from "@/components/talent/FeedbackCollection";
+import GoalTracking from "@/components/talent/GoalTracking";
 
 export default function TalentDetailDialog({ talent, isOpen, onClose }) {
   const [editedTalent, setEditedTalent] = useState(talent);
@@ -516,6 +519,30 @@ Retorne um objeto JSON com:
                 <p className="text-sm">Nenhuma venture alocada</p>
               </div>
             )}
+          </div>
+
+          {/* Performance Tracking */}
+          <div className="border-t border-white/10 pt-6">
+            <Tabs defaultValue="feedback">
+              <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger value="feedback">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Feedbacks
+                </TabsTrigger>
+                <TabsTrigger value="goals">
+                  <Target className="w-4 h-4 mr-2" />
+                  Metas
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="feedback" className="mt-4">
+                <FeedbackCollection talentId={talent.id} talentName={talent.full_name} />
+              </TabsContent>
+
+              <TabsContent value="goals" className="mt-4">
+                <GoalTracking talentId={talent.id} talentName={talent.full_name} />
+              </TabsContent>
+            </Tabs>
           </div>
 
           {/* Management Section */}

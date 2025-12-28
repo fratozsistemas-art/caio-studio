@@ -19,6 +19,8 @@ import DocumentKnowledgeExtractor from "@/components/knowledge/DocumentKnowledge
 import RoleSkillManager from "@/components/admin/RoleSkillManager";
 import CodeAuditDashboard from "@/components/admin/CodeAuditDashboard";
 import TalentSkillMatrix from "@/components/talent/TalentSkillMatrix";
+import PerformanceTemplateManager from "@/components/talent/PerformanceTemplateManager";
+import TeamPerformanceInsights from "@/components/talent/TeamPerformanceInsights";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -186,6 +188,10 @@ export default function AdminHub() {
               <Award className="w-4 h-4 mr-2" />
               Skill Matrix
             </TabsTrigger>
+            <TabsTrigger value="performance">
+              <Settings className="w-4 h-4 mr-2" />
+              Performance
+            </TabsTrigger>
             <TabsTrigger value="permissions">
               <Shield className="w-4 h-4 mr-2" />
               Permissões
@@ -249,6 +255,31 @@ export default function AdminHub() {
               align="left"
             />
             <TalentSkillMatrix />
+          </TabsContent>
+
+          {/* Performance Tab */}
+          <TabsContent value="performance" className="space-y-6">
+            <SectionTitle
+              title="Performance e Desenvolvimento"
+              subtitle="Gestão de Avaliações, Feedback e Insights"
+              accent="gold"
+              align="left"
+            />
+            
+            <Tabs defaultValue="templates" className="space-y-4">
+              <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger value="templates">Templates</TabsTrigger>
+                <TabsTrigger value="insights">Insights IA</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="templates">
+                <PerformanceTemplateManager />
+              </TabsContent>
+
+              <TabsContent value="insights">
+                <TeamPerformanceInsights />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           {/* Permissions Tab */}
