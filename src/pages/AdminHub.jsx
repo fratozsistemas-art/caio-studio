@@ -223,6 +223,18 @@ export default function AdminHub() {
               <Settings className="w-4 h-4 mr-2" />
               Conteúdo
             </TabsTrigger>
+            <TabsTrigger value="finances">
+              <Settings className="w-4 h-4 mr-2" />
+              Finanças
+            </TabsTrigger>
+            <TabsTrigger value="projects">
+              <Settings className="w-4 h-4 mr-2" />
+              Projetos
+            </TabsTrigger>
+            <TabsTrigger value="reports">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Relatórios
+            </TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab */}
@@ -405,6 +417,42 @@ export default function AdminHub() {
               className="mt-12"
             />
             <DocumentKnowledgeExtractor ventureId={null} />
+          </TabsContent>
+
+          {/* Finances Tab */}
+          <TabsContent value="finances" className="space-y-6">
+            <SectionTitle
+              title="Gestão Financeira"
+              subtitle="Orçamentos e Despesas"
+              accent="gold"
+              align="left"
+            />
+            <div className="grid lg:grid-cols-2 gap-6">
+              <BudgetOverview />
+              <ExpenseTracker />
+            </div>
+          </TabsContent>
+
+          {/* Projects Tab */}
+          <TabsContent value="projects" className="space-y-6">
+            <SectionTitle
+              title="Gestão de Projetos"
+              subtitle="Timeline e Milestones"
+              accent="cyan"
+              align="left"
+            />
+            <ProjectTimeline />
+          </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports" className="space-y-6">
+            <SectionTitle
+              title="Relatórios Avançados"
+              subtitle="Visualizações e Analytics"
+              accent="gold"
+              align="left"
+            />
+            <AdvancedReports />
           </TabsContent>
         </Tabs>
 
