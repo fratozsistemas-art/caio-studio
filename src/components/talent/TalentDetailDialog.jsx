@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award, Sparkles, Loader2 } from "lucide-react";
+import { Star, MapPin, Briefcase, Mail, Phone, Linkedin, FileText, Github, Globe, Calendar, Award, Sparkles, Loader2, Plus, X } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -16,7 +17,41 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
   const [editedTalent, setEditedTalent] = useState(talent);
   const [cvSummary, setCvSummary] = useState(null);
   const [generatingSummary, setGeneratingSummary] = useState(false);
+  const [showVentureDialog, setShowVentureDialog] = useState(false);
+  const [selectedVentureId, setSelectedVentureId] = useState('');
+  const [ventureAllocationData, setVentureAllocationData] = useState({
+    role: '',
+    allocation_percentage: 50,
+    responsibilities: '',
+    is_lead: false
+  });
   const queryClient = useQueryClient();
+
+  // Fetch ventures allocated to this talent
+  const { data: talentVentures } = useQuery({
+    queryKey: ['talent-ventures', talent.id],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureTalent',
+        operation: 'filter',
+        query: { talent_id: talent.id }
+      });
+      return res.data?.data || [];
+    },
+    enabled: !!talent.id
+  });
+
+  // Fetch all ventures for selection
+  const { data: allVentures } = useQuery({
+    queryKey: ['all-ventures'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'Venture',
+        operation: 'list'
+      });
+      return res.data?.data || [];
+    }
+  });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }) => {
@@ -34,6 +69,42 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
     }
   });
 
+  const addVentureMutation = useMutation({
+    mutationFn: async (data) => {
+      return await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureTalent',
+        operation: 'create',
+        data
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['talent-ventures', talent.id]);
+      setShowVentureDialog(false);
+      setSelectedVentureId('');
+      setVentureAllocationData({
+        role: '',
+        allocation_percentage: 50,
+        responsibilities: '',
+        is_lead: false
+      });
+      toast.success('Venture adicionada ao talento!');
+    }
+  });
+
+  const removeVentureMutation = useMutation({
+    mutationFn: async (ventureAllocationId) => {
+      return await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureTalent',
+        operation: 'delete',
+        id: ventureAllocationId
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['talent-ventures', talent.id]);
+      toast.success('Venture removida do talento');
+    }
+  });
+
   const handleSave = () => {
     updateMutation.mutate({
       id: talent.id,
@@ -45,6 +116,31 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
       }
     });
   };
+
+  const handleAddVenture = () => {
+    if (!selectedVentureId || !ventureAllocationData.role) {
+      toast.error('Selecione uma venture e defina o papel');
+      return;
+    }
+
+    const responsibilities = ventureAllocationData.responsibilities
+      .split(',')
+      .map(r => r.trim())
+      .filter(Boolean);
+
+    addVentureMutation.mutate({
+      venture_id: selectedVentureId,
+      talent_id: talent.id,
+      role: ventureAllocationData.role,
+      allocation_percentage: ventureAllocationData.allocation_percentage,
+      responsibilities,
+      is_lead: ventureAllocationData.is_lead,
+      status: 'active'
+    });
+  };
+
+  const allocatedVentureIds = talentVentures?.map(tv => tv.venture_id) || [];
+  const availableVentures = allVentures?.filter(v => !allocatedVentureIds.includes(v.id)) || [];
 
   const handleGenerateSummary = async () => {
     if (!talent.cv_file_url) {
@@ -361,6 +457,53 @@ Retorne um objeto JSON com:
             </div>
           )}
 
+          {/* Ventures Allocation */}
+          <div className="border-t border-white/10 pt-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-white font-semibold">Ventures Alocadas</h4>
+              <Button
+                onClick={() => setShowVentureDialog(true)}
+                size="sm"
+                className="bg-[#00D4FF] hover:bg-[#00B8E6] text-[#06101F]"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Venture
+              </Button>
+            </div>
+
+            {talentVentures && talentVentures.length > 0 ? (
+              <div className="space-y-2">
+                {talentVentures.map((tv) => {
+                  const venture = allVentures?.find(v => v.id === tv.venture_id);
+                  return (
+                    <div key={tv.id} className="bg-white/5 rounded-lg p-3 flex items-start justify-between group">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-medium">{venture?.name || 'Venture'}</span>
+                          {tv.is_lead && (
+                            <Badge className="bg-[#C7A763]/20 text-[#C7A763] text-xs">Lead</Badge>
+                          )}
+                        </div>
+                        <div className="text-sm text-slate-400 mt-1">{tv.role}</div>
+                        <div className="text-xs text-slate-500 mt-1">Alocação: {tv.allocation_percentage}%</div>
+                      </div>
+                      <button
+                        onClick={() => removeVentureMutation.mutate(tv.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded-lg text-red-400"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-slate-400 bg-white/5 rounded-lg">
+                <p className="text-sm">Nenhuma venture alocada</p>
+              </div>
+            )}
+          </div>
+
           {/* Management Section */}
           <div className="border-t border-white/10 pt-6 space-y-4">
             <h4 className="text-white font-semibold">Gestão de Candidatura</h4>
@@ -438,6 +581,88 @@ Retorne um objeto JSON com:
           </div>
         </div>
       </DialogContent>
+
+      {/* Add Venture Dialog */}
+      <Dialog open={showVentureDialog} onOpenChange={setShowVentureDialog}>
+        <DialogContent className="bg-[#0a1628] border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white">Adicionar Venture ao Talento</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <Label className="text-white">Selecionar Venture</Label>
+              <Select value={selectedVentureId} onValueChange={setSelectedVentureId}>
+                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Escolha uma venture..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableVentures.map(venture => (
+                    <SelectItem key={venture.id} value={venture.id}>
+                      {venture.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-white">Papel na Venture *</Label>
+              <Input
+                value={ventureAllocationData.role}
+                onChange={(e) => setVentureAllocationData({...ventureAllocationData, role: e.target.value})}
+                placeholder="ex: Tech Lead, Product Manager..."
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+
+            <div>
+              <Label className="text-white">Alocação (%)</Label>
+              <Input
+                type="number"
+                min="0"
+                max="100"
+                value={ventureAllocationData.allocation_percentage}
+                onChange={(e) => setVentureAllocationData({...ventureAllocationData, allocation_percentage: parseInt(e.target.value) || 0})}
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+
+            <div>
+              <Label className="text-white">Responsabilidades (separadas por vírgula)</Label>
+              <Input
+                value={ventureAllocationData.responsibilities}
+                onChange={(e) => setVentureAllocationData({...ventureAllocationData, responsibilities: e.target.value})}
+                placeholder="ex: Desenvolvimento backend, Code reviews..."
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={ventureAllocationData.is_lead}
+                onChange={(e) => setVentureAllocationData({...ventureAllocationData, is_lead: e.target.checked})}
+                className="rounded"
+              />
+              <Label className="text-white">É líder/responsável principal?</Label>
+            </div>
+
+            <div className="flex gap-2 justify-end pt-4">
+              <Button variant="outline" onClick={() => setShowVentureDialog(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleAddVenture}
+                disabled={addVentureMutation.isPending}
+                className="bg-[#00D4FF] hover:bg-[#00B8E6] text-[#06101F]"
+              >
+                {addVentureMutation.isPending ? 'Adicionando...' : 'Adicionar'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

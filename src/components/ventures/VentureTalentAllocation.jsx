@@ -1,10 +1,101 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Star, Briefcase } from 'lucide-react';
+import { Users, Star, Briefcase, Plus, X } from 'lucide-react';
 import GlowCard from "@/components/ui/GlowCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 export default function VentureTalentAllocation({ ventureId, talents }) {
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [selectedTalentId, setSelectedTalentId] = useState('');
+  const [allocationData, setAllocationData] = useState({
+    role: '',
+    allocation_percentage: 50,
+    responsibilities: '',
+    is_lead: false
+  });
+  const queryClient = useQueryClient();
+
+  // Fetch all talents for selection
+  const { data: allTalents } = useQuery({
+    queryKey: ['all-talents'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'Talent',
+        operation: 'list'
+      });
+      return res.data?.data || [];
+    }
+  });
+
+  const addTalentMutation = useMutation({
+    mutationFn: async (data) => {
+      return await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureTalent',
+        operation: 'create',
+        data
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ventureTalents', ventureId]);
+      setShowAddDialog(false);
+      setSelectedTalentId('');
+      setAllocationData({
+        role: '',
+        allocation_percentage: 50,
+        responsibilities: '',
+        is_lead: false
+      });
+      toast.success('Talento adicionado à venture!');
+    }
+  });
+
+  const removeTalentMutation = useMutation({
+    mutationFn: async (talentAllocationId) => {
+      return await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'VentureTalent',
+        operation: 'delete',
+        id: talentAllocationId
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ventureTalents', ventureId]);
+      toast.success('Talento removido da venture');
+    }
+  });
+
+  const handleAddTalent = () => {
+    if (!selectedTalentId || !allocationData.role) {
+      toast.error('Selecione um talento e defina o papel');
+      return;
+    }
+
+    const responsibilities = allocationData.responsibilities
+      .split(',')
+      .map(r => r.trim())
+      .filter(Boolean);
+
+    addTalentMutation.mutate({
+      venture_id: ventureId,
+      talent_id: selectedTalentId,
+      role: allocationData.role,
+      allocation_percentage: allocationData.allocation_percentage,
+      responsibilities,
+      is_lead: allocationData.is_lead,
+      status: 'active'
+    });
+  };
+
+  // Filter out already allocated talents
+  const allocatedTalentIds = talents.map(t => t.talent_id);
+  const availableTalents = allTalents?.filter(t => !allocatedTalentIds.includes(t.id)) || [];
   const totalAllocation = talents.reduce((sum, t) => sum + (t.allocation || 0), 0);
   const avgPerformance = talents.length > 0 
     ? talents.reduce((sum, t) => sum + (t.performance_score || 0), 0) / talents.length 
@@ -16,11 +107,22 @@ export default function VentureTalentAllocation({ ventureId, talents }) {
   }, {});
 
   return (
-    <GlowCard glowColor="cyan" className="p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Users className="w-5 h-5 text-[#00D4FF]" />
-        <h3 className="text-xl font-bold text-white">Alocação de Talentos</h3>
-      </div>
+    <>
+      <GlowCard glowColor="cyan" className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Users className="w-5 h-5 text-[#00D4FF]" />
+            <h3 className="text-xl font-bold text-white">Alocação de Talentos</h3>
+          </div>
+          <Button
+            onClick={() => setShowAddDialog(true)}
+            size="sm"
+            className="bg-[#00D4FF] hover:bg-[#00B8E6] text-[#06101F]"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Adicionar Talento
+          </Button>
+        </div>
 
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
@@ -59,7 +161,7 @@ export default function VentureTalentAllocation({ ventureId, talents }) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+            className="p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -100,6 +202,12 @@ export default function VentureTalentAllocation({ ventureId, talents }) {
                   </div>
                 )}
               </div>
+              <button
+                onClick={() => removeTalentMutation.mutate(talent.id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded-lg text-red-400"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </motion.div>
         ))}
@@ -112,5 +220,88 @@ export default function VentureTalentAllocation({ ventureId, talents }) {
         </div>
       )}
     </GlowCard>
+
+    {/* Add Talent Dialog */}
+    <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+      <DialogContent className="bg-[#0a1628] border-white/10">
+        <DialogHeader>
+          <DialogTitle className="text-white">Adicionar Talento à Venture</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div>
+            <Label className="text-white">Selecionar Talento</Label>
+            <Select value={selectedTalentId} onValueChange={setSelectedTalentId}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectValue placeholder="Escolha um talento..." />
+              </SelectTrigger>
+              <SelectContent>
+                {availableTalents.map(talent => (
+                  <SelectItem key={talent.id} value={talent.id}>
+                    {talent.full_name} - {talent.current_position || 'N/A'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label className="text-white">Papel na Venture *</Label>
+            <Input
+              value={allocationData.role}
+              onChange={(e) => setAllocationData({...allocationData, role: e.target.value})}
+              placeholder="ex: Tech Lead, Product Manager..."
+              className="bg-white/5 border-white/10 text-white"
+            />
+          </div>
+
+          <div>
+            <Label className="text-white">Alocação (%)</Label>
+            <Input
+              type="number"
+              min="0"
+              max="100"
+              value={allocationData.allocation_percentage}
+              onChange={(e) => setAllocationData({...allocationData, allocation_percentage: parseInt(e.target.value) || 0})}
+              className="bg-white/5 border-white/10 text-white"
+            />
+          </div>
+
+          <div>
+            <Label className="text-white">Responsabilidades (separadas por vírgula)</Label>
+            <Input
+              value={allocationData.responsibilities}
+              onChange={(e) => setAllocationData({...allocationData, responsibilities: e.target.value})}
+              placeholder="ex: Desenvolvimento backend, Code reviews..."
+              className="bg-white/5 border-white/10 text-white"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={allocationData.is_lead}
+              onChange={(e) => setAllocationData({...allocationData, is_lead: e.target.checked})}
+              className="rounded"
+            />
+            <Label className="text-white">É líder/responsável principal?</Label>
+          </div>
+
+          <div className="flex gap-2 justify-end pt-4">
+            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleAddTalent}
+              disabled={addTalentMutation.isPending}
+              className="bg-[#00D4FF] hover:bg-[#00B8E6] text-[#06101F]"
+            >
+              {addTalentMutation.isPending ? 'Adicionando...' : 'Adicionar'}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  </>
   );
 }
