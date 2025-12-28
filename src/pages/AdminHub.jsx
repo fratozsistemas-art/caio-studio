@@ -16,6 +16,7 @@ import YouTubeSyncManager from "@/components/admin/YouTubeSyncManager";
 import UserManagement from "@/components/admin/UserManagement";
 import TalentManagement from "@/components/talent/TalentManagement";
 import DocumentKnowledgeExtractor from "@/components/knowledge/DocumentKnowledgeExtractor";
+import RoleSkillManager from "@/components/admin/RoleSkillManager";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -191,6 +192,10 @@ export default function AdminHub() {
               <Settings className="w-4 h-4 mr-2" />
               Insights IA
             </TabsTrigger>
+            <TabsTrigger value="roles-skills">
+              <Settings className="w-4 h-4 mr-2" />
+              Cargos & Skills
+            </TabsTrigger>
             <TabsTrigger value="content">
               <Settings className="w-4 h-4 mr-2" />
               Conteúdo
@@ -264,6 +269,17 @@ export default function AdminHub() {
               align="left"
             />
             <CollaborationChannels />
+          </TabsContent>
+
+          {/* Roles & Skills Tab */}
+          <TabsContent value="roles-skills" className="space-y-6">
+            <SectionTitle
+              title="Cargos e Habilidades"
+              subtitle="Padronização do Sistema"
+              accent="gold"
+              align="left"
+            />
+            <RoleSkillManager />
           </TabsContent>
 
           {/* AI Insights Tab */}

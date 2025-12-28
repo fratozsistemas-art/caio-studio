@@ -27,6 +27,20 @@ export default function TalentDetailDialog({ talent, isOpen, onClose }) {
   });
   const queryClient = useQueryClient();
 
+  // Fetch available roles
+  const { data: roles = [] } = useQuery({
+    queryKey: ['roles'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'Role',
+        operation: 'filter',
+        query: { is_active: true },
+        sort: 'name'
+      });
+      return res.data?.data || [];
+    }
+  });
+
   // Fetch ventures allocated to this talent
   const { data: talentVentures } = useQuery({
     queryKey: ['talent-ventures', talent.id],
@@ -608,12 +622,21 @@ Retorne um objeto JSON com:
 
             <div>
               <Label className="text-white">Papel na Venture *</Label>
-              <Input
-                value={ventureAllocationData.role}
-                onChange={(e) => setVentureAllocationData({...ventureAllocationData, role: e.target.value})}
-                placeholder="ex: Tech Lead, Product Manager..."
-                className="bg-white/5 border-white/10 text-white"
-              />
+              <Select 
+                value={ventureAllocationData.role} 
+                onValueChange={(v) => setVentureAllocationData({...ventureAllocationData, role: v})}
+              >
+                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Selecione um cargo..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {roles.map(role => (
+                    <SelectItem key={role.id} value={role.name}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>

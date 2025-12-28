@@ -23,6 +23,20 @@ export default function VentureTalentAllocation({ ventureId, talents }) {
   });
   const queryClient = useQueryClient();
 
+  // Fetch available roles
+  const { data: roles = [] } = useQuery({
+    queryKey: ['roles'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('secureEntityQuery', {
+        entity_name: 'Role',
+        operation: 'filter',
+        query: { is_active: true },
+        sort: 'name'
+      });
+      return res.data?.data || [];
+    }
+  });
+
   // Fetch all talents for selection
   const { data: allTalents } = useQuery({
     queryKey: ['all-talents'],
@@ -247,12 +261,21 @@ export default function VentureTalentAllocation({ ventureId, talents }) {
 
           <div>
             <Label className="text-white">Papel na Venture *</Label>
-            <Input
-              value={allocationData.role}
-              onChange={(e) => setAllocationData({...allocationData, role: e.target.value})}
-              placeholder="ex: Tech Lead, Product Manager..."
-              className="bg-white/5 border-white/10 text-white"
-            />
+            <Select 
+              value={allocationData.role} 
+              onValueChange={(v) => setAllocationData({...allocationData, role: v})}
+            >
+              <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectValue placeholder="Selecione um cargo..." />
+              </SelectTrigger>
+              <SelectContent>
+                {roles.map(role => (
+                  <SelectItem key={role.id} value={role.name}>
+                    {role.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
