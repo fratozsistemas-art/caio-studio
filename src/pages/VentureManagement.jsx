@@ -41,7 +41,7 @@ export default function VentureManagement() {
       try {
         const isAuth = await base44.auth.isAuthenticated();
         if (!isAuth) {
-          window.location.href = createPageUrl('Login') + '?next=' + encodeURIComponent(window.location.pathname);
+          base44.auth.redirectToLogin(window.location.pathname);
           return;
         }
         const currentUser = await base44.auth.me();
@@ -51,7 +51,7 @@ export default function VentureManagement() {
         }
         setUser(currentUser);
       } catch (error) {
-        window.location.href = createPageUrl('Login') + '?next=' + encodeURIComponent(window.location.pathname);
+        base44.auth.redirectToLogin(window.location.pathname);
       } finally {
         setLoading(false);
       }

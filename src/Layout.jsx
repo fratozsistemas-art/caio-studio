@@ -248,7 +248,7 @@ function LayoutContent({ children, currentPageName }) {
                     </div>
                   ) : (
                     <Button
-                      onClick={() => base44.auth.redirectToLogin()}
+                      onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
                       size="sm"
                       className="bg-[#C7A763] hover:bg-[#A88B4A] text-background"
                     >
@@ -315,7 +315,7 @@ function LayoutContent({ children, currentPageName }) {
                   </button>
 
                   <Button
-                  onClick={() => base44.auth.redirectToLogin()}
+                  onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
                   className="w-full bg-[#C7A763] hover:bg-[#A88B4A] text-background font-semibold rounded-lg shadow-lg mt-4"
                   >
                   {t.nav.login}

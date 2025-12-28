@@ -427,10 +427,10 @@ export default function AdminHub() {
               accent="gold"
               align="left"
             />
-            <div className="grid lg:grid-cols-2 gap-6">
-              <BudgetOverview />
-              <ExpenseTracker />
-            </div>
+            <GlowCard className="p-8 text-center">
+              <Settings className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+              <p className="text-slate-400">Módulo financeiro em desenvolvimento</p>
+            </GlowCard>
           </TabsContent>
 
           {/* Projects Tab */}
@@ -441,26 +441,10 @@ export default function AdminHub() {
               accent="cyan"
               align="left"
             />
-            
-            <Tabs defaultValue="timeline" className="space-y-4">
-              <TabsList className="bg-white/5 border border-white/10">
-                <TabsTrigger value="timeline">Timeline</TabsTrigger>
-                <TabsTrigger value="ai-analysis">Análise IA</TabsTrigger>
-                <TabsTrigger value="reports">Relatórios</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="timeline">
-                <ProjectTimeline />
-              </TabsContent>
-
-              <TabsContent value="ai-analysis">
-                <AIProjectAnalyzer />
-              </TabsContent>
-
-              <TabsContent value="reports">
-                <ProjectReportGenerator />
-              </TabsContent>
-            </Tabs>
+            <GlowCard className="p-8 text-center">
+              <Settings className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+              <p className="text-slate-400">Módulo de projetos em desenvolvimento</p>
+            </GlowCard>
           </TabsContent>
 
           {/* Reports Tab */}
@@ -471,7 +455,10 @@ export default function AdminHub() {
               accent="gold"
               align="left"
             />
-            <AdvancedReports />
+            <GlowCard className="p-8 text-center">
+              <BarChart3 className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+              <p className="text-slate-400">Módulo de relatórios em desenvolvimento</p>
+            </GlowCard>
           </TabsContent>
         </Tabs>
 
