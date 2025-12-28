@@ -11,6 +11,8 @@ import GlowCard from "@/components/ui/GlowCard";
 import VentureMetricsOverview from "@/components/ventures/VentureMetricsOverview";
 import VentureOKRManager from "@/components/ventures/VentureOKRManager";
 import VentureTalentAllocation from "@/components/ventures/VentureTalentAllocation";
+import VentureProjectionsView from "@/components/ventures/VentureProjectionsView";
+import SectionTitle from "@/components/ui/SectionTitle";
 import RelatedVentures from "@/components/portfolio/RelatedVentures";
 import VentureChat from "@/components/collaboration/VentureChat";
 import VentureTaskBoard from "@/components/collaboration/VentureTaskBoard";
@@ -303,6 +305,20 @@ export default function VentureDetail() {
           financials={financials || []}
           kpis={kpis || []}
         />}
+
+        {/* Projections - Admin Only */}
+        {isAdmin && (
+          <div className="mt-8">
+            <SectionTitle
+              subtitle="PROJEÇÕES"
+              title="Cenários e Projeções"
+              accent="cyan"
+              align="left"
+              className="mb-6"
+            />
+            <VentureProjectionsView ventureId={ventureId} />
+          </div>
+        )}
 
         {/* Talent Allocation - Admin Only */}
         {isAdmin && <VentureTalentAllocation

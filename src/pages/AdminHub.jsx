@@ -15,6 +15,7 @@ import CollaborationChannels from "@/components/collaboration/CollaborationChann
 import YouTubeSyncManager from "@/components/admin/YouTubeSyncManager";
 import UserManagement from "@/components/admin/UserManagement";
 import TalentManagement from "@/components/talent/TalentManagement";
+import DocumentKnowledgeExtractor from "@/components/knowledge/DocumentKnowledgeExtractor";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -304,6 +305,15 @@ export default function AdminHub() {
                 </ul>
               </GlowCard>
             </div>
+
+            <SectionTitle
+              title="Extração de Conhecimento com IA"
+              subtitle="Automatize a Importação de Dados"
+              accent="cyan"
+              align="left"
+              className="mt-12"
+            />
+            <DocumentKnowledgeExtractor ventureId={null} />
           </TabsContent>
         </Tabs>
       </div>
