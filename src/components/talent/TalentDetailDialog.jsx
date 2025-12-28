@@ -17,6 +17,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FeedbackCollection from "@/components/talent/FeedbackCollection";
 import GoalTracking from "@/components/talent/GoalTracking";
 import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
+import Feedback360Manager from "@/components/talent/Feedback360Manager";
+import Feedback360Insights from "@/components/talent/Feedback360Insights";
+import QuizIntegration from "@/components/talent/QuizIntegration";
 
 export default function TalentDetailDialog({ talent, isOpen, onClose }) {
   const [editedTalent, setEditedTalent] = useState(talent);
