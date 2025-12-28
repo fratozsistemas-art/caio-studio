@@ -23,6 +23,7 @@ import TalentSkillMatrix from "@/components/talent/TalentSkillMatrix";
 import PerformanceTemplateManager from "@/components/talent/PerformanceTemplateManager";
 import TeamPerformanceInsights from "@/components/talent/TeamPerformanceInsights";
 import FileManager from "@/components/admin/FileManager";
+import LinkedInProfile from "@/components/profile/LinkedInProfile";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -113,15 +114,18 @@ export default function AdminHub() {
               <p className="text-slate-400 text-sm">Dashboard, Permissões & Colaboração</p>
             </div>
           </div>
-          <GlowCard glowColor="gold" className="px-4 py-3">
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-[#C7A763]" />
-              <div>
-                <div className="text-xs text-slate-400">Admin</div>
-                <div className="text-sm font-semibold text-white">{user?.full_name}</div>
+          <div className="flex gap-4">
+            <LinkedInProfile />
+            <GlowCard glowColor="gold" className="px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-[#C7A763]" />
+                <div>
+                  <div className="text-xs text-slate-400">Admin</div>
+                  <div className="text-sm font-semibold text-white">{user?.full_name}</div>
+                </div>
               </div>
-            </div>
-          </GlowCard>
+            </GlowCard>
+          </div>
         </div>
 
         {/* Stats Overview */}
