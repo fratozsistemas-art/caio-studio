@@ -437,11 +437,30 @@ export default function AdminHub() {
           <TabsContent value="projects" className="space-y-6">
             <SectionTitle
               title="Gestão de Projetos"
-              subtitle="Timeline e Milestones"
+              subtitle="Timeline, Análise Preditiva e Relatórios"
               accent="cyan"
               align="left"
             />
-            <ProjectTimeline />
+            
+            <Tabs defaultValue="timeline" className="space-y-4">
+              <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger value="timeline">Timeline</TabsTrigger>
+                <TabsTrigger value="ai-analysis">Análise IA</TabsTrigger>
+                <TabsTrigger value="reports">Relatórios</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="timeline">
+                <ProjectTimeline />
+              </TabsContent>
+
+              <TabsContent value="ai-analysis">
+                <AIProjectAnalyzer />
+              </TabsContent>
+
+              <TabsContent value="reports">
+                <ProjectReportGenerator />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           {/* Reports Tab */}
