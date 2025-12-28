@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award } from 'lucide-react';
+import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award, FileText } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionTitle from "@/components/ui/SectionTitle";
 import GlowCard from "@/components/ui/GlowCard";
@@ -212,6 +212,10 @@ export default function AdminHub() {
             <TabsTrigger value="code-audit">
               <Shield className="w-4 h-4 mr-2" />
               Code Auditor
+            </TabsTrigger>
+            <TabsTrigger value="arquivos">
+              <FileText className="w-4 h-4 mr-2" />
+              Arquivos
             </TabsTrigger>
             <TabsTrigger value="content">
               <Settings className="w-4 h-4 mr-2" />
