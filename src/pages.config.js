@@ -20,6 +20,7 @@ import ContentHub from './pages/ContentHub';
 import CommunicationHub from './pages/CommunicationHub';
 import FeedbackHub from './pages/FeedbackHub';
 import GamificationHub from './pages/GamificationHub';
+import MyFeedback from './pages/MyFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +47,7 @@ export const PAGES = {
     "CommunicationHub": CommunicationHub,
     "FeedbackHub": FeedbackHub,
     "GamificationHub": GamificationHub,
+    "MyFeedback": MyFeedback,
 }
 
 export const pagesConfig = {

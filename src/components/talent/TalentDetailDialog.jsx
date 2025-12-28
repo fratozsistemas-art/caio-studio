@@ -531,6 +531,14 @@ Retorne um objeto JSON com:
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Feedbacks
                 </TabsTrigger>
+                <TabsTrigger value="feedback360">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Feedback 360°
+                </TabsTrigger>
+                <TabsTrigger value="insights360">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Insights 360°
+                </TabsTrigger>
                 <TabsTrigger value="goals">
                   <Target className="w-4 h-4 mr-2" />
                   Metas
@@ -547,6 +555,14 @@ Retorne um objeto JSON com:
 
               <TabsContent value="feedback" className="mt-4">
                 <FeedbackCollection talentId={talent.id} talentName={talent.full_name} />
+              </TabsContent>
+
+              <TabsContent value="feedback360" className="mt-4">
+                <Feedback360Manager talentId={talent.id} talentName={talent.full_name} />
+              </TabsContent>
+
+              <TabsContent value="insights360" className="mt-4">
+                <Feedback360Insights talentId={talent.id} talentName={talent.full_name} />
               </TabsContent>
 
               <TabsContent value="goals" className="mt-4">
