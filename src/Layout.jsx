@@ -8,6 +8,7 @@ import { base44 } from "@/api/base44Client";
 import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
 import { useTranslation } from "@/components/translations";
 import Sidebar from "@/components/layout/Sidebar";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -227,11 +228,12 @@ function LayoutContent({ children, currentPageName }) {
                   >
                     <Globe className="w-3.5 h-3.5" />
                     <span className="text-xs font-medium">{language === 'pt-BR' ? 'PT' : 'EN'}</span>
-                  </button>
+                    </button>
 
-                  {/* User Menu */}
-                  {isAuthenticated ? (
-                    <div className="flex items-center gap-2 ml-2">
+                    {/* User Menu */}
+                    {isAuthenticated ? (
+                      <div className="flex items-center gap-2 ml-2">
+                        <NotificationBell />
                       <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-accent transition-all border border-border">
                         <User className="w-3.5 h-3.5" />
                         <span className="text-xs font-medium">{user?.full_name?.split(' ')[0]}</span>

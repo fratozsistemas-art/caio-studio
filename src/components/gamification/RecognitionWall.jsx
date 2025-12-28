@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion } from 'framer-motion';
+import { createPageUrl } from "@/utils";
 
 const RECOGNITION_TYPES = {
   excellent_work: { label: 'Trabalho Excelente', icon: '⭐', color: 'from-yellow-500 to-yellow-600' },
@@ -67,11 +68,25 @@ export default function RecognitionWall() {
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.functions.invoke('secureEntityQuery', {
+      const recognition = await base44.functions.invoke('secureEntityQuery', {
         entity_name: 'Recognition',
         operation: 'create',
         data
       });
+      
+      // Create notification for recipient
+      const talent = talents.find(t => t.id === data.to_talent_id);
+      if (talent?.email) {
+        await base44.functions.invoke('createNotification', {
+          user_email: talent.email,
+          type: 'recognition_received',
+          title: '🌟 Você recebeu um reconhecimento!',
+          message: `${data.from_name} reconheceu você por ${RECOGNITION_TYPES[data.recognition_type]?.label}`,
+          action_url: createPageUrl('GamificationHub')
+        });
+      }
+      
+      return recognition;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['public-recognitions']);
