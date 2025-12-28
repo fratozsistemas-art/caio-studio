@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Award, Search, Filter, Users, AlertCircle, TrendingUp, Target } from 'lucide-react';
+import { Award, Search, Filter, Users, AlertCircle, TrendingUp, Target, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -11,8 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GlowCard from '@/components/ui/GlowCard';
 import { Badge } from '@/components/ui/badge';
+import AISkillsAnalyzer from './AISkillsAnalyzer';
 
 const proficiencyLevels = {
   beginner: { label: 'Iniciante', color: 'bg-slate-500/20 text-slate-400', value: 1 },
@@ -156,9 +158,18 @@ export default function TalentSkillMatrix() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header & Stats */}
-      <div className="grid md:grid-cols-4 gap-4">
+    <Tabs defaultValue="matrix" className="space-y-6">
+      <TabsList className="bg-white/5 border border-white/10">
+        <TabsTrigger value="matrix">Matriz de Skills</TabsTrigger>
+        <TabsTrigger value="ai-analysis">
+          <Sparkles className="w-4 h-4 mr-2" />
+          Análise Preditiva IA
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="matrix" className="space-y-6">
+        {/* Header & Stats */}
+        <div className="grid md:grid-cols-4 gap-4">
         <GlowCard glowColor="cyan" className="p-5">
           <div className="flex items-center gap-3">
             <Award className="w-5 h-5 text-[#00D4FF]" />
@@ -399,6 +410,11 @@ export default function TalentSkillMatrix() {
           <p className="text-slate-400">Nenhuma skill encontrada com os filtros aplicados</p>
         </div>
       )}
-    </div>
+      </TabsContent>
+
+      <TabsContent value="ai-analysis">
+        <AISkillsAnalyzer />
+      </TabsContent>
+    </Tabs>
   );
 }
