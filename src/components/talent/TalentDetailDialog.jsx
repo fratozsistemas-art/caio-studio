@@ -476,6 +476,11 @@ Retorne um objeto JSON com:
             </div>
           )}
 
+          {/* Quiz Integration */}
+          <div className="border-t border-white/10 pt-6">
+            <QuizIntegration talent={talent} />
+          </div>
+
           {/* Ventures Allocation */}
           <div className="border-t border-white/10 pt-6 space-y-4">
             <div className="flex items-center justify-between">
