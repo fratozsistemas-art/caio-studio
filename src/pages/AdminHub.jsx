@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award, FileText } from 'lucide-react';
+import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award, FileText, HelpCircle } from 'lucide-react';
+import InteractiveTour from '@/components/onboarding/InteractiveTour';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionTitle from "@/components/ui/SectionTitle";
 import GlowCard from "@/components/ui/GlowCard";
@@ -29,6 +30,7 @@ export default function AdminHub() {
   const [loading, setLoading] = useState(true);
   const [portfolioData, setPortfolioData] = useState(null);
   const [dataLoading, setDataLoading] = useState(true);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -172,7 +174,7 @@ export default function AdminHub() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto">
+          <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto" data-tour="admin-hub">
             <TabsTrigger value="dashboard">
               <BarChart3 className="w-4 h-4 mr-2" />
               Dashboard
@@ -181,15 +183,15 @@ export default function AdminHub() {
               <Users className="w-4 h-4 mr-2" />
               Usuários
             </TabsTrigger>
-            <TabsTrigger value="talent">
+            <TabsTrigger value="talent" data-tour="talents">
               <Users className="w-4 h-4 mr-2" />
               Talentos
             </TabsTrigger>
-            <TabsTrigger value="skill-matrix">
+            <TabsTrigger value="skill-matrix" data-tour="skill-matrix">
               <Award className="w-4 h-4 mr-2" />
               Skill Matrix
             </TabsTrigger>
-            <TabsTrigger value="performance">
+            <TabsTrigger value="performance" data-tour="performance">
               <Settings className="w-4 h-4 mr-2" />
               Performance
             </TabsTrigger>
@@ -213,7 +215,7 @@ export default function AdminHub() {
               <Shield className="w-4 h-4 mr-2" />
               Code Auditor
             </TabsTrigger>
-            <TabsTrigger value="arquivos">
+            <TabsTrigger value="arquivos" data-tour="arquivos">
               <FileText className="w-4 h-4 mr-2" />
               Arquivos
             </TabsTrigger>
@@ -405,6 +407,9 @@ export default function AdminHub() {
             <DocumentKnowledgeExtractor ventureId={null} />
           </TabsContent>
         </Tabs>
+
+        {/* Interactive Tour */}
+        {showTour && <InteractiveTour onComplete={() => setShowTour(false)} />}
       </div>
     </main>
   );

@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FeedbackCollection from "@/components/talent/FeedbackCollection";
 import GoalTracking from "@/components/talent/GoalTracking";
+import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
 
 export default function TalentDetailDialog({ talent, isOpen, onClose }) {
   const [editedTalent, setEditedTalent] = useState(talent);
@@ -533,6 +534,10 @@ Retorne um objeto JSON com:
                   <Target className="w-4 h-4 mr-2" />
                   Metas
                 </TabsTrigger>
+                <TabsTrigger value="onboarding">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Onboarding
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="feedback" className="mt-4">
@@ -541,6 +546,10 @@ Retorne um objeto JSON com:
 
               <TabsContent value="goals" className="mt-4">
                 <GoalTracking talentId={talent.id} talentName={talent.full_name} />
+              </TabsContent>
+
+              <TabsContent value="onboarding" className="mt-4">
+                <OnboardingChecklist talentId={talent.id} />
               </TabsContent>
             </Tabs>
           </div>
