@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock } from 'lucide-react';
+import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionTitle from "@/components/ui/SectionTitle";
 import GlowCard from "@/components/ui/GlowCard";
@@ -18,6 +18,7 @@ import TalentManagement from "@/components/talent/TalentManagement";
 import DocumentKnowledgeExtractor from "@/components/knowledge/DocumentKnowledgeExtractor";
 import RoleSkillManager from "@/components/admin/RoleSkillManager";
 import CodeAuditDashboard from "@/components/admin/CodeAuditDashboard";
+import TalentSkillMatrix from "@/components/talent/TalentSkillMatrix";
 import { createPageUrl } from "@/utils";
 
 export default function AdminHub() {
@@ -181,6 +182,10 @@ export default function AdminHub() {
               <Users className="w-4 h-4 mr-2" />
               Talentos
             </TabsTrigger>
+            <TabsTrigger value="skill-matrix">
+              <Award className="w-4 h-4 mr-2" />
+              Skill Matrix
+            </TabsTrigger>
             <TabsTrigger value="permissions">
               <Shield className="w-4 h-4 mr-2" />
               Permissões
@@ -233,6 +238,17 @@ export default function AdminHub() {
           {/* Talent Tab */}
           <TabsContent value="talent" className="space-y-6">
             <TalentManagement />
+          </TabsContent>
+
+          {/* Skill Matrix Tab */}
+          <TabsContent value="skill-matrix" className="space-y-6">
+            <SectionTitle
+              title="Matriz de Habilidades"
+              subtitle="Visualização e Análise de Competências"
+              accent="cyan"
+              align="left"
+            />
+            <TalentSkillMatrix />
           </TabsContent>
 
           {/* Permissions Tab */}
