@@ -19,7 +19,10 @@ export default function VentureForm({ venture, onClose, onSuccess }) {
     category: venture?.category || '',
     tags: venture?.tags?.join(', ') || '',
     website: venture?.website || '',
-    team_size: venture?.team_size || 0
+    team_size: venture?.team_size || 0,
+    business_model: venture?.business_model || '',
+    target_audience: venture?.target_audience || '',
+    competitive_advantages: venture?.competitive_advantages?.join(', ') || ''
   });
 
   const handleSubmit = async (e) => {
@@ -30,6 +33,7 @@ export default function VentureForm({ venture, onClose, onSuccess }) {
       const data = {
         ...formData,
         tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
+        competitive_advantages: formData.competitive_advantages.split(',').map(t => t.trim()).filter(t => t),
         team_size: parseInt(formData.team_size) || 0
       };
 
@@ -172,6 +176,36 @@ export default function VentureForm({ venture, onClose, onSuccess }) {
                 value={formData.team_size}
                 onChange={(e) => setFormData({...formData, team_size: e.target.value})}
                 className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-slate-300 mb-2 block">Modelo de Negócio</label>
+              <Input
+                value={formData.business_model}
+                onChange={(e) => setFormData({...formData, business_model: e.target.value})}
+                className="bg-white/5 border-white/10 text-white"
+                placeholder="B2B, B2C, SaaS, etc."
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-slate-300 mb-2 block">Público-Alvo</label>
+              <Input
+                value={formData.target_audience}
+                onChange={(e) => setFormData({...formData, target_audience: e.target.value})}
+                className="bg-white/5 border-white/10 text-white"
+                placeholder="Descrição do público-alvo"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-slate-300 mb-2 block">Vantagens Competitivas (separadas por vírgula)</label>
+              <Textarea
+                value={formData.competitive_advantages}
+                onChange={(e) => setFormData({...formData, competitive_advantages: e.target.value})}
+                className="bg-white/5 border-white/10 text-white"
+                placeholder="Tecnologia proprietária, Equipe experiente, etc."
               />
             </div>
 

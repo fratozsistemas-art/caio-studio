@@ -27,6 +27,7 @@ import InternalMarketplace from "@/components/marketplace/InternalMarketplace";
 import TaskManager from "@/components/collaboration/TaskManager";
 import CommentSection from "@/components/collaboration/CommentSection";
 import ActivityFeed from "@/components/collaboration/ActivityFeed";
+import VenturePortfolioDashboard from "@/components/ventures/VenturePortfolioDashboard";
 
 export default function VentureManagement() {
   const [user, setUser] = useState(null);
@@ -227,6 +228,7 @@ export default function VentureManagement() {
         {/* Tabs */}
         <Tabs defaultValue="ventures" className="space-y-6">
           <TabsList className="bg-white/5 border border-white/10 flex-wrap h-auto">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="ventures">Ventures</TabsTrigger>
             <TabsTrigger value="tasks">Tarefas</TabsTrigger>
             <TabsTrigger value="activity">Atividades</TabsTrigger>
@@ -240,6 +242,10 @@ export default function VentureManagement() {
             <TabsTrigger value="alerts">Notificações</TabsTrigger>
             <TabsTrigger value="analytics">Análise com IA</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard">
+            <VenturePortfolioDashboard ventures={ventures} />
+          </TabsContent>
 
           <TabsContent value="ventures">
             <VentureList
