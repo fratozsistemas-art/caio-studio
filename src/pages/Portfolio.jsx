@@ -8,6 +8,7 @@ import { Rocket, TrendingUp, Cpu, Zap, Grid, Search, X, Filter, Palette, Network
 import SectionTitle from "@/components/ui/SectionTitle";
 import VentureCard from "@/components/portfolio/VentureCard";
 import VentureQuickView from "@/components/portfolio/VentureQuickView";
+import PortfolioAnalyticsDashboard from "@/components/portfolio/PortfolioAnalyticsDashboard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -427,6 +428,9 @@ export default function Portfolio() {
             ))}
           </div>
         </motion.div>
+
+        {/* Analytics Dashboard */}
+        <PortfolioAnalyticsDashboard ventures={allVentures} />
 
         {/* Ventures Explorer Section */}
         <div className="mb-12">
