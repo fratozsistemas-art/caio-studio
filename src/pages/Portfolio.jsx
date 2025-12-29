@@ -287,12 +287,23 @@ export default function Portfolio() {
       const matchesTags = selectedTags.length === 0 || 
         selectedTags.every(tag => venture.tags?.includes(tag));
       
-      // Search query filter (searches in title, description, tags, and category)
+      // Search query filter (searches in title, description, tags, category, team, roadmap, funding)
       const matchesSearch = searchQuery === "" || 
         venture.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         venture.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        venture.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        venture.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        venture.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        venture.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        venture.team_bios?.some(member => 
+          member.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          member.role?.toLowerCase().includes(searchQuery.toLowerCase())
+        ) ||
+        venture.roadmap?.some(phase => 
+          phase.phase?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          phase.milestones?.some(m => m.toLowerCase().includes(searchQuery.toLowerCase()))
+        ) ||
+        venture.funding_history?.some(round => 
+          round.round?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
       return matchesLayer && matchesStatus && matchesCategory && matchesTags && matchesSearch;
     });
