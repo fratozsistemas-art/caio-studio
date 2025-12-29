@@ -11,11 +11,18 @@ import GlowCard from '@/components/ui/GlowCard';
 import { CheckCircle2, Circle, Clock, AlertCircle, Plus, Loader2, Calendar, Trash2, Search, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function ClickUpIntegration() {
+export default function ClickUpIntegration({ onListChange }) {
   const queryClient = useQueryClient();
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [selectedSpace, setSelectedSpace] = useState(null);
   const [selectedList, setSelectedList] = useState(null);
+
+  // Notify parent of list change
+  useEffect(() => {
+    if (onListChange) {
+      onListChange(selectedList);
+    }
+  }, [selectedList, onListChange]);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -98,7 +105,17 @@ export default function ClickUpIntegration() {
       });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Trigger automation
+      try {
+        await base44.functions.invoke('executeClickUpAutomation', {
+          task: data,
+          eventType: 'task_created',
+          listId: selectedList
+        });
+      } catch (error) {
+        console.error('Automation execution failed:', error);
+      }
       queryClient.invalidateQueries({ queryKey: ['clickup-tasks', selectedList] });
       setCreateDialogOpen(false);
       setNewTask({ name: '', description: '', status: '', priority: 3 });
@@ -129,7 +146,17 @@ export default function ClickUpIntegration() {
       });
       return response.data;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: async (data, variables) => {
+      // Trigger automation
+      try {
+        await base44.functions.invoke('executeClickUpAutomation', {
+          task: { id: variables.taskId, name: variables.name, status: { status: variables.status } },
+          eventType: 'task_status_changed',
+          listId: selectedList
+        });
+      } catch (error) {
+        console.error('Automation execution failed:', error);
+      }
       queryClient.invalidateQueries({ queryKey: ['clickup-tasks', selectedList] });
       toast.success('Task updated successfully');
       

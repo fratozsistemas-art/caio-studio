@@ -6,10 +6,13 @@ import { CheckCircle, Clock, AlertCircle, TrendingUp, Loader2 } from 'lucide-rea
 import GlowCard from '@/components/ui/GlowCard';
 import SectionTitle from '@/components/ui/SectionTitle';
 import ClickUpIntegration from '@/components/clickup/ClickUpIntegration';
+import AutomationRuleManager from '@/components/clickup/AutomationRuleManager';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function ClickUpDashboard() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedList, setSelectedList] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -103,9 +106,30 @@ export default function ClickUpDashboard() {
             </GlowCard>
           </div>
 
-          <GlowCard glowColor="cyan" className="p-8">
-            <ClickUpIntegration />
-          </GlowCard>
+          <Tabs defaultValue="tasks" className="space-y-6">
+            <TabsList className="bg-white/5 border border-white/10">
+              <TabsTrigger value="tasks">Tasks</TabsTrigger>
+              <TabsTrigger value="automation">Automation</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="tasks">
+              <GlowCard glowColor="cyan" className="p-8">
+                <ClickUpIntegration onListChange={setSelectedList} />
+              </GlowCard>
+            </TabsContent>
+
+            <TabsContent value="automation">
+              <GlowCard glowColor="gold" className="p-8">
+                {selectedList ? (
+                  <AutomationRuleManager selectedList={selectedList} />
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-slate-400">Select a list in the Tasks tab to create automation rules</p>
+                  </div>
+                )}
+              </GlowCard>
+            </TabsContent>
+          </Tabs>
         </motion.div>
       </div>
     </main>
