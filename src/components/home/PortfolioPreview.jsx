@@ -78,9 +78,9 @@ export default function PortfolioPreview() {
           viewport={{ once: true, margin: "-100px" }}
         >
           {portfolioLayers.map((layer, index) => (
-            <motion.div key={index} variants={itemVariants}>
-              <GlowCard glowColor={layer.color} className="h-full">
-                <div className="p-8">
+            <motion.div key={index} variants={itemVariants} className="h-full">
+              <GlowCard glowColor={layer.color} className="h-full flex flex-col">
+                <div className="p-8 flex flex-col h-full">
                   <div className="flex items-start justify-between mb-6">
                     <div className={`p-3 rounded-xl ${layer.color === 'cyan' ? 'bg-[#00D4FF]/10' : 'bg-[#C7A763]/10'}`}>
                       <layer.icon className={`w-6 h-6 ${layer.color === 'cyan' ? 'text-[#00D4FF]' : 'text-[#C7A763]'}`} />
@@ -98,15 +98,15 @@ export default function PortfolioPreview() {
                     {layer.title}
                   </h3>
                   
-                  <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">
                     {layer.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2 mb-6 min-h-[80px] content-start">
                     {layer.ventures.map((venture, vIndex) => (
                       <span
                         key={vIndex}
-                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs"
+                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs h-fit"
                       >
                         {venture}
                       </span>

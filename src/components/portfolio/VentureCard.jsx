@@ -20,10 +20,11 @@ export default function VentureCard({ venture, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="h-full"
     >
-      <Link to={createPageUrl('VentureDetail') + '?id=' + venture.id}>
-        <GlowCard glowColor={venture.layer === 'startup' ? 'cyan' : 'gold'} className="h-full group cursor-pointer">
-        <div className="p-6">
+      <Link to={createPageUrl('VentureDetail') + '?id=' + venture.id} className="h-full block">
+        <GlowCard glowColor={venture.layer === 'startup' ? 'cyan' : 'gold'} className="h-full group cursor-pointer flex flex-col">
+        <div className="p-6 flex flex-col h-full">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center">
@@ -39,26 +40,24 @@ export default function VentureCard({ venture, index }) {
             {venture.name}
           </h3>
           
-          <p className="text-slate-400 text-sm leading-relaxed mb-4 line-clamp-2">
+          <p className="text-slate-400 text-sm leading-relaxed mb-4 line-clamp-2 flex-grow">
             {venture.description}
           </p>
 
           {/* Tags */}
-          {venture.tags && venture.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {venture.tags.map((tag, tagIndex) => (
-                <span
-                  key={tagIndex}
-                  className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-medium hover:bg-white/10 transition-colors"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+          <div className="flex flex-wrap gap-1.5 mb-4 min-h-[32px]">
+            {venture.tags && venture.tags.length > 0 && venture.tags.map((tag, tagIndex) => (
+              <span
+                key={tagIndex}
+                className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-medium hover:bg-white/10 transition-colors"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
 
           {/* Footer */}
-          <div className="pt-4 border-t border-white/10">
+          <div className="pt-4 border-t border-white/10 mt-auto">
             <div className="flex items-center justify-between">
               <span className="text-xs text-slate-500">{venture.category}</span>
               <div className="flex items-center gap-2">
