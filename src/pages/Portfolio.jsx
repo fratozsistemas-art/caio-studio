@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Rocket, TrendingUp, Cpu, Zap, Grid, Search, X, Filter, Palette, Network, Eye } from 'lucide-react';
 import SectionTitle from "@/components/ui/SectionTitle";
@@ -659,8 +661,10 @@ export default function Portfolio() {
         >
         <AnimatePresence mode="popLayout">
         {filteredVentures.map((venture, index) => (
-          <div key={venture.name} className="relative group">
-            <VentureCard venture={venture} index={index} />
+          <div key={venture.id || venture.name} className="relative group">
+            <Link to={venture.id ? createPageUrl(`VenturePublicPage?ventureId=${venture.id}`) : '#'}>
+              <VentureCard venture={venture} index={index} />
+            </Link>
             <button
               onClick={() => setQuickViewVenture(venture)}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
