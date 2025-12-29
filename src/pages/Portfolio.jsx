@@ -745,16 +745,15 @@ export default function Portfolio() {
             })}
           </div>
 
-        {/* Quick View Modal */}
-        <AnimatePresence>
-        {quickViewVenture && (
-        <VentureQuickView 
-          venture={quickViewVenture} 
-          onClose={() => setQuickViewVenture(null)} 
-        />
-        )}
-        </AnimatePresence>
-        </>
+          {/* Quick View Modal */}
+          <AnimatePresence>
+            {quickViewVenture && (
+              <VentureQuickView 
+                venture={quickViewVenture} 
+                onClose={() => setQuickViewVenture(null)} 
+              />
+            )}
+          </AnimatePresence>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
