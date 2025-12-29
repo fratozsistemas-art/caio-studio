@@ -181,6 +181,9 @@ export default function AutomationRuleManager({ selectedList }) {
                       <SelectItem value="task_status_changed">Status Changed</SelectItem>
                       <SelectItem value="task_assigned">Task Assigned</SelectItem>
                       <SelectItem value="task_priority_changed">Priority Changed</SelectItem>
+                      <SelectItem value="task_due_date_approaching">Due Date Approaching</SelectItem>
+                      <SelectItem value="comment_added">Comment Added</SelectItem>
+                      <SelectItem value="custom_field_changed">Custom Field Changed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -200,10 +203,47 @@ export default function AutomationRuleManager({ selectedList }) {
                       <SelectItem value="send_email">Send Email</SelectItem>
                       <SelectItem value="update_task">Update Task</SelectItem>
                       <SelectItem value="assign_task">Assign Task</SelectItem>
+                      <SelectItem value="assign_by_role">Assign by Role</SelectItem>
+                      <SelectItem value="update_custom_field">Update Custom Field</SelectItem>
+                      <SelectItem value="move_to_list">Move to List</SelectItem>
+                      <SelectItem value="create_subtask">Create Subtask</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
+
+              {/* Trigger Configuration */}
+              {(newRule.trigger_type === 'task_due_date_approaching' || 
+                newRule.trigger_type === 'custom_field_changed') && (
+                <div className="border border-white/10 rounded-lg p-4 space-y-3">
+                  <h4 className="text-sm font-semibold text-white">Trigger Configuration</h4>
+                  
+                  {newRule.trigger_type === 'task_due_date_approaching' && (
+                    <Input
+                      type="number"
+                      placeholder="Days before due date (e.g., 2)"
+                      value={newRule.trigger_conditions?.days_before || ''}
+                      onChange={(e) => setNewRule({
+                        ...newRule,
+                        trigger_conditions: { ...newRule.trigger_conditions, days_before: parseInt(e.target.value) }
+                      })}
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                  )}
+                  
+                  {newRule.trigger_type === 'custom_field_changed' && (
+                    <Input
+                      placeholder="Custom field ID"
+                      value={newRule.trigger_conditions?.field_id || ''}
+                      onChange={(e) => setNewRule({
+                        ...newRule,
+                        trigger_conditions: { ...newRule.trigger_conditions, field_id: e.target.value }
+                      })}
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                  )}
+                </div>
+              )}
 
               {/* Action Configuration */}
               <div className="border border-white/10 rounded-lg p-4 space-y-3">
@@ -295,6 +335,83 @@ export default function AutomationRuleManager({ selectedList }) {
                       })}
                       className="bg-white/5 border-white/10 text-white"
                       rows={3}
+                    />
+                  </>
+                )}
+
+                {newRule.action_type === 'assign_by_role' && (
+                  <Select
+                    value={newRule.action_config?.role || ''}
+                    onValueChange={(val) => setNewRule({
+                      ...newRule,
+                      action_config: { ...newRule.action_config, role: val }
+                    })}
+                  >
+                    <SelectTrigger className="bg-white/5 border-white/10">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="user">User</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+
+                {newRule.action_type === 'update_custom_field' && (
+                  <>
+                    <Input
+                      placeholder="Custom field ID"
+                      value={newRule.action_config?.field_id || ''}
+                      onChange={(e) => setNewRule({
+                        ...newRule,
+                        action_config: { ...newRule.action_config, field_id: e.target.value }
+                      })}
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                    <Input
+                      placeholder="Field value"
+                      value={newRule.action_config?.field_value || ''}
+                      onChange={(e) => setNewRule({
+                        ...newRule,
+                        action_config: { ...newRule.action_config, field_value: e.target.value }
+                      })}
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                  </>
+                )}
+
+                {newRule.action_type === 'move_to_list' && (
+                  <Input
+                    placeholder="Target list ID"
+                    value={newRule.action_config?.target_list_id || ''}
+                    onChange={(e) => setNewRule({
+                      ...newRule,
+                      action_config: { ...newRule.action_config, target_list_id: e.target.value }
+                    })}
+                    className="bg-white/5 border-white/10 text-white"
+                  />
+                )}
+
+                {newRule.action_type === 'create_subtask' && (
+                  <>
+                    <Input
+                      placeholder="Subtask name (use {{task_name}})"
+                      value={newRule.action_config?.subtask_name || ''}
+                      onChange={(e) => setNewRule({
+                        ...newRule,
+                        action_config: { ...newRule.action_config, subtask_name: e.target.value }
+                      })}
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                    <Textarea
+                      placeholder="Subtask description"
+                      value={newRule.action_config?.subtask_description || ''}
+                      onChange={(e) => setNewRule({
+                        ...newRule,
+                        action_config: { ...newRule.action_config, subtask_description: e.target.value }
+                      })}
+                      className="bg-white/5 border-white/10 text-white"
+                      rows={2}
                     />
                   </>
                 )}

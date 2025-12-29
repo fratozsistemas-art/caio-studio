@@ -7,6 +7,7 @@ import GlowCard from '@/components/ui/GlowCard';
 import SectionTitle from '@/components/ui/SectionTitle';
 import ClickUpIntegration from '@/components/clickup/ClickUpIntegration';
 import AutomationRuleManager from '@/components/clickup/AutomationRuleManager';
+import TaskSyncPanel from '@/components/clickup/TaskSyncPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function ClickUpDashboard() {
@@ -110,6 +111,7 @@ export default function ClickUpDashboard() {
             <TabsList className="bg-white/5 border border-white/10">
               <TabsTrigger value="tasks">Tasks</TabsTrigger>
               <TabsTrigger value="automation">Automation</TabsTrigger>
+              <TabsTrigger value="sync">Sync</TabsTrigger>
             </TabsList>
 
             <TabsContent value="tasks">
@@ -125,6 +127,18 @@ export default function ClickUpDashboard() {
                 ) : (
                   <div className="text-center py-12">
                     <p className="text-slate-400">Select a list in the Tasks tab to create automation rules</p>
+                  </div>
+                )}
+              </GlowCard>
+            </TabsContent>
+
+            <TabsContent value="sync">
+              <GlowCard glowColor="mixed" className="p-8">
+                {selectedList ? (
+                  <TaskSyncPanel selectedList={selectedList} />
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-slate-400">Select a list in the Tasks tab to configure sync</p>
                   </div>
                 )}
               </GlowCard>

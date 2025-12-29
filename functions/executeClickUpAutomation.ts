@@ -45,9 +45,65 @@ Deno.serve(async (req) => {
         case 'task_priority_changed':
           shouldExecute = eventType === 'task_priority_changed';
           break;
+        case 'task_due_date_approaching':
+          if (task.due_date && automation.trigger_conditions?.days_before) {
+            const dueDate = new Date(parseInt(task.due_date));
+            const daysUntilDue = Math.ceil((dueDate - new Date()) / (1000 * 60 * 60 * 24));
+            shouldExecute = daysUntilDue === automation.trigger_conditions.days_before;
+          }
+          break;
+        case 'comment_added':
+          shouldExecute = eventType === 'comment_added';
+          break;
+        case 'custom_field_changed':
+          shouldExecute = eventType === 'custom_field_changed';
+          if (automation.trigger_conditions?.field_id) {
+            shouldExecute = shouldExecute && task.changed_field_id === automation.trigger_conditions.field_id;
+          }
+          break;
       }
 
       if (!shouldExecute) continue;
+
+      // Evaluate conditional logic if enabled
+      if (automation.conditional_logic?.enabled) {
+        let conditionsMet = true;
+        const conditions = automation.conditional_logic.conditions || [];
+        
+        for (const condition of conditions) {
+          const fieldValue = task[condition.field];
+          const conditionValue = condition.value;
+          
+          switch (condition.operator) {
+            case 'equals':
+              conditionsMet = conditionsMet && fieldValue === conditionValue;
+              break;
+            case 'not_equals':
+              conditionsMet = conditionsMet && fieldValue !== conditionValue;
+              break;
+            case 'contains':
+              conditionsMet = conditionsMet && String(fieldValue).includes(conditionValue);
+              break;
+            case 'greater_than':
+              conditionsMet = conditionsMet && Number(fieldValue) > Number(conditionValue);
+              break;
+            case 'less_than':
+              conditionsMet = conditionsMet && Number(fieldValue) < Number(conditionValue);
+              break;
+          }
+        }
+
+        // Use then or else action based on conditions
+        if (conditionsMet && automation.conditional_logic.then_action) {
+          automation.action_type = automation.conditional_logic.then_action.type;
+          automation.action_config = automation.conditional_logic.then_action.config;
+        } else if (!conditionsMet && automation.conditional_logic.else_action) {
+          automation.action_type = automation.conditional_logic.else_action.type;
+          automation.action_config = automation.conditional_logic.else_action.config;
+        } else {
+          continue;
+        }
+      }
 
       // Execute action
       try {
@@ -137,6 +193,64 @@ Deno.serve(async (req) => {
                 assignees: [user_id]
               });
             }
+            break;
+          }
+
+          case 'assign_by_role': {
+            const { role } = automation.action_config;
+            
+            if (role) {
+              // Find users with this role
+              const users = await base44.asServiceRole.entities.User.filter({ role });
+              if (users.length > 0) {
+                // Assign to first available user or use round-robin logic
+                const assignee = users[0];
+                await base44.asServiceRole.functions.invoke('clickup', {
+                  action: 'updateTask',
+                  taskId: task.id,
+                  assignees: [assignee.email]
+                });
+              }
+            }
+            break;
+          }
+
+          case 'update_custom_field': {
+            const { field_id, field_value } = automation.action_config;
+            
+            if (field_id) {
+              await base44.asServiceRole.functions.invoke('clickup', {
+                action: 'updateTask',
+                taskId: task.id,
+                custom_fields: [{ id: field_id, value: field_value }]
+              });
+            }
+            break;
+          }
+
+          case 'move_to_list': {
+            const { target_list_id } = automation.action_config;
+            
+            if (target_list_id) {
+              await base44.asServiceRole.functions.invoke('clickup', {
+                action: 'updateTask',
+                taskId: task.id,
+                list: target_list_id
+              });
+            }
+            break;
+          }
+
+          case 'create_subtask': {
+            const { subtask_name, subtask_description } = automation.action_config;
+            
+            await base44.asServiceRole.functions.invoke('clickup', {
+              action: 'createTask',
+              listId: listId,
+              name: subtask_name?.replace('{{task_name}}', task.name) || 'Subtask',
+              description: subtask_description?.replace('{{task_name}}', task.name) || '',
+              parent: task.id
+            });
             break;
           }
         }
