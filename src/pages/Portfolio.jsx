@@ -691,69 +691,71 @@ export default function Portfolio() {
 
         {/* Ventures by Layer */}
         {filteredVentures.length > 0 ? (
-          <div className="space-y-16">
-            {layers.filter(l => l.id !== 'all').map((layer) => {
-              const layerVentures = filteredVentures.filter(v => v.layer === layer.id);
-              if (layerVentures.length === 0) return null;
+          <>
+            <div className="space-y-16">
+              {layers.filter(l => l.id !== 'all').map((layer) => {
+                const layerVentures = filteredVentures.filter(v => v.layer === layer.id);
+                if (layerVentures.length === 0) return null;
 
-              return (
-                <div key={layer.id} ref={sectionRefs[layer.id]} className="scroll-mt-24">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    className="mb-8"
-                  >
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center">
-                        <layer.icon className="w-5 h-5 text-[#C7A763]" />
-                      </div>
-                      <h2 className="text-3xl font-bold text-white font-montserrat">
-                        {layer.label}
-                      </h2>
-                      <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
-                    </div>
-                    <p className="text-slate-400 ml-14">
-                      {layerVentures.length} venture{layerVentures.length !== 1 ? 's' : ''}
-                    </p>
-                  </motion.div>
-
-                  <motion.div 
-                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    layout
-                  >
-                    <AnimatePresence mode="popLayout">
-                      {layerVentures.map((venture, index) => (
-                        <div key={venture.id || venture.name} className="relative group">
-                          <Link to={venture.id ? createPageUrl(`VenturePublicPage?ventureId=${venture.id}`) : '#'}>
-                            <VentureCard venture={venture} index={index} />
-                          </Link>
-                          <button
-                            onClick={() => setQuickViewVenture(venture)}
-                            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
-                            title="Visualização rápida"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
+                return (
+                  <div key={layer.id} ref={sectionRefs[layer.id]} className="scroll-mt-24">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5 }}
+                      className="mb-8"
+                    >
+                      <div className="flex items-center gap-4 mb-2">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center">
+                          <layer.icon className="w-5 h-5 text-[#C7A763]" />
                         </div>
-                      ))}
-                    </AnimatePresence>
-                  </motion.div>
-                </div>
-              );
-            })}
-          </div>
+                        <h2 className="text-3xl font-bold text-white font-montserrat">
+                          {layer.label}
+                        </h2>
+                        <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+                      </div>
+                      <p className="text-slate-400 ml-14">
+                        {layerVentures.length} venture{layerVentures.length !== 1 ? 's' : ''}
+                      </p>
+                    </motion.div>
 
-          {/* Quick View Modal */}
-          <AnimatePresence>
-            {quickViewVenture && (
-              <VentureQuickView 
-                venture={quickViewVenture} 
-                onClose={() => setQuickViewVenture(null)} 
-              />
-            )}
-          </AnimatePresence>
+                    <motion.div 
+                      className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                      layout
+                    >
+                      <AnimatePresence mode="popLayout">
+                        {layerVentures.map((venture, index) => (
+                          <div key={venture.id || venture.name} className="relative group">
+                            <Link to={venture.id ? createPageUrl(`VenturePublicPage?ventureId=${venture.id}`) : '#'}>
+                              <VentureCard venture={venture} index={index} />
+                            </Link>
+                            <button
+                              onClick={() => setQuickViewVenture(venture)}
+                              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
+                              title="Visualização rápida"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </AnimatePresence>
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Quick View Modal */}
+            <AnimatePresence>
+              {quickViewVenture && (
+                <VentureQuickView 
+                  venture={quickViewVenture} 
+                  onClose={() => setQuickViewVenture(null)} 
+                />
+              )}
+            </AnimatePresence>
+          </>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
