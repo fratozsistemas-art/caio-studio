@@ -13,6 +13,7 @@ import Home from './pages/Home';
 import InnovaAcademy from './pages/InnovaAcademy';
 import LeadAutomation from './pages/LeadAutomation';
 import LeadManagement from './pages/LeadManagement';
+import MarketIntelligence from './pages/MarketIntelligence';
 import MyFeedback from './pages/MyFeedback';
 import PermissionsManagement from './pages/PermissionsManagement';
 import Platforms from './pages/Platforms';
@@ -21,7 +22,7 @@ import PortfolioDashboard from './pages/PortfolioDashboard';
 import StakeholderJourney from './pages/StakeholderJourney';
 import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
-import MarketIntelligence from './pages/MarketIntelligence';
+import VenturePublicPage from './pages/VenturePublicPage';
 import __Layout from './Layout.jsx';
 
 
@@ -41,6 +42,7 @@ export const PAGES = {
     "InnovaAcademy": InnovaAcademy,
     "LeadAutomation": LeadAutomation,
     "LeadManagement": LeadManagement,
+    "MarketIntelligence": MarketIntelligence,
     "MyFeedback": MyFeedback,
     "PermissionsManagement": PermissionsManagement,
     "Platforms": Platforms,
@@ -49,7 +51,7 @@ export const PAGES = {
     "StakeholderJourney": StakeholderJourney,
     "VentureDetail": VentureDetail,
     "VentureManagement": VentureManagement,
-    "MarketIntelligence": MarketIntelligence,
+    "VenturePublicPage": VenturePublicPage,
 }
 
 export const pagesConfig = {
