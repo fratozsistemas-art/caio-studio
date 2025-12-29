@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -7,9 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GlowCard from '@/components/ui/GlowCard';
-import { CheckCircle2, Circle, Clock, AlertCircle, Plus, Loader2, MessageSquare, Calendar } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, AlertCircle, Plus, Loader2, Calendar, Trash2, Search, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ClickUpIntegration() {
@@ -18,12 +17,27 @@ export default function ClickUpIntegration() {
   const [selectedSpace, setSelectedSpace] = useState(null);
   const [selectedList, setSelectedList] = useState(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [user, setUser] = useState(null);
   const [newTask, setNewTask] = useState({
     name: '',
     description: '',
     status: '',
     priority: 3
   });
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+      } catch (error) {
+        console.error('Failed to load user', error);
+      }
+    };
+    loadUser();
+  }, []);
 
   // Fetch workspaces/teams
   const { data: workspaces, isLoading: loadingWorkspaces } = useQuery({
@@ -70,7 +84,8 @@ export default function ClickUpIntegration() {
       });
       return response.data.tasks || [];
     },
-    enabled: !!selectedList
+    enabled: !!selectedList,
+    refetchInterval: 30000 // Auto-refresh every 30 seconds
   });
 
   // Create task mutation
@@ -88,15 +103,25 @@ export default function ClickUpIntegration() {
       setCreateDialogOpen(false);
       setNewTask({ name: '', description: '', status: '', priority: 3 });
       toast.success('Task created successfully');
+      
+      // Create notification
+      if (user) {
+        base44.entities.Notification.create({
+          user_email: user.email,
+          type: 'task_assigned',
+          title: 'Nova tarefa criada',
+          message: `Tarefa "${newTask.name}" criada com sucesso no ClickUp`
+        });
+      }
     },
     onError: (error) => {
       toast.error('Failed to create task: ' + error.message);
     }
   });
 
-  // Update task status mutation
+  // Update task mutation
   const updateTaskMutation = useMutation({
-    mutationFn: async ({ taskId, status }) => {
+    mutationFn: async ({ taskId, status, name }) => {
       const response = await base44.functions.invoke('clickup', {
         action: 'updateTask',
         taskId,
@@ -104,12 +129,50 @@ export default function ClickUpIntegration() {
       });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['clickup-tasks', selectedList] });
       toast.success('Task updated successfully');
+      
+      // Create notification
+      if (user) {
+        base44.entities.Notification.create({
+          user_email: user.email,
+          type: 'task_assigned',
+          title: 'Status atualizado',
+          message: `Tarefa "${variables.name}" atualizada para "${variables.status}"`
+        });
+      }
     },
     onError: (error) => {
       toast.error('Failed to update task: ' + error.message);
+    }
+  });
+
+  // Delete task mutation
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (taskId) => {
+      const response = await base44.functions.invoke('clickup', {
+        action: 'deleteTask',
+        taskId
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clickup-tasks', selectedList] });
+      toast.success('Task deleted successfully');
+      
+      // Create notification
+      if (user) {
+        base44.entities.Notification.create({
+          user_email: user.email,
+          type: 'task_assigned',
+          title: 'Tarefa excluída',
+          message: 'Tarefa removida com sucesso do ClickUp'
+        });
+      }
+    },
+    onError: (error) => {
+      toast.error('Failed to delete task: ' + error.message);
     }
   });
 
@@ -144,6 +207,16 @@ export default function ClickUpIntegration() {
       default: return 'None';
     }
   };
+
+  // Filter tasks
+  const filteredTasks = tasks?.filter(task => {
+    const matchesSearch = searchQuery === '' || 
+      task.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || 
+      task.status?.status?.toLowerCase() === filterStatus.toLowerCase();
+    return matchesSearch && matchesStatus;
+  }) || [];
 
   if (loadingWorkspaces) {
     return (
@@ -278,17 +351,43 @@ export default function ClickUpIntegration() {
             </Dialog>
           </div>
 
+          {/* Search and Filter */}
+          <div className="mb-4 flex gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                placeholder="Buscar tarefas..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white/5 border-white/10 text-white"
+              />
+            </div>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-40 bg-white/5 border-white/10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos Status</SelectItem>
+                <SelectItem value="to do">To Do</SelectItem>
+                <SelectItem value="in progress">In Progress</SelectItem>
+                <SelectItem value="complete">Complete</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {loadingTasks ? (
             <div className="flex items-center justify-center p-12">
               <Loader2 className="w-6 h-6 animate-spin text-[#C7A763]" />
             </div>
-          ) : tasks?.length === 0 ? (
+          ) : filteredTasks.length === 0 ? (
             <GlowCard glowColor="gold" className="p-12 text-center">
-              <p className="text-slate-400">No tasks found. Create your first task!</p>
+              <p className="text-slate-400">
+                {tasks?.length === 0 ? 'No tasks found. Create your first task!' : 'No tasks match your filters'}
+              </p>
             </GlowCard>
           ) : (
             <div className="grid gap-4">
-              {tasks?.map((task) => (
+              {filteredTasks.map((task) => (
                 <GlowCard key={task.id} glowColor="mixed" className="p-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1">
@@ -319,14 +418,29 @@ export default function ClickUpIntegration() {
                         </div>
                       </div>
                     </div>
-                    <a
-                      href={task.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#C7A763] hover:text-[#A88B4A] text-sm"
-                    >
-                      View in ClickUp →
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={task.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#C7A763] hover:text-[#A88B4A] text-sm whitespace-nowrap"
+                      >
+                        View in ClickUp →
+                      </a>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+                            deleteTaskMutation.mutate(task.id);
+                          }
+                        }}
+                        disabled={deleteTaskMutation.isPending}
+                        className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </GlowCard>
               ))}
