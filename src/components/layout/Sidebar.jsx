@@ -13,7 +13,9 @@ import {
   MessageCircle,
   TrendingUp,
   Trophy,
-  X
+  X,
+  CheckSquare,
+  FolderKanban
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/translations";
@@ -37,7 +39,9 @@ export default function Sidebar({ isOpen, onClose, isAdmin, language }) {
     { name: t.nav.automation, page: "LeadAutomation", icon: TrendingUp },
     { name: t.nav.crm, page: "CRMHub", icon: Settings },
     { name: t.nav.content, page: "ContentHub", icon: FileText },
-    { name: t.nav.communication, page: "CommunicationHub", icon: Mail }
+    { name: t.nav.communication, page: "CommunicationHub", icon: Mail },
+    { name: "ClickUp", page: "ClickUpDashboard", icon: CheckSquare },
+    { name: "Projects", page: "VentureProjects", icon: FolderKanban }
   ];
 
   const menuItems = isAdmin ? [...userMenuItems, ...adminMenuItems] : userMenuItems;
