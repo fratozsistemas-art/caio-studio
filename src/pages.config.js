@@ -3,6 +3,7 @@ import About from './pages/About';
 import Admin from './pages/Admin';
 import AdminHub from './pages/AdminHub';
 import CRMHub from './pages/CRMHub';
+import ClickUpDashboard from './pages/ClickUpDashboard';
 import CollaborationHub from './pages/CollaborationHub';
 import ColourMeBrazil from './pages/ColourMeBrazil';
 import CommunicationHub from './pages/CommunicationHub';
@@ -23,7 +24,7 @@ import StakeholderJourney from './pages/StakeholderJourney';
 import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
 import VenturePublicPage from './pages/VenturePublicPage';
-import ClickUpDashboard from './pages/ClickUpDashboard';
+import VentureProjects from './pages/VentureProjects';
 import __Layout from './Layout.jsx';
 
 
@@ -33,6 +34,7 @@ export const PAGES = {
     "Admin": Admin,
     "AdminHub": AdminHub,
     "CRMHub": CRMHub,
+    "ClickUpDashboard": ClickUpDashboard,
     "CollaborationHub": CollaborationHub,
     "ColourMeBrazil": ColourMeBrazil,
     "CommunicationHub": CommunicationHub,
@@ -53,7 +55,7 @@ export const PAGES = {
     "VentureDetail": VentureDetail,
     "VentureManagement": VentureManagement,
     "VenturePublicPage": VenturePublicPage,
-    "ClickUpDashboard": ClickUpDashboard,
+    "VentureProjects": VentureProjects,
 }
 
 export const pagesConfig = {
