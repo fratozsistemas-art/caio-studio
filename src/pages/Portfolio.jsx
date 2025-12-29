@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -215,6 +215,22 @@ export default function Portfolio() {
   const [showFilters, setShowFilters] = useState(false);
   const [quickViewVenture, setQuickViewVenture] = useState(null);
 
+  // Refs for scrolling to sections
+  const sectionRefs = {
+    startup: useRef(null),
+    scaleup: useRef(null),
+    deeptech: useRef(null),
+    platform: useRef(null),
+    cultural: useRef(null),
+    winwin: useRef(null)
+  };
+
+  const scrollToLayer = (layerId) => {
+    if (sectionRefs[layerId]?.current) {
+      sectionRefs[layerId].current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   // Fetch ventures from database
   const { data: dbVentures, isLoading } = useQuery({
     queryKey: ['ventures'],
@@ -406,24 +422,30 @@ export default function Portfolio() {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
               >
-                <GlowCard 
-                  glowColor={idx % 2 === 0 ? "cyan" : "gold"} 
-                  className="p-6 h-full"
+                <button
+                  onClick={() => scrollToLayer(layer.id)}
+                  className="w-full text-left"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center flex-shrink-0">
-                      <layer.icon className="w-6 h-6 text-[#C7A763]" />
+                  <GlowCard 
+                    glowColor={idx % 2 === 0 ? "cyan" : "gold"} 
+                    className="p-6 h-full cursor-pointer"
+                    hover={true}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center flex-shrink-0">
+                        <layer.icon className="w-6 h-6 text-[#C7A763]" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white mb-2">
+                          {layer.label}
+                        </h3>
+                        <p className="text-sm text-slate-400 leading-relaxed">
+                          {allVentures.filter(v => v.layer === layer.id).length} ventures
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">
-                        {layer.label}
-                      </h3>
-                      <p className="text-sm text-slate-400 leading-relaxed">
-                        {allVentures.filter(v => v.layer === layer.id).length} ventures
-                      </p>
-                    </div>
-                  </div>
-                </GlowCard>
+                  </GlowCard>
+                </button>
               </motion.div>
             ))}
           </div>
@@ -667,30 +689,61 @@ export default function Portfolio() {
           </div>
         </div>
 
-        {/* Portfolio Grid */}
+        {/* Ventures by Layer */}
         {filteredVentures.length > 0 ? (
-        <>
-        <motion.div 
-        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-        layout
-        >
-        <AnimatePresence mode="popLayout">
-        {filteredVentures.map((venture, index) => (
-          <div key={venture.id || venture.name} className="relative group">
-            <Link to={venture.id ? createPageUrl(`VenturePublicPage?ventureId=${venture.id}`) : '#'}>
-              <VentureCard venture={venture} index={index} />
-            </Link>
-            <button
-              onClick={() => setQuickViewVenture(venture)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
-              title="Visualização rápida"
-            >
-              <Eye className="w-4 h-4" />
-            </button>
+          <div className="space-y-16">
+            {layers.filter(l => l.id !== 'all').map((layer) => {
+              const layerVentures = filteredVentures.filter(v => v.layer === layer.id);
+              if (layerVentures.length === 0) return null;
+
+              return (
+                <div key={layer.id} ref={sectionRefs[layer.id]} className="scroll-mt-24">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className="mb-8"
+                  >
+                    <div className="flex items-center gap-4 mb-2">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center">
+                        <layer.icon className="w-5 h-5 text-[#C7A763]" />
+                      </div>
+                      <h2 className="text-3xl font-bold text-white font-montserrat">
+                        {layer.label}
+                      </h2>
+                      <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+                    </div>
+                    <p className="text-slate-400 ml-14">
+                      {layerVentures.length} venture{layerVentures.length !== 1 ? 's' : ''}
+                    </p>
+                  </motion.div>
+
+                  <motion.div 
+                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    layout
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {layerVentures.map((venture, index) => (
+                        <div key={venture.id || venture.name} className="relative group">
+                          <Link to={venture.id ? createPageUrl(`VenturePublicPage?ventureId=${venture.id}`) : '#'}>
+                            <VentureCard venture={venture} index={index} />
+                          </Link>
+                          <button
+                            onClick={() => setQuickViewVenture(venture)}
+                            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
+                            title="Visualização rápida"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </AnimatePresence>
+                  </motion.div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-        </AnimatePresence>
-        </motion.div>
 
         {/* Quick View Modal */}
         <AnimatePresence>
