@@ -1,275 +1,354 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { FileText, Download, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import GlowCard from '@/components/ui/GlowCard';
+import { FileText, Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import jsPDF from 'jspdf';
 
-export default function ProjectReportGenerator({ ventureId, ventureName }) {
-  const [report, setReport] = useState(null);
+export default function ProjectReportGenerator({ ventureId }) {
+  const [reportConfig, setReportConfig] = useState({
+    format: 'pdf',
+    includeMetrics: true,
+    includeProjects: true,
+    includeTasks: true,
+    includeBottlenecks: true,
+    includeTrends: false,
+    timeRange: 'all'
+  });
   const [generating, setGenerating] = useState(false);
 
-  const { data: milestones = [] } = useQuery({
-    queryKey: ['milestones', ventureId],
-    queryFn: async () => {
-      const res = await base44.functions.invoke('secureEntityQuery', {
-        entity_name: 'ProjectMilestone',
-        operation: 'filter',
-        query: ventureId ? { venture_id: ventureId } : {}
-      });
-      return res.data?.data || [];
-    }
+  // Fetch data
+  const { data: projects } = useQuery({
+    queryKey: ['venture-projects', ventureId],
+    queryFn: () => base44.entities.VentureProject.filter({ venture_id: ventureId }),
+    enabled: !!ventureId
   });
 
-  const { data: tasks = [] } = useQuery({
-    queryKey: ['tasks', ventureId],
+  const { data: allProjectTasks } = useQuery({
+    queryKey: ['all-project-tasks', ventureId],
     queryFn: async () => {
-      const res = await base44.functions.invoke('secureEntityQuery', {
-        entity_name: 'VentureTask',
-        operation: 'filter',
-        query: ventureId ? { venture_id: ventureId } : {}
-      });
-      return res.data?.data || [];
-    }
+      if (!projects || projects.length === 0) return [];
+      
+      const allListIds = projects.flatMap(p => p.clickup_list_ids || []);
+      if (allListIds.length === 0) return [];
+
+      const taskPromises = allListIds.map(listId =>
+        base44.functions.invoke('clickup', { action: 'getTasks', listId })
+      );
+
+      const results = await Promise.all(taskPromises);
+      return results.flatMap(r => r.data.tasks || []);
+    },
+    enabled: !!projects?.length
   });
 
-  const generateReport = async () => {
+  const generatePDFReport = () => {
     setGenerating(true);
+    
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Gere um relatório executivo de progresso de projeto profissional e conciso.
+      const doc = new jsPDF();
+      let yPos = 20;
 
-PROJETO: ${ventureName || 'Projeto'}
-DATA: ${format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+      // Title
+      doc.setFontSize(20);
+      doc.text('Project Analytics Report', 20, yPos);
+      yPos += 10;
 
-MILESTONES (${milestones.length}):
-${milestones.map(m => `
-- ${m.title}
-  Status: ${m.status}
-  Progresso: ${m.progress}%
-  Prazo: ${m.due_date}
-  ${m.completed_date ? `✓ Concluído em ${m.completed_date}` : ''}
-`).join('\n')}
+      doc.setFontSize(10);
+      doc.text(`Generated: ${format(new Date(), 'MMM dd, yyyy HH:mm')}`, 20, yPos);
+      yPos += 15;
 
-TAREFAS:
-- Total: ${tasks.length}
-- Concluídas: ${tasks.filter(t => t.status === 'completed').length}
-- Em andamento: ${tasks.filter(t => t.status === 'in_progress').length}
-- Pendentes: ${tasks.filter(t => t.status === 'todo').length}
+      // Metrics
+      if (reportConfig.includeMetrics) {
+        doc.setFontSize(16);
+        doc.text('Key Metrics', 20, yPos);
+        yPos += 10;
 
-Gere um relatório estruturado em JSON com:
-- executive_summary: resumo executivo (2-3 frases)
-- overall_progress: percentual geral de progresso
-- key_achievements: array de 3-5 conquistas principais
-- challenges: array de 2-3 desafios enfrentados
-- next_steps: array de 3-5 próximos passos
-- milestone_status: resumo do status dos milestones
-- team_performance: avaliação do desempenho da equipe
-- recommendations: 2-3 recomendações estratégicas`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            executive_summary: { type: "string" },
-            overall_progress: { type: "number" },
-            key_achievements: { type: "array", items: { type: "string" } },
-            challenges: { type: "array", items: { type: "string" } },
-            next_steps: { type: "array", items: { type: "string" } },
-            milestone_status: { type: "string" },
-            team_performance: { type: "string" },
-            recommendations: { type: "array", items: { type: "string" } }
-          }
+        const totalProjects = projects?.length || 0;
+        const totalTasks = allProjectTasks?.length || 0;
+        const completedTasks = allProjectTasks?.filter(t => 
+          t.status?.status?.toLowerCase().includes('complete')
+        ).length || 0;
+        const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+        doc.setFontSize(10);
+        doc.text(`Total Projects: ${totalProjects}`, 30, yPos);
+        yPos += 7;
+        doc.text(`Total Tasks: ${totalTasks}`, 30, yPos);
+        yPos += 7;
+        doc.text(`Completed Tasks: ${completedTasks}`, 30, yPos);
+        yPos += 7;
+        doc.text(`Completion Rate: ${completionRate}%`, 30, yPos);
+        yPos += 15;
+      }
+
+      // Projects
+      if (reportConfig.includeProjects && projects) {
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = 20;
         }
-      });
 
-      setReport({
-        ...response,
-        generated_at: new Date().toISOString(),
-        venture_name: ventureName
-      });
-      toast.success('Relatório gerado!');
+        doc.setFontSize(16);
+        doc.text('Projects Overview', 20, yPos);
+        yPos += 10;
+
+        projects.forEach(project => {
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+
+          doc.setFontSize(12);
+          doc.text(`• ${project.name}`, 30, yPos);
+          yPos += 6;
+          doc.setFontSize(9);
+          doc.text(`  Status: ${project.status}`, 35, yPos);
+          yPos += 5;
+          if (project.description) {
+            const desc = project.description.substring(0, 80);
+            doc.text(`  ${desc}${project.description.length > 80 ? '...' : ''}`, 35, yPos);
+            yPos += 7;
+          }
+          yPos += 3;
+        });
+        yPos += 10;
+      }
+
+      // Tasks Summary
+      if (reportConfig.includeTasks && allProjectTasks) {
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = 20;
+        }
+
+        doc.setFontSize(16);
+        doc.text('Tasks Summary', 20, yPos);
+        yPos += 10;
+
+        const tasksByStatus = {};
+        allProjectTasks.forEach(task => {
+          const status = task.status?.status || 'Unknown';
+          tasksByStatus[status] = (tasksByStatus[status] || 0) + 1;
+        });
+
+        doc.setFontSize(10);
+        Object.entries(tasksByStatus).forEach(([status, count]) => {
+          if (yPos > 280) {
+            doc.addPage();
+            yPos = 20;
+          }
+          doc.text(`${status}: ${count} tasks`, 30, yPos);
+          yPos += 7;
+        });
+        yPos += 10;
+      }
+
+      // Bottlenecks
+      if (reportConfig.includeBottlenecks && allProjectTasks) {
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = 20;
+        }
+
+        doc.setFontSize(16);
+        doc.text('Bottlenecks & Risks', 20, yPos);
+        yPos += 10;
+
+        const bottlenecks = allProjectTasks.filter(t => {
+          const isHighPriority = t.priority?.priority === 1 || t.priority?.priority === 2;
+          const isOverdue = t.due_date && Date.now() > parseInt(t.due_date);
+          return isHighPriority && isOverdue;
+        });
+
+        doc.setFontSize(10);
+        doc.text(`High-priority overdue tasks: ${bottlenecks.length}`, 30, yPos);
+        yPos += 10;
+
+        bottlenecks.slice(0, 10).forEach(task => {
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+          const taskName = task.name.substring(0, 60);
+          doc.setFontSize(9);
+          doc.text(`• ${taskName}${task.name.length > 60 ? '...' : ''}`, 35, yPos);
+          yPos += 6;
+        });
+      }
+
+      // Save
+      doc.save(`project-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      toast.success('Report generated successfully');
     } catch (error) {
-      toast.error('Erro ao gerar relatório: ' + error.message);
+      toast.error('Failed to generate report');
+      console.error(error);
     } finally {
       setGenerating(false);
     }
   };
 
-  const downloadReport = () => {
-    if (!report) return;
+  const generateCSVReport = () => {
+    setGenerating(true);
 
-    const reportText = `
-RELATÓRIO DE PROGRESSO DO PROJETO
-${report.venture_name}
-Gerado em: ${format(new Date(report.generated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+    try {
+      let csv = 'Project Name,Status,Total Tasks,Completed Tasks,In Progress,Overdue\n';
 
-═══════════════════════════════════════════════════════════
+      projects?.forEach(project => {
+        const projectListIds = project.clickup_list_ids || [];
+        const projectTasks = allProjectTasks?.filter(task => 
+          projectListIds.some(listId => task.list?.id === listId)
+        ) || [];
 
-RESUMO EXECUTIVO
-${report.executive_summary}
+        const completed = projectTasks.filter(t => 
+          t.status?.status?.toLowerCase().includes('complete')
+        ).length;
+        const inProgress = projectTasks.filter(t => 
+          t.status?.status?.toLowerCase().includes('progress')
+        ).length;
+        const overdue = projectTasks.filter(t => 
+          t.due_date && Date.now() > parseInt(t.due_date)
+        ).length;
 
-PROGRESSO GERAL: ${report.overall_progress}%
+        csv += `"${project.name}","${project.status}",${projectTasks.length},${completed},${inProgress},${overdue}\n`;
+      });
 
-═══════════════════════════════════════════════════════════
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `project-report-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
 
-CONQUISTAS PRINCIPAIS
-${report.key_achievements.map((a, i) => `${i + 1}. ${a}`).join('\n')}
+      toast.success('CSV report generated');
+    } catch (error) {
+      toast.error('Failed to generate CSV');
+      console.error(error);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
-═══════════════════════════════════════════════════════════
-
-DESAFIOS ENFRENTADOS
-${report.challenges.map((c, i) => `${i + 1}. ${c}`).join('\n')}
-
-═══════════════════════════════════════════════════════════
-
-PRÓXIMOS PASSOS
-${report.next_steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
-
-═══════════════════════════════════════════════════════════
-
-STATUS DOS MILESTONES
-${report.milestone_status}
-
-═══════════════════════════════════════════════════════════
-
-DESEMPENHO DA EQUIPE
-${report.team_performance}
-
-═══════════════════════════════════════════════════════════
-
-RECOMENDAÇÕES ESTRATÉGICAS
-${report.recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n')}
-    `.trim();
-
-    const blob = new Blob([reportText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `relatorio-${ventureName?.toLowerCase().replace(/\s+/g, '-') || 'projeto'}-${format(new Date(), 'yyyy-MM-dd')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success('Relatório baixado!');
+  const handleGenerate = () => {
+    if (reportConfig.format === 'pdf') {
+      generatePDFReport();
+    } else {
+      generateCSVReport();
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+      <GlowCard glowColor="gold" className="p-6">
+        <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
           <FileText className="w-5 h-5 text-[#C7A763]" />
-          Relatório Automático
+          Report Configuration
         </h3>
-        <div className="flex gap-2">
-          {report && (
-            <Button onClick={downloadReport} variant="outline">
-              <Download className="w-4 h-4 mr-2" />
-              Baixar
-            </Button>
-          )}
+
+        <div className="space-y-6">
+          {/* Format Selection */}
+          <div>
+            <label className="text-sm text-slate-400 mb-2 block">Export Format</label>
+            <Select
+              value={reportConfig.format}
+              onValueChange={(val) => setReportConfig({ ...reportConfig, format: val })}
+            >
+              <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pdf">PDF Document</SelectItem>
+                <SelectItem value="csv">CSV Spreadsheet</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Include Sections */}
+          <div>
+            <label className="text-sm text-slate-400 mb-3 block">Include in Report</label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="metrics"
+                  checked={reportConfig.includeMetrics}
+                  onCheckedChange={(checked) => 
+                    setReportConfig({ ...reportConfig, includeMetrics: checked })
+                  }
+                />
+                <label htmlFor="metrics" className="text-sm text-white cursor-pointer">
+                  Key Metrics & Statistics
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="projects"
+                  checked={reportConfig.includeProjects}
+                  onCheckedChange={(checked) => 
+                    setReportConfig({ ...reportConfig, includeProjects: checked })
+                  }
+                />
+                <label htmlFor="projects" className="text-sm text-white cursor-pointer">
+                  Projects Overview
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="tasks"
+                  checked={reportConfig.includeTasks}
+                  onCheckedChange={(checked) => 
+                    setReportConfig({ ...reportConfig, includeTasks: checked })
+                  }
+                />
+                <label htmlFor="tasks" className="text-sm text-white cursor-pointer">
+                  Tasks Summary
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="bottlenecks"
+                  checked={reportConfig.includeBottlenecks}
+                  onCheckedChange={(checked) => 
+                    setReportConfig({ ...reportConfig, includeBottlenecks: checked })
+                  }
+                />
+                <label htmlFor="bottlenecks" className="text-sm text-white cursor-pointer">
+                  Bottlenecks & Risks
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Generate Button */}
           <Button
-            onClick={generateReport}
-            disabled={generating}
-            className="bg-gradient-to-r from-[#C7A763] to-[#00D4FF] hover:from-[#A88B4A] hover:to-[#00B8E0]"
+            onClick={handleGenerate}
+            disabled={generating || !projects?.length}
+            className="w-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]"
           >
             {generating ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Gerando...
+                Generating...
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 mr-2" />
-                Gerar Relatório
+                <Download className="w-4 h-4 mr-2" />
+                Generate Report
               </>
             )}
           </Button>
         </div>
-      </div>
-
-      {report && (
-        <div className="space-y-4">
-          <GlowCard className="p-6 bg-gradient-to-br from-[#C7A763]/10 to-[#00D4FF]/10 border-[#C7A763]/30">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h4 className="text-white font-semibold">{report.venture_name}</h4>
-                <p className="text-xs text-slate-400 mt-1">
-                  Gerado em {format(new Date(report.generated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold text-[#C7A763]">{report.overall_progress}%</div>
-                <div className="text-xs text-slate-400">Progresso</div>
-              </div>
-            </div>
-            <p className="text-slate-300 italic">{report.executive_summary}</p>
-          </GlowCard>
-
-          <GlowCard className="p-6">
-            <h4 className="text-white font-semibold mb-3">✅ Conquistas Principais</h4>
-            <div className="space-y-2">
-              {report.key_achievements.map((achievement, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-slate-300">
-                  <span className="text-green-400 mt-1">•</span>
-                  <span>{achievement}</span>
-                </div>
-              ))}
-            </div>
-          </GlowCard>
-
-          <GlowCard className="p-6">
-            <h4 className="text-white font-semibold mb-3">⚠️ Desafios</h4>
-            <div className="space-y-2">
-              {report.challenges.map((challenge, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-slate-300">
-                  <span className="text-orange-400 mt-1">•</span>
-                  <span>{challenge}</span>
-                </div>
-              ))}
-            </div>
-          </GlowCard>
-
-          <GlowCard className="p-6">
-            <h4 className="text-white font-semibold mb-3">🎯 Próximos Passos</h4>
-            <div className="space-y-3">
-              {report.next_steps.map((step, idx) => (
-                <div key={idx} className="flex items-start gap-3 bg-white/5 rounded-lg p-3">
-                  <div className="w-6 h-6 rounded-full bg-[#00D4FF]/20 text-[#00D4FF] flex items-center justify-center text-xs font-bold flex-shrink-0">
-                    {idx + 1}
-                  </div>
-                  <span className="text-slate-300">{step}</span>
-                </div>
-              ))}
-            </div>
-          </GlowCard>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <GlowCard className="p-6">
-              <h4 className="text-white font-semibold mb-2">Status dos Milestones</h4>
-              <p className="text-sm text-slate-300">{report.milestone_status}</p>
-            </GlowCard>
-
-            <GlowCard className="p-6">
-              <h4 className="text-white font-semibold mb-2">Desempenho da Equipe</h4>
-              <p className="text-sm text-slate-300">{report.team_performance}</p>
-            </GlowCard>
-          </div>
-
-          <GlowCard className="p-6 bg-[#C7A763]/5 border-[#C7A763]/20">
-            <h4 className="text-white font-semibold mb-3">💡 Recomendações Estratégicas</h4>
-            <div className="space-y-2">
-              {report.recommendations.map((rec, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-slate-300">
-                  <span className="text-[#C7A763] mt-1">→</span>
-                  <span>{rec}</span>
-                </div>
-              ))}
-            </div>
-          </GlowCard>
-        </div>
-      )}
+      </GlowCard>
     </div>
   );
 }

@@ -23,8 +23,8 @@ import PortfolioDashboard from './pages/PortfolioDashboard';
 import StakeholderJourney from './pages/StakeholderJourney';
 import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
-import VenturePublicPage from './pages/VenturePublicPage';
 import VentureProjects from './pages/VentureProjects';
+import VenturePublicPage from './pages/VenturePublicPage';
 import __Layout from './Layout.jsx';
 
 
@@ -54,8 +54,8 @@ export const PAGES = {
     "StakeholderJourney": StakeholderJourney,
     "VentureDetail": VentureDetail,
     "VentureManagement": VentureManagement,
-    "VenturePublicPage": VenturePublicPage,
     "VentureProjects": VentureProjects,
+    "VenturePublicPage": VenturePublicPage,
 }
 
 export const pagesConfig = {

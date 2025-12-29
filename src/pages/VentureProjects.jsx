@@ -11,6 +11,9 @@ import GlowCard from '@/components/ui/GlowCard';
 import SectionTitle from '@/components/ui/SectionTitle';
 import ProjectOverview from '@/components/projects/ProjectOverview';
 import ProjectNotes from '@/components/projects/ProjectNotes';
+import ProjectAnalyticsDashboard from '@/components/projects/ProjectAnalyticsDashboard';
+import ProjectTrendAnalysis from '@/components/projects/ProjectTrendAnalysis';
+import ProjectReportGenerator from '@/components/projects/ProjectReportGenerator';
 import { FolderKanban, Plus, Loader2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
@@ -195,6 +198,31 @@ export default function VentureProjects() {
               )}
             </div>
           </GlowCard>
+
+          {/* Analytics Dashboard for Selected Venture */}
+          {selectedVenture && !selectedProject && (
+            <GlowCard glowColor="mixed" className="p-8 mb-8">
+              <Tabs defaultValue="dashboard" className="space-y-6">
+                <TabsList className="bg-white/5 border border-white/10">
+                  <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                  <TabsTrigger value="trends">Trends</TabsTrigger>
+                  <TabsTrigger value="reports">Reports</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="dashboard">
+                  <ProjectAnalyticsDashboard ventureId={selectedVenture} />
+                </TabsContent>
+
+                <TabsContent value="trends">
+                  <ProjectTrendAnalysis ventureId={selectedVenture} />
+                </TabsContent>
+
+                <TabsContent value="reports">
+                  <ProjectReportGenerator ventureId={selectedVenture} />
+                </TabsContent>
+              </Tabs>
+            </GlowCard>
+          )}
 
           {/* Projects List & Details */}
           {selectedVenture && (
