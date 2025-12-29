@@ -23,6 +23,7 @@ import StakeholderJourney from './pages/StakeholderJourney';
 import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
 import VenturePublicPage from './pages/VenturePublicPage';
+import ClickUpDashboard from './pages/ClickUpDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -52,6 +53,7 @@ export const PAGES = {
     "VentureDetail": VentureDetail,
     "VentureManagement": VentureManagement,
     "VenturePublicPage": VenturePublicPage,
+    "ClickUpDashboard": ClickUpDashboard,
 }
 
 export const pagesConfig = {
