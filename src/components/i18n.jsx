@@ -720,7 +720,9 @@ i18n
     },
     react: {
       useSuspense: false // Disable suspense to avoid loading issues
-    }
+    },
+    returnNull: false, // Return key if translation is missing
+    returnEmptyString: false // Don't return empty string
   });
 
 // Save language changes to localStorage
