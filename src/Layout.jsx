@@ -185,8 +185,8 @@ function LayoutContent({ children, currentPageName }) {
                 </div>
               </div>
               <div className="flex flex-col leading-none">
-                <span className="text-sm font-bold font-montserrat tracking-tight">CAIO VISION</span>
-                <span className="text-[10px] text-[#C7A763] tracking-[0.15em] uppercase">Venture Studio</span>
+                <span className="text-sm font-bold font-montserrat tracking-tight">CASIO V2</span>
+                <span className="text-[10px] text-[#C7A763] tracking-[0.15em] uppercase">STUDIO</span>
               </div>
             </Link>
           </div>
@@ -357,7 +357,7 @@ function LayoutContent({ children, currentPageName }) {
                   <Brain className="w-5 h-5 text-[#C7A763]" />
                 </div>
                 <div>
-                  <span className="text-lg font-bold font-montserrat">CAIO VISION</span>
+                  <span className="text-lg font-bold font-montserrat">CASIO V2 STUDIO</span>
                 </div>
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
@@ -395,7 +395,7 @@ function LayoutContent({ children, currentPageName }) {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} CAIO Vision Venture Studio. {t.footer.rights}
+              © {new Date().getFullYear()} {t.footer.brand || 'CASIO V2 STUDIO'}. {t.footer.rights}
             </p>
             <div className="flex items-center gap-6">
               <span className="text-xs text-slate-500">

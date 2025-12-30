@@ -58,7 +58,7 @@ export const translations = {
     about: {
       hero: {
         subtitle: 'SOBRE NÓS',
-        title: 'CAIO Vision Venture Studio',
+        title: 'CASIO V2 STUDIO',
         description: 'An Operating System for Venture Creation. Transformamos complexidade em clareza estratégica através da união entre inteligência humana e artificial.'
       },
       values: {
@@ -360,7 +360,8 @@ export const translations = {
       contact: 'Contato',
       rights: 'Todos os direitos reservados.',
       tagline: 'Strategic insight at',
-      speed: 'thought speed'
+      speed: 'thought speed',
+      brand: 'CASIO V2 STUDIO'
     }
   },
 
@@ -423,7 +424,7 @@ export const translations = {
     about: {
       hero: {
         subtitle: 'ABOUT US',
-        title: 'CAIO Vision Venture Studio',
+        title: 'CASIO V2 STUDIO',
         description: 'An Operating System for Venture Creation. We transform complexity into strategic clarity through the union of human and artificial intelligence.'
       },
       values: {
@@ -725,7 +726,8 @@ export const translations = {
       contact: 'Contact',
       rights: 'All rights reserved.',
       tagline: 'Strategic insight at',
-      speed: 'thought speed'
+      speed: 'thought speed',
+      brand: 'CASIO V2 STUDIO'
     }
   }
 };

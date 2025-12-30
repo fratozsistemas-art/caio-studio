@@ -148,21 +148,21 @@ Deno.serve(async (req) => {
     // Pre-approved responses by threat type and language
     const responses = {
       en: {
-        systemPrompt: "I'm designed to help you with venture management, analytics, and collaboration. For information about our platform's capabilities, please refer to our public documentation or contact our team at contato@caiovision.com.",
-        architecture: "CAIO Vision's internal systems are proprietary. I can help you understand our platform's features and how to use them effectively for your ventures.",
+        systemPrompt: "I'm designed to help you with venture management, analytics, and collaboration. For information about our platform's capabilities, please refer to our public documentation or contact our team at contato@casio.com.",
+        architecture: "CASIO V2 STUDIO's internal systems are proprietary. I can help you understand our platform's features and how to use them effectively for your ventures.",
         proprietary: "Our methodologies and algorithms are proprietary intellectual property. I'm here to help you leverage our platform's capabilities to build successful ventures.",
         protocols: "System protocols are confidential. I can assist you with platform features, venture management, and strategic insights.",
-        systemNames: "I'm the CAIO Vision AI assistant. How can I help you with your ventures today?",
+        systemNames: "I'm the CASIO V2 STUDIO AI assistant. How can I help you with your ventures today?",
         jailbreak: "I'm designed specifically to assist with venture building and management. Let me know how I can help with your ventures.",
         extraction: "I cannot provide system data or configurations. I can help you with venture analytics, task management, and collaboration features.",
         general: "I'm here to help you build and manage ventures successfully. What would you like to work on today?"
       },
       pt: {
-        systemPrompt: "Fui projetado para ajudá-lo com gestão de ventures, análises e colaboração. Para informações sobre as capacidades da nossa plataforma, consulte nossa documentação pública ou entre em contato com nossa equipe em contato@caiovision.com.",
-        architecture: "Os sistemas internos da CAIO Vision são proprietários. Posso ajudá-lo a entender os recursos da nossa plataforma e como usá-los efetivamente para suas ventures.",
+        systemPrompt: "Fui projetado para ajudá-lo com gestão de ventures, análises e colaboração. Para informações sobre as capacidades da nossa plataforma, consulte nossa documentação pública ou entre em contato com nossa equipe em contato@casio.com.",
+        architecture: "Os sistemas internos da CASIO V2 STUDIO são proprietários. Posso ajudá-lo a entender os recursos da nossa plataforma e como usá-los efetivamente para suas ventures.",
         proprietary: "Nossas metodologias e algoritmos são propriedade intelectual. Estou aqui para ajudá-lo a aproveitar as capacidades da nossa plataforma para construir ventures de sucesso.",
         protocols: "Os protocolos do sistema são confidenciais. Posso ajudá-lo com recursos da plataforma, gestão de ventures e insights estratégicos.",
-        systemNames: "Sou o assistente de IA da CAIO Vision. Como posso ajudá-lo com suas ventures hoje?",
+        systemNames: "Sou o assistente de IA da CASIO V2 STUDIO. Como posso ajudá-lo com suas ventures hoje?",
         jailbreak: "Fui projetado especificamente para auxiliar na construção e gestão de ventures. Me diga como posso ajudar com suas ventures.",
         extraction: "Não posso fornecer dados ou configurações do sistema. Posso ajudá-lo com análises de ventures, gestão de tarefas e recursos de colaboração.",
         general: "Estou aqui para ajudá-lo a construir e gerenciar ventures com sucesso. No que gostaria de trabalhar hoje?"
