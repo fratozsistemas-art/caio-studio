@@ -20,7 +20,7 @@ function LayoutContent({ children, currentPageName }) {
   
   const publicNavigation = [
     { name: t.nav.home, page: "Home" },
-    { name: "Sua Jornada", page: "StakeholderJourney" },
+    { name: t.nav.journey, page: "StakeholderJourney" },
     { name: t.nav.portfolio, page: "Portfolio" },
     { name: t.nav.about, page: "About" }
   ];
@@ -204,60 +204,58 @@ function LayoutContent({ children, currentPageName }) {
                 }`}
               >
                 {item.name}
-                </Link>
-                ))}
+              </Link>
+            ))}
 
-                {/* Theme Toggle */}
-                <button
-                onClick={toggleTheme}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-accent transition-all border border-border"
-                title={t.theme.toggle}
-                >
-                {theme === 'dark' ? (
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-accent transition-all border border-border"
+              title={t.theme.toggle}
+            >
+              {theme === 'dark' ? (
                 <Sun className="w-3.5 h-3.5" />
-                ) : (
+              ) : (
                 <Moon className="w-3.5 h-3.5" />
-                )}
+              )}
+            </button>
+
+            {/* Language Toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-accent transition-all border border-border"
+              title="Change language"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span className="text-xs font-medium">{t.nav.langShort}</span>
+            </button>
+
+            {/* User Menu */}
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2 ml-2">
+                <NotificationBell />
+                <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-accent transition-all border border-border">
+                  <User className="w-3.5 h-3.5" />
+                  <span className="text-xs font-medium">{user?.full_name?.split(' ')[0]}</span>
                 </button>
-
-                {/* Language Toggle */}
-                  <button
-                    onClick={toggleLanguage}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-accent transition-all border border-border"
-                    title="Change language"
-                  >
-                    <Globe className="w-3.5 h-3.5" />
-                    <span className="text-xs font-medium">{language === 'pt-BR' ? 'PT' : 'EN'}</span>
-                    </button>
-
-                    {/* User Menu */}
-                    {isAuthenticated ? (
-                      <div className="flex items-center gap-2 ml-2">
-                        <NotificationBell />
-                      <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-accent transition-all border border-border">
-                        <User className="w-3.5 h-3.5" />
-                        <span className="text-xs font-medium">{user?.full_name?.split(' ')[0]}</span>
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-all"
-                        title={t.nav.logout}
-                      >
-                        <LogOut className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <Button
-                      onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
-                      size="sm"
-                      className="bg-[#C7A763] hover:bg-[#A88B4A] text-background"
-                    >
-                      {t.nav.login}
-                    </Button>
-                  )}
-                  </div>
-
-
+                <button
+                  onClick={handleLogout}
+                  className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-all"
+                  title={t.nav.logout}
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
+                size="sm"
+                className="bg-[#C7A763] hover:bg-[#A88B4A] text-background"
+              >
+                {t.nav.login}
+              </Button>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           {!isAuthenticated && (
@@ -296,31 +294,31 @@ function LayoutContent({ children, currentPageName }) {
                   >
                     {item.name}
                   </Link>
-                  ))}
+                ))}
 
-                  <button
+                <button
                   onClick={toggleTheme}
                   className="flex items-center gap-2.5 w-full px-3 py-2.5 text-base font-medium rounded-lg hover:bg-accent"
-                  >
+                >
                   {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                   {theme === 'dark' ? t.theme.light : t.theme.dark}
-                  </button>
+                </button>
 
-                  <button
+                <button
                   onClick={toggleLanguage}
                   className="flex items-center gap-2.5 w-full px-3 py-2.5 text-base font-medium rounded-lg hover:bg-accent"
-                  >
+                >
                   <Globe className="w-4 h-4" />
-                  {language === 'pt-BR' ? 'English' : 'Português'}
-                  </button>
+                  {t.nav.langFull}
+                </button>
 
-                  <Button
+                <Button
                   onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
                   className="w-full bg-[#C7A763] hover:bg-[#A88B4A] text-background font-semibold rounded-lg shadow-lg mt-4"
-                  >
+                >
                   {t.nav.login}
                   <ArrowUpRight className="ml-1.5 w-4 h-4" />
-                  </Button>
+                </Button>
               </div>
             </motion.div>
           )}
@@ -408,17 +406,17 @@ function LayoutContent({ children, currentPageName }) {
         </div>
       </footer>
     </div>
-    );
-    }
+  );
+}
 
-    import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
-    export default function Layout({ children, currentPageName }) {
-      return (
-        <ThemeProvider>
-          <LanguageProvider>
-            <LayoutContent children={children} currentPageName={currentPageName} />
-          </LanguageProvider>
-        </ThemeProvider>
-      );
-    }
+export default function Layout({ children, currentPageName }) {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <LayoutContent children={children} currentPageName={currentPageName} />
+      </LanguageProvider>
+    </ThemeProvider>
+  );
+}

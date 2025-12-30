@@ -14,12 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import GlowCard from "@/components/ui/GlowCard";
+import { useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "@/components/translations";
 
-const ventures = [
-  // Startup Projects
+const STATIC_VENTURES_CONFIG = [
   {
-    name: "Golden Deer",
-    description: "Plataforma de investimentos alternativos com foco em ativos digitais e tokenização.",
+    key: "golden_deer",
     layer: "startup",
     status: "development",
     category: "FinTech",
@@ -27,8 +27,7 @@ const ventures = [
     website: "https://goldendeer.com.br"
   },
   {
-    name: "QuickTech Acabamentos",
-    description: "Soluções de automação para pequenas e médias empresas com IA integrada.",
+    key: "quicktech_acabamentos",
     layer: "startup",
     status: "active",
     category: "SaaS",
@@ -36,8 +35,7 @@ const ventures = [
     website: "https://quicktechacabamentos.com.br"
   },
   {
-    name: "ESU Empreendimentos",
-    description: "Plataforma de gestão e desenvolvimento de empreendimentos imobiliários.",
+    key: "esu_empreendimentos",
     layer: "startup",
     status: "active",
     category: "PropTech",
@@ -45,16 +43,14 @@ const ventures = [
     website: "https://esuemi.com.br"
   },
   {
-    name: "Nexus Pay",
-    description: "Gateway de pagamentos unificado para e-commerce com checkout otimizado.",
+    key: "nexus_pay",
     layer: "startup",
     status: "development",
     category: "Payments",
     tags: ["E-commerce", "Pagamentos", "API"]
   },
   {
-    name: "ESIOS",
-    description: "Sistema operacional para gestão estratégica de ventures e portfolios.",
+    key: "esios",
     layer: "startup",
     status: "active",
     category: "Platform",
@@ -62,8 +58,7 @@ const ventures = [
     website: "https://esios.caiovision.com"
   },
   {
-    name: "CAIO Vision Studio",
-    description: "Portal institucional e showcase do ecossistema CAIO Vision.",
+    key: "caio_vision_studio",
     layer: "platform",
     status: "active",
     category: "Institutional",
@@ -71,8 +66,7 @@ const ventures = [
     website: "https://caiovision.com"
   },
   {
-    name: "CAIO Vision Brasil",
-    description: "Portal regional para o mercado brasileiro com conteúdo localizado.",
+    key: "caio_vision_brasil",
     layer: "platform",
     status: "active",
     category: "Regional Portal",
@@ -80,8 +74,7 @@ const ventures = [
     website: "https://caiovision.com.br"
   },
   {
-    name: "Twins",
-    description: "Plataforma de inteligência artificial para criação de gêmeos digitais.",
+    key: "twins",
     layer: "startup",
     status: "development",
     category: "AI Platform",
@@ -89,8 +82,7 @@ const ventures = [
     website: "https://twins.caiovision.com"
   },
   {
-    name: "Troyjo",
-    description: "Plataforma de análise estratégica e inteligência de mercado.",
+    key: "troyjo",
     layer: "startup",
     status: "active",
     category: "Analytics",
@@ -98,8 +90,7 @@ const ventures = [
     website: "https://troyjo.caiovision.com"
   },
   {
-    name: "Colour Me Brazil",
-    description: "Plataforma de arte digital e experiências culturais brasileiras.",
+    key: "colour_me_brazil",
     layer: "cultural",
     status: "active",
     category: "Digital Art",
@@ -107,26 +98,22 @@ const ventures = [
     website: "https://colour-me-brazil.caiovision.com"
   },
   {
-    name: "i9net",
-    description: "Rede de inovação e conhecimento conectando empresas e instituições.",
+    key: "i9net",
     layer: "scaleup",
     status: "scaling",
     category: "Innovation Network",
     tags: ["Network", "Innovation", "Collaboration"],
     website: "https://i9net.caiovision.com"
   },
-  // Scale-Up
   {
-    name: "All.AI",
-    description: "Plataforma enterprise de inteligência artificial para transformação digital.",
+    key: "all_ai",
     layer: "scaleup",
     status: "scaling",
     category: "AI Enterprise",
     tags: ["Machine Learning", "Enterprise", "Analytics"]
   },
   {
-    name: "Innova Academy",
-    description: "EdTech focada em capacitação profissional com metodologias imersivas.",
+    key: "innova_academy",
     layer: "scaleup",
     status: "active",
     category: "EdTech",
@@ -134,17 +121,14 @@ const ventures = [
     website: "https://innovaacademy.com.br"
   },
   {
-    name: "DataSync",
-    description: "Orquestração de dados em tempo real para operações críticas de negócios.",
+    key: "datasync",
     layer: "scaleup",
     status: "scaling",
     category: "Data Infra",
     tags: ["Big Data", "Real-time", "Integration"]
   },
-  // Deep Tech
   {
-    name: "ORIX Materials",
-    description: "Desenvolvimento de materiais avançados com propriedades programáveis.",
+    key: "orix_materials",
     layer: "deeptech",
     status: "research",
     category: "Advanced Materials",
@@ -152,44 +136,36 @@ const ventures = [
     website: "https://orixmaterials.com"
   },
   {
-    name: "QuantumBridge",
-    description: "Pesquisa em computação quântica aplicada a problemas de otimização.",
+    key: "quantum_bridge",
     layer: "deeptech",
     status: "research",
     category: "Quantum Computing",
     tags: ["Quantum", "Research", "Patents"]
   },
-  // Enabling Platforms
   {
-    name: "Fratoz Triple A",
-    description: "Infraestrutura de aceleração com recursos compartilhados para o ecossistema.",
+    key: "fratoz_triple_a",
     layer: "platform",
     status: "active",
     category: "Acceleration",
     tags: ["Infra", "Shared Services", "Support"]
   },
   {
-    name: "CRIA Incubator",
-    description: "Incubadora de ideias transformadoras com mentoria e capital semente.",
+    key: "cria_incubator",
     layer: "platform",
     status: "active",
     category: "Incubation",
     tags: ["Early Stage", "Mentoring", "Seed"],
     website: "https://criaincubator.com.br"
   },
-  // Cultural Cluster
   {
-    name: "Arte e Cultura Lab",
-    description: "Laboratório de inovação em artes e manifestações culturais.",
+    key: "arte_e_cultura_lab",
     layer: "cultural",
     status: "active",
     category: "Cultural Innovation",
     tags: ["Arts", "Culture", "Innovation", "Community"]
   },
-  // Win-Win Optionalities
   {
-    name: "Synergy Hub",
-    description: "Plataforma de parcerias estratégicas e colaborações win-win.",
+    key: "synergy_hub",
     layer: "winwin",
     status: "active",
     category: "Strategic Partnerships",
@@ -197,17 +173,20 @@ const ventures = [
   }
 ];
 
-const layers = [
-  { id: "all", label: "Todos", icon: Grid },
-  { id: "startup", label: "Startups", icon: Rocket },
-  { id: "scaleup", label: "Scale-ups", icon: TrendingUp },
-  { id: "deeptech", label: "Deep Tech", icon: Cpu },
-  { id: "platform", label: "Platforms", icon: Zap },
-  { id: "cultural", label: "Cluster Cultural", icon: Palette },
-  { id: "winwin", label: "Opcionalidades Win-Win", icon: Network }
+const STATIC_LAYERS_CONFIG = [
+  { id: "all", icon: Grid },
+  { id: "startup", icon: Rocket },
+  { id: "scaleup", icon: TrendingUp },
+  { id: "deeptech", icon: Cpu },
+  { id: "platform", icon: Zap },
+  { id: "cultural", icon: Palette },
+  { id: "winwin", icon: Network }
 ];
 
 export default function Portfolio() {
+  const { language } = useLanguage();
+  const t = useTranslation(language);
+  
   const [activeLayer, setActiveLayer] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
@@ -238,9 +217,15 @@ export default function Portfolio() {
     queryFn: () => base44.entities.Venture.list('-created_date', 100)
   });
 
-  // Combine database and hardcoded ventures
+  // Combine database and translated static ventures
   const allVentures = useMemo(() => {
-    const combined = [...(dbVentures || []), ...ventures];
+    const translatedStaticVentures = STATIC_VENTURES_CONFIG.map(v => ({
+      ...v,
+      name: t.portfolio.ventures[v.key].name,
+      description: t.portfolio.ventures[v.key].description
+    }));
+
+    const combined = [...(dbVentures || []), ...translatedStaticVentures];
     const unique = combined.reduce((acc, current) => {
       const exists = acc.find(v => v.name === current.name);
       if (!exists) {
@@ -249,7 +234,7 @@ export default function Portfolio() {
       return acc;
     }, []);
     return unique;
-  }, [dbVentures]);
+  }, [dbVentures, t.portfolio.ventures]);
 
   // Extract all unique tags from ventures
   const allTags = useMemo(() => {
@@ -346,14 +331,13 @@ export default function Portfolio() {
             className="text-center max-w-4xl mx-auto"
           >
             <span className="text-sm font-medium tracking-[0.3em] uppercase text-[#C7A763] mb-6 block">
-              Portfolio
+              {t.portfolio.subtitle}
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white font-montserrat leading-tight mb-8">
-              Um Sistema Operacional para Criação de Ventures
+              {t.portfolio.hero.title}
             </h1>
             <p className="text-slate-300 text-xl md:text-2xl leading-relaxed mb-12">
-              Transformando complexidade em clareza estratégica através da união entre 
-              inteligência humana e artificial.
+              {t.portfolio.hero.description}
             </p>
           </motion.div>
         </div>
@@ -369,26 +353,17 @@ export default function Portfolio() {
           <GlowCard glowColor="mixed" className="p-10 md:p-14">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-montserrat mb-6">
-                O Desafio que Estamos Resolvendo
+                {t.portfolio.problem.title}
               </h2>
               <div className="space-y-4 text-slate-300 text-lg leading-relaxed">
-                <p>
-                  Ventures tradicionais falham não por falta de capital ou tecnologia. 
-                  Elas falham por <strong className="text-white">decisões mal estruturadas</strong> sobre 
-                  estratégia, pessoas e execução.
-                </p>
-                <p>
-                  Fundadores são pressionados a decidir em cenários onde:
-                </p>
+                <p dangerouslySetInnerHTML={{ __html: t.portfolio.problem.p1 }} />
+                <p>{t.portfolio.problem.p2}</p>
                 <ul className="space-y-2 ml-6 list-disc text-slate-400">
-                  <li>As informações são fragmentadas e contraditórias</li>
-                  <li>Os riscos são irreversíveis e complexos</li>
-                  <li>As consequências afetam cultura, financeiro e posicionamento</li>
+                  <li>{t.portfolio.problem.li1}</li>
+                  <li>{t.portfolio.problem.li2}</li>
+                  <li>{t.portfolio.problem.li3}</li>
                 </ul>
-                <p className="pt-4">
-                  O verdadeiro gargalo não é IA ou dinheiro. É <strong className="text-[#C7A763]">
-                  clareza decisória sob incerteza extrema</strong>.
-                </p>
+                <p className="pt-4" dangerouslySetInnerHTML={{ __html: t.portfolio.problem.p3 }} />
               </div>
             </div>
           </GlowCard>
@@ -404,18 +379,17 @@ export default function Portfolio() {
         >
           <div className="text-center mb-12">
             <SectionTitle
-              subtitle="Nossa Abordagem"
-              title="6 Camadas Estratégicas"
+              subtitle={t.portfolio.approach.subtitle}
+              title={t.portfolio.approach.title}
               accent="cyan"
             />
             <p className="text-slate-400 text-lg mt-6 max-w-2xl mx-auto">
-              Cada camada do portfolio foi desenhada para criar sinergias, compartilhar 
-              recursos e amplificar o impacto coletivo.
+              {t.portfolio.approach.description}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {layers.filter(l => l.id !== 'all').map((layer, idx) => (
+            {STATIC_LAYERS_CONFIG.filter(l => l.id !== 'all').map((layer, idx) => (
               <motion.div
                 key={layer.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -438,10 +412,10 @@ export default function Portfolio() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-white mb-2">
-                          {layer.label}
+                          {t.portfolio.filters[layer.id]}
                         </h3>
                         <p className="text-sm text-slate-400 leading-relaxed">
-                          {allVentures.filter(v => v.layer === layer.id).length} ventures
+                          {allVentures.filter(v => v.layer === layer.id).length} {t.portfolio.venturesCount}
                         </p>
                       </div>
                     </div>
@@ -461,8 +435,8 @@ export default function Portfolio() {
         {/* Ventures Explorer Section */}
         <div className="mb-12">
           <SectionTitle
-            subtitle="Explore"
-            title="Nossas Ventures"
+            subtitle={t.portfolio.explore.subtitle}
+            title={t.portfolio.explore.title}
             accent="gold"
             align="left"
           />
@@ -478,7 +452,7 @@ export default function Portfolio() {
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar ventures por nome, descrição, categoria ou tags..."
+                  placeholder={t.portfolio.search.placeholder}
                   className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-slate-500"
                 />
                 {searchQuery && (
@@ -498,7 +472,7 @@ export default function Portfolio() {
                 }`}
               >
                 <Filter className="w-4 h-4 mr-2" />
-                Filtros Avançados
+                {t.portfolio.search.advancedFilters}
                 {activeFiltersCount > 0 && (
                   <Badge className="ml-2 bg-[#C7A763] text-[#06101F] hover:bg-[#C7A763]">
                     {activeFiltersCount}
@@ -523,10 +497,10 @@ export default function Portfolio() {
                     <div>
                       <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                         <Grid className="w-4 h-4 text-[#C7A763]" />
-                        Camadas do Portfolio
+                        {t.portfolio.filters.layersTitle}
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {layers.map((layer) => (
+                        {STATIC_LAYERS_CONFIG.map((layer) => (
                           <Button
                             key={layer.id}
                             size="sm"
@@ -539,7 +513,7 @@ export default function Portfolio() {
                             }`}
                           >
                             <layer.icon className="w-3 h-3 mr-1.5" />
-                            {layer.label}
+                            {t.portfolio.filters[layer.id]}
                           </Button>
                         ))}
                       </div>
@@ -549,7 +523,7 @@ export default function Portfolio() {
                     <div>
                       <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                         <Zap className="w-4 h-4 text-[#00D4FF]" />
-                        Status
+                        {t.common.status}
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         <Button
@@ -562,7 +536,7 @@ export default function Portfolio() {
                               : "border-white/20 bg-white/5 text-white hover:bg-white/10"
                           }`}
                         >
-                          Todos
+                          {t.common.all}
                         </Button>
                         {allStatuses.map((status) => (
                           <Button
@@ -576,7 +550,7 @@ export default function Portfolio() {
                                 : "border-white/20 bg-white/5 text-white hover:bg-white/10"
                             }`}
                           >
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                            {t.portfolio.status[status] || status.charAt(0).toUpperCase() + status.slice(1)}
                           </Button>
                         ))}
                       </div>
@@ -586,10 +560,10 @@ export default function Portfolio() {
                     <div>
                       <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                         <Filter className="w-4 h-4 text-[#C7A763]" />
-                        Filtrar por Tags
+                        {t.portfolio.filters.tagsTitle}
                         {selectedTags.length > 0 && (
                           <span className="text-xs text-[#C7A763]">
-                            ({selectedTags.length} selecionada{selectedTags.length > 1 ? 's' : ''})
+                            ({selectedTags.length} {t.portfolio.filters.tagsSelected})
                           </span>
                         )}
                       </h4>
@@ -614,7 +588,7 @@ export default function Portfolio() {
                     {activeFiltersCount > 0 && (
                       <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                         <span className="text-sm text-slate-400">
-                          {filteredVentures.length} venture{filteredVentures.length !== 1 ? 's' : ''} encontrada{filteredVentures.length !== 1 ? 's' : ''}
+                          {t.portfolio.resultsSummary.showing} <span className="text-[#C7A763] font-semibold">{filteredVentures.length}</span> {t.portfolio.resultsSummary.of} <span className="text-white">{allVentures.length}</span> {t.portfolio.resultsSummary.venturesFound}
                         </span>
                         <Button
                           size="sm"
@@ -623,7 +597,7 @@ export default function Portfolio() {
                           className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                         >
                           <X className="w-4 h-4 mr-1.5" />
-                          Limpar Filtros
+                          {t.portfolio.resultsSummary.clearFilters}
                         </Button>
                       </div>
                     )}
@@ -636,13 +610,13 @@ export default function Portfolio() {
           {/* Active Filters Display */}
           {(activeFiltersCount > 0 && !showFilters) && (
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-slate-400">Filtros ativos:</span>
+              <span className="text-sm text-slate-400">{t.portfolio.activeFilters.title}:</span>
               {activeLayer !== "all" && (
                 <Badge 
                   variant="secondary" 
                   className="bg-[#C7A763]/20 text-[#C7A763] border border-[#C7A763]/30 hover:bg-[#C7A763]/30"
                 >
-                  {layers.find(l => l.id === activeLayer)?.label}
+                  {t.portfolio.filters[activeLayer]}
                   <button onClick={() => setActiveLayer("all")} className="ml-1.5">
                     <X className="w-3 h-3" />
                   </button>
@@ -653,7 +627,7 @@ export default function Portfolio() {
                   variant="secondary" 
                   className="bg-[#00D4FF]/20 text-[#00D4FF] border border-[#00D4FF]/30 hover:bg-[#00D4FF]/30"
                 >
-                  {selectedStatus}
+                  {t.portfolio.status[selectedStatus] || selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}
                   <button onClick={() => setSelectedStatus("all")} className="ml-1.5">
                     <X className="w-3 h-3" />
                   </button>
@@ -676,7 +650,7 @@ export default function Portfolio() {
                   variant="secondary" 
                   className="bg-white/10 text-white border border-white/20 hover:bg-white/20"
                 >
-                  Busca: "{searchQuery}"
+                  {t.portfolio.activeFilters.search}: "{searchQuery}"
                   <button onClick={() => setSearchQuery("")} className="ml-1.5">
                     <X className="w-3 h-3" />
                   </button>
@@ -686,18 +660,11 @@ export default function Portfolio() {
           )}
         </div>
 
-        {/* Results Summary */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="text-sm text-slate-400">
-            Mostrando <span className="text-[#C7A763] font-semibold">{filteredVentures.length}</span> de <span className="text-white">{allVentures.length}</span> ventures
-          </div>
-        </div>
-
         {/* Ventures by Layer */}
         {filteredVentures.length > 0 ? (
           <>
             <div className="space-y-16">
-              {layers.filter(l => l.id !== 'all').map((layer) => {
+              {STATIC_LAYERS_CONFIG.filter(l => l.id !== 'all').map((layer) => {
                 const layerVentures = filteredVentures.filter(v => v.layer === layer.id);
                 if (layerVentures.length === 0) return null;
 
@@ -715,12 +682,12 @@ export default function Portfolio() {
                           <layer.icon className="w-5 h-5 text-[#C7A763]" />
                         </div>
                         <h2 className="text-3xl font-bold text-white font-montserrat">
-                          {layer.label}
+                          {t.portfolio.filters[layer.id]}
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
                       </div>
                       <p className="text-slate-400 ml-14">
-                        {layerVentures.length} venture{layerVentures.length !== 1 ? 's' : ''}
+                        {layerVentures.length} {t.portfolio.venturesCount}
                       </p>
                     </motion.div>
 
@@ -737,7 +704,7 @@ export default function Portfolio() {
                             <button
                               onClick={() => setQuickViewVenture(venture)}
                               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
-                              title="Visualização rápida"
+                              title={t.portfolio.quickView}
                             >
                               <Eye className="w-4 h-4" />
                             </button>
@@ -769,16 +736,16 @@ export default function Portfolio() {
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
               <Search className="w-8 h-8 text-white/30" />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">Nenhuma venture encontrada</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">{t.portfolio.noVentures.title}</h3>
             <p className="text-slate-400 mb-6">
-              Tente ajustar seus filtros ou termos de busca
+              {t.portfolio.noVentures.description}
             </p>
             <Button
               onClick={clearAllFilters}
               variant="outline"
               className="border-white/20 bg-white/5 hover:bg-white/10 text-white"
             >
-              Limpar todos os filtros
+              {t.portfolio.noVentures.clearFilters}
             </Button>
           </motion.div>
         )}
@@ -791,17 +758,17 @@ export default function Portfolio() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          {[
-            { value: "15+", label: "Ventures Ativas" },
-            { value: "6", label: "Camadas Estratégicas" },
-            { value: "50+", label: "Profissionais" },
-            { value: "R$2M+", label: "Capital Deployado" }
+          {[ 
+            { value: "15+", labelKey: "activeVentures" },
+            { value: "6", labelKey: "strategicLayers" },
+            { value: "50+", labelKey: "professionals" },
+            { value: "R$2M+", labelKey: "capitalDeployed" }
           ].map((stat, index) => (
             <div key={index} className="text-center p-6 rounded-2xl bg-white/5 border border-white/10">
               <div className="text-3xl md:text-4xl font-bold text-[#C7A763] font-montserrat mb-2">
                 {stat.value}
               </div>
-              <div className="text-sm text-slate-400">{stat.label}</div>
+              <div className="text-sm text-slate-400">{t.portfolio.stats[stat.labelKey]}</div>
             </div>
           ))}
         </motion.div>
