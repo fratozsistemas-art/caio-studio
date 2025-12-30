@@ -95,14 +95,17 @@ Deno.serve(async (req) => {
                 break;
 
             case 'update':
-                if (!data.id && !query.id) {
+                const updateId = data.id || query.id;
+                if (!updateId) {
                     return Response.json({ error: 'Missing id for update operation' }, { status: 400 });
                 }
-                const updateId = data.id || query.id;
                 
                 // Verify ownership before update
                 if (securityField) {
                     const existingItem = await entityAPI.get(updateId);
+                    if (!existingItem) {
+                        return Response.json({ error: 'Item not found' }, { status: 404 });
+                    }
                     if (existingItem[securityField] !== user.email) {
                         return Response.json({ error: 'Access denied' }, { status: 403 });
                     }
@@ -114,19 +117,23 @@ Deno.serve(async (req) => {
                 break;
 
             case 'delete':
-                if (!query.id) {
+                const deleteId = data.id || query.id;
+                if (!deleteId) {
                     return Response.json({ error: 'Missing id for delete operation' }, { status: 400 });
                 }
                 
                 // Verify ownership before delete
                 if (securityField) {
-                    const existingItem = await entityAPI.get(query.id);
+                    const existingItem = await entityAPI.get(deleteId);
+                    if (!existingItem) {
+                        return Response.json({ error: 'Item not found' }, { status: 404 });
+                    }
                     if (existingItem[securityField] !== user.email) {
                         return Response.json({ error: 'Access denied' }, { status: 403 });
                     }
                 }
                 
-                result = await entityAPI.delete(query.id);
+                result = await entityAPI.delete(deleteId);
                 break;
 
             case 'bulkCreate':
