@@ -5,16 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Brain, ArrowUpRight, Globe, Moon, Sun, User, LogOut } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
-import { useTranslation } from "@/components/translations";
+import { useLanguage } from "@/components/LanguageProvider";
+import { useTranslation } from "react-i18next";
+import "@/components/i18n";
 import Sidebar from "@/components/layout/Sidebar";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 function LayoutContent({ children, currentPageName }) {
-  const { language, toggleLanguage } = useLanguage();
-  const t = useTranslation(language);
+  const { toggleLanguage } = useLanguage();
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   
@@ -414,9 +415,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 export default function Layout({ children, currentPageName }) {
   return (
     <ThemeProvider>
-      <LanguageProvider>
-        <LayoutContent children={children} currentPageName={currentPageName} />
-      </LanguageProvider>
+      <LayoutContent children={children} currentPageName={currentPageName} />
     </ThemeProvider>
   );
 }
