@@ -6,12 +6,11 @@ import { Brain, TrendingUp, AlertTriangle, Sparkles, Loader2, Target } from 'luc
 import { Button } from "@/components/ui/button";
 import GlowCard from "@/components/ui/GlowCard";
 import { toast } from "sonner";
-import { useLanguage } from "@/components/LanguageProvider";
-import { useTranslation } from "@/components/translations";
+import { useTranslation } from "react-i18next";
+import "@/components/i18n";
 
 export default function AIInsightsDashboard({ ventures, financials, kpis, talents }) {
-  const { language } = useLanguage();
-  const t = useTranslation(language);
+  const { t } = useTranslation();
   const [insights, setInsights] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
 

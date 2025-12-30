@@ -18,11 +18,12 @@ import {
   FolderKanban
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { useTranslation } from "@/components/translations";
+import { useTranslation } from "react-i18next";
+import "@/components/i18n";
 
-export default function Sidebar({ isOpen, onClose, isAdmin, language }) {
+export default function Sidebar({ isOpen, onClose, isAdmin }) {
   const location = useLocation();
-  const t = useTranslation(language);
+  const { t } = useTranslation();
   
   const currentPage = location.pathname.split('/').pop() || 'Home';
 

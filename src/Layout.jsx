@@ -334,7 +334,6 @@ function LayoutContent({ children, currentPageName }) {
             isOpen={sidebarOpen} 
             onClose={() => setSidebarOpen(false)}
             isAdmin={isAdmin}
-            language={language}
           />
         )}
 

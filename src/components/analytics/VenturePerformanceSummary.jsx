@@ -5,12 +5,11 @@ import { Brain, TrendingUp, TrendingDown, Loader2, CheckCircle2, AlertCircle } f
 import { Button } from "@/components/ui/button";
 import GlowCard from "@/components/ui/GlowCard";
 import { toast } from "sonner";
-import { useLanguage } from "@/components/LanguageProvider";
-import { useTranslation } from "@/components/translations";
+import { useTranslation } from "react-i18next";
+import "@/components/i18n";
 
 export default function VenturePerformanceSummary({ venture, financials, kpis, talents }) {
-  const { language } = useLanguage();
-  const t = useTranslation(language);
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [generating, setGenerating] = useState(false);
 
