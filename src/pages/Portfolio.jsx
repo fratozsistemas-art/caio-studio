@@ -186,6 +186,13 @@ const STATIC_LAYERS_CONFIG = [
 export default function Portfolio() {
   const { t } = useTranslation();
   
+  // Ensure translation is loaded before accessing
+  if (!t || typeof t !== 'function') {
+    return <div className="min-h-screen flex items-center justify-center">
+      <Loader2 className="w-8 h-8 animate-spin text-white" />
+    </div>;
+  }
+  
   const [activeLayer, setActiveLayer] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
@@ -220,8 +227,8 @@ export default function Portfolio() {
   const allVentures = useMemo(() => {
     const translatedStaticVentures = STATIC_VENTURES_CONFIG.map(v => ({
       ...v,
-      name: t.portfolio.ventures[v.key].name,
-      description: t.portfolio.ventures[v.key].description
+      name: t(`portfolio.ventures.${v.key}.name`),
+      description: t(`portfolio.ventures.${v.key}.description`)
     }));
 
     const combined = [...(dbVentures || []), ...translatedStaticVentures];
@@ -330,13 +337,13 @@ export default function Portfolio() {
             className="text-center max-w-4xl mx-auto"
           >
             <span className="text-sm font-medium tracking-[0.3em] uppercase text-[#C7A763] mb-6 block">
-              {t.portfolio.subtitle}
+              {t('portfolio.subtitle')}
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white font-montserrat leading-tight mb-8">
-              {t.portfolio.hero.title}
+              {t('portfolio.hero.title')}
             </h1>
             <p className="text-slate-300 text-xl md:text-2xl leading-relaxed mb-12">
-              {t.portfolio.hero.description}
+              {t('portfolio.hero.description')}
             </p>
           </motion.div>
         </div>
@@ -352,17 +359,17 @@ export default function Portfolio() {
           <GlowCard glowColor="mixed" className="p-10 md:p-14">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-montserrat mb-6">
-                {t.portfolio.problem.title}
+                {t('portfolio.problem.title')}
               </h2>
               <div className="space-y-4 text-slate-300 text-lg leading-relaxed">
-                <p dangerouslySetInnerHTML={{ __html: t.portfolio.problem.p1 }} />
-                <p>{t.portfolio.problem.p2}</p>
+                <p dangerouslySetInnerHTML={{ __html: t('portfolio.problem.p1') }} />
+                <p>{t('portfolio.problem.p2')}</p>
                 <ul className="space-y-2 ml-6 list-disc text-slate-400">
-                  <li>{t.portfolio.problem.li1}</li>
-                  <li>{t.portfolio.problem.li2}</li>
-                  <li>{t.portfolio.problem.li3}</li>
+                  <li>{t('portfolio.problem.li1')}</li>
+                  <li>{t('portfolio.problem.li2')}</li>
+                  <li>{t('portfolio.problem.li3')}</li>
                 </ul>
-                <p className="pt-4" dangerouslySetInnerHTML={{ __html: t.portfolio.problem.p3 }} />
+                <p className="pt-4" dangerouslySetInnerHTML={{ __html: t('portfolio.problem.p3') }} />
               </div>
             </div>
           </GlowCard>
@@ -378,12 +385,12 @@ export default function Portfolio() {
         >
           <div className="text-center mb-12">
             <SectionTitle
-              subtitle={t.portfolio.approach.subtitle}
-              title={t.portfolio.approach.title}
+              subtitle={t('portfolio.approach.subtitle')}
+              title={t('portfolio.approach.title')}
               accent="cyan"
             />
             <p className="text-slate-400 text-lg mt-6 max-w-2xl mx-auto">
-              {t.portfolio.approach.description}
+              {t('portfolio.approach.description')}
             </p>
           </div>
 
@@ -411,10 +418,10 @@ export default function Portfolio() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-white mb-2">
-                          {t.portfolio.filters[layer.id]}
+                          {t(`portfolio.filters.${layer.id}`)}
                         </h3>
                         <p className="text-sm text-slate-400 leading-relaxed">
-                          {allVentures.filter(v => v.layer === layer.id).length} {t.portfolio.venturesCount}
+                          {allVentures.filter(v => v.layer === layer.id).length} {t('portfolio.venturesCount')}
                         </p>
                       </div>
                     </div>
@@ -434,8 +441,8 @@ export default function Portfolio() {
         {/* Ventures Explorer Section */}
         <div className="mb-12">
           <SectionTitle
-            subtitle={t.portfolio.explore.subtitle}
-            title={t.portfolio.explore.title}
+            subtitle={t('portfolio.explore.subtitle')}
+            title={t('portfolio.explore.title')}
             accent="gold"
             align="left"
           />
@@ -451,7 +458,7 @@ export default function Portfolio() {
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t.portfolio.search.placeholder}
+                  placeholder={t('portfolio.search.placeholder')}
                   className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-slate-500"
                 />
                 {searchQuery && (
@@ -471,7 +478,7 @@ export default function Portfolio() {
                 }`}
               >
                 <Filter className="w-4 h-4 mr-2" />
-                {t.portfolio.search.advancedFilters}
+                {t('portfolio.search.advancedFilters')}
                 {activeFiltersCount > 0 && (
                   <Badge className="ml-2 bg-[#C7A763] text-[#06101F] hover:bg-[#C7A763]">
                     {activeFiltersCount}
@@ -496,7 +503,7 @@ export default function Portfolio() {
                     <div>
                       <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                         <Grid className="w-4 h-4 text-[#C7A763]" />
-                        {t.portfolio.filters.layersTitle}
+                        {t('portfolio.filters.layersTitle')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {STATIC_LAYERS_CONFIG.map((layer) => (
@@ -522,7 +529,7 @@ export default function Portfolio() {
                     <div>
                       <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                         <Zap className="w-4 h-4 text-[#00D4FF]" />
-                        {t.common.status}
+                        {t('common.status')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         <Button
@@ -533,10 +540,10 @@ export default function Portfolio() {
                             selectedStatus === "all"
                               ? "bg-gradient-to-r from-[#00D4FF] to-[#0099CC] text-[#06101F]"
                               : "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                          }`}
-                        >
-                          {t.common.all}
-                        </Button>
+                              }`}
+                              >
+                              {t('common.all')}
+                              </Button>
                         {allStatuses.map((status) => (
                           <Button
                             key={status}
@@ -547,10 +554,10 @@ export default function Portfolio() {
                               selectedStatus === status
                                 ? "bg-gradient-to-r from-[#00D4FF] to-[#0099CC] text-[#06101F]"
                                 : "border-white/20 bg-white/5 text-white hover:bg-white/10"
-                            }`}
-                          >
-                            {t.portfolio.status[status] || status.charAt(0).toUpperCase() + status.slice(1)}
-                          </Button>
+                                }`}
+                                >
+                                {t(`portfolio.status.${status}`) || status.charAt(0).toUpperCase() + status.slice(1)}
+                                </Button>
                         ))}
                       </div>
                     </div>
@@ -559,10 +566,10 @@ export default function Portfolio() {
                     <div>
                       <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                         <Filter className="w-4 h-4 text-[#C7A763]" />
-                        {t.portfolio.filters.tagsTitle}
+                        {t('portfolio.filters.tagsTitle')}
                         {selectedTags.length > 0 && (
                           <span className="text-xs text-[#C7A763]">
-                            ({selectedTags.length} {t.portfolio.filters.tagsSelected})
+                            ({selectedTags.length} {t('portfolio.filters.tagsSelected')})
                           </span>
                         )}
                       </h4>
@@ -587,7 +594,7 @@ export default function Portfolio() {
                     {activeFiltersCount > 0 && (
                       <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                         <span className="text-sm text-slate-400">
-                          {t.portfolio.resultsSummary.showing} <span className="text-[#C7A763] font-semibold">{filteredVentures.length}</span> {t.portfolio.resultsSummary.of} <span className="text-white">{allVentures.length}</span> {t.portfolio.resultsSummary.venturesFound}
+                          {t('portfolio.resultsSummary.showing')} <span className="text-[#C7A763] font-semibold">{filteredVentures.length}</span> {t('portfolio.resultsSummary.of')} <span className="text-white">{allVentures.length}</span> {t('portfolio.resultsSummary.venturesFound')}
                         </span>
                         <Button
                           size="sm"
@@ -596,7 +603,7 @@ export default function Portfolio() {
                           className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                         >
                           <X className="w-4 h-4 mr-1.5" />
-                          {t.portfolio.resultsSummary.clearFilters}
+                          {t('portfolio.resultsSummary.clearFilters')}
                         </Button>
                       </div>
                     )}
@@ -609,13 +616,13 @@ export default function Portfolio() {
           {/* Active Filters Display */}
           {(activeFiltersCount > 0 && !showFilters) && (
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-slate-400">{t.portfolio.activeFilters.title}:</span>
+              <span className="text-sm text-slate-400">{t('portfolio.activeFilters.title')}:</span>
               {activeLayer !== "all" && (
                 <Badge 
                   variant="secondary" 
                   className="bg-[#C7A763]/20 text-[#C7A763] border border-[#C7A763]/30 hover:bg-[#C7A763]/30"
                 >
-                  {t.portfolio.filters[activeLayer]}
+                  {t(`portfolio.filters.${activeLayer}`)}
                   <button onClick={() => setActiveLayer("all")} className="ml-1.5">
                     <X className="w-3 h-3" />
                   </button>
@@ -626,7 +633,7 @@ export default function Portfolio() {
                   variant="secondary" 
                   className="bg-[#00D4FF]/20 text-[#00D4FF] border border-[#00D4FF]/30 hover:bg-[#00D4FF]/30"
                 >
-                  {t.portfolio.status[selectedStatus] || selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}
+                  {t(`portfolio.status.${selectedStatus}`) || selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}
                   <button onClick={() => setSelectedStatus("all")} className="ml-1.5">
                     <X className="w-3 h-3" />
                   </button>
@@ -649,14 +656,14 @@ export default function Portfolio() {
                   variant="secondary" 
                   className="bg-white/10 text-white border border-white/20 hover:bg-white/20"
                 >
-                  {t.portfolio.activeFilters.search}: "{searchQuery}"
+                  {t('portfolio.activeFilters.search')}: "{searchQuery}"
                   <button onClick={() => setSearchQuery("")} className="ml-1.5">
                     <X className="w-3 h-3" />
                   </button>
                 </Badge>
               )}
-            </div>
-          )}
+              </div>
+              )}
         </div>
 
         {/* Ventures by Layer */}
@@ -681,13 +688,13 @@ export default function Portfolio() {
                           <layer.icon className="w-5 h-5 text-[#C7A763]" />
                         </div>
                         <h2 className="text-3xl font-bold text-white font-montserrat">
-                          {t.portfolio.filters[layer.id]}
+                          {t(`portfolio.filters.${layer.id}`)}
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
-                      </div>
-                      <p className="text-slate-400 ml-14">
-                        {layerVentures.length} {t.portfolio.venturesCount}
-                      </p>
+                        </div>
+                        <p className="text-slate-400 ml-14">
+                        {layerVentures.length} {t('portfolio.venturesCount')}
+                        </p>
                     </motion.div>
 
                     <motion.div 
@@ -703,10 +710,10 @@ export default function Portfolio() {
                             <button
                               onClick={() => setQuickViewVenture(venture)}
                               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
-                              title={t.portfolio.quickView}
-                            >
+                              title={t('portfolio.quickView')}
+                              >
                               <Eye className="w-4 h-4" />
-                            </button>
+                              </button>
                           </div>
                         ))}
                       </AnimatePresence>
@@ -735,16 +742,16 @@ export default function Portfolio() {
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
               <Search className="w-8 h-8 text-white/30" />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">{t.portfolio.noVentures.title}</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">{t('portfolio.noVentures.title')}</h3>
             <p className="text-slate-400 mb-6">
-              {t.portfolio.noVentures.description}
+              {t('portfolio.noVentures.description')}
             </p>
             <Button
               onClick={clearAllFilters}
               variant="outline"
               className="border-white/20 bg-white/5 hover:bg-white/10 text-white"
             >
-              {t.portfolio.noVentures.clearFilters}
+              {t('portfolio.noVentures.clearFilters')}
             </Button>
           </motion.div>
         )}
@@ -767,7 +774,7 @@ export default function Portfolio() {
               <div className="text-3xl md:text-4xl font-bold text-[#C7A763] font-montserrat mb-2">
                 {stat.value}
               </div>
-              <div className="text-sm text-slate-400">{t.portfolio.stats[stat.labelKey]}</div>
+              <div className="text-sm text-slate-400">{t(`portfolio.stats.${stat.labelKey}`)}</div>
             </div>
           ))}
         </motion.div>
