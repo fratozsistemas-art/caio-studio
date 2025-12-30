@@ -112,6 +112,7 @@ export default function ClickUpDashboard() {
             <TabsList className="bg-white/5 border border-white/10">
               <TabsTrigger value="tasks">Tasks</TabsTrigger>
               <TabsTrigger value="automation">Automation</TabsTrigger>
+              <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
               <TabsTrigger value="sync">Sync</TabsTrigger>
             </TabsList>
 
@@ -131,6 +132,10 @@ export default function ClickUpDashboard() {
                   </div>
                 )}
               </GlowCard>
+            </TabsContent>
+
+            <TabsContent value="webhooks">
+              <WebhookManager selectedTeam={selectedList ? 'auto' : null} selectedList={selectedList} />
             </TabsContent>
 
             <TabsContent value="sync">

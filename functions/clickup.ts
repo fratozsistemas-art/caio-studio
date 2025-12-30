@@ -154,6 +154,34 @@ Deno.serve(async (req) => {
         break;
       }
 
+      case 'createWebhook': {
+        const { listId, endpoint, events } = params;
+        response = await fetch(`${CLICKUP_API_BASE}/list/${listId}/webhook`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            endpoint,
+            events: events || ['taskCreated', 'taskUpdated', 'taskDeleted', 'taskCommentPosted']
+          })
+        });
+        break;
+      }
+
+      case 'listWebhooks': {
+        const { teamId } = params;
+        response = await fetch(`${CLICKUP_API_BASE}/team/${teamId}/webhook`, { headers });
+        break;
+      }
+
+      case 'deleteWebhook': {
+        const { webhookId } = params;
+        response = await fetch(`${CLICKUP_API_BASE}/webhook/${webhookId}`, {
+          method: 'DELETE',
+          headers
+        });
+        break;
+      }
+
       default:
         return Response.json({ error: 'Invalid action' }, { status: 400 });
     }
