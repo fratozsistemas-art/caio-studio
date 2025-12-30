@@ -14,8 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import GlowCard from "@/components/ui/GlowCard";
-import { useLanguage } from "@/components/LanguageProvider";
-import { useTranslation } from "@/components/translations";
+import { useTranslation } from "react-i18next";
+import "@/components/i18n";
 
 const STATIC_VENTURES_CONFIG = [
   {
@@ -184,8 +184,7 @@ const STATIC_LAYERS_CONFIG = [
 ];
 
 export default function Portfolio() {
-  const { language } = useLanguage();
-  const t = useTranslation(language);
+  const { t } = useTranslation();
   
   const [activeLayer, setActiveLayer] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
