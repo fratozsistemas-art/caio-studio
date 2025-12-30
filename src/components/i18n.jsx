@@ -2,7 +2,9 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 // Get saved language from localStorage or default to en-US
-const savedLanguage = localStorage.getItem('app_language') || 'en-US';
+const savedLanguage = typeof window !== 'undefined' 
+  ? localStorage.getItem('app_language') || 'en-US'
+  : 'en-US';
 
 const resources = {
   'pt-BR': {
