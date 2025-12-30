@@ -42,7 +42,8 @@ export default function Sidebar({ isOpen, onClose, isAdmin }) {
     { name: t.nav.content, page: "ContentHub", icon: FileText },
     { name: t.nav.communication, page: "CommunicationHub", icon: Mail },
     { name: "ClickUp", page: "ClickUpDashboard", icon: CheckSquare },
-    { name: "Projects", page: "VentureProjects", icon: FolderKanban }
+    { name: "Projects", page: "VentureProjects", icon: FolderKanban },
+    { name: "Relatórios", page: "ReportsHub", icon: FileText }
   ];
 
   const menuItems = isAdmin ? [...userMenuItems, ...adminMenuItems] : userMenuItems;
