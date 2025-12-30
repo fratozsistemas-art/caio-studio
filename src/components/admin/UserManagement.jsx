@@ -79,13 +79,18 @@ export default function UserManagement() {
     mutationFn: async ({ email, role }) => {
       return await base44.users.inviteUser(email, role);
     },
-    onSuccess: () => {
-      toast.success('Convite enviado com sucesso');
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['all-users'] });
+      toast.success(`Convite enviado para ${inviteData.email}! Peça para verificar a caixa de spam.`, {
+        duration: 6000
+      });
       setShowInvite(false);
       setInviteData({ email: '', role: 'user' });
     },
     onError: (error) => {
-      toast.error(error.message || 'Erro ao enviar convite');
+      toast.error(`Erro ao enviar convite: ${error.message}`, {
+        duration: 5000
+      });
     }
   });
 
@@ -204,9 +209,15 @@ export default function UserManagement() {
                 </SelectContent>
               </Select>
 
-              <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+              <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 space-y-2">
                 <p className="text-xs text-blue-400">
-                  Um convite será enviado por email. O usuário poderá criar sua conta ao clicar no link.
+                  ✉️ Um convite será enviado por email. O usuário poderá criar sua conta ao clicar no link.
+                </p>
+                <p className="text-xs text-yellow-400">
+                  ⚠️ Importante: Peça ao usuário para verificar a pasta de SPAM/Lixo eletrônico.
+                </p>
+                <p className="text-xs text-slate-400">
+                  O email pode demorar alguns minutos para chegar.
                 </p>
               </div>
 
