@@ -1,32 +1,21 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const LanguageContext = createContext();
-
+// Thin wrapper to maintain backward compatibility
 export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useLanguage must be used within LanguageProvider');
-  }
-  return context;
+  const { i18n } = useTranslation();
+  
+  return {
+    language: i18n.language,
+    setLanguage: (lang) => i18n.changeLanguage(lang),
+    toggleLanguage: () => {
+      const newLang = i18n.language === 'pt-BR' ? 'en-US' : 'pt-BR';
+      i18n.changeLanguage(newLang);
+    }
+  };
 };
 
+// Keep the provider for backward compatibility, but it's no longer needed
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState(() => {
-    const saved = localStorage.getItem('app_language');
-    return saved || 'en-US';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('app_language', language);
-  }, [language]);
-
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'pt-BR' ? 'en-US' : 'pt-BR');
-  };
-
-  return (
-    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage }}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  return <>{children}</>;
 }
