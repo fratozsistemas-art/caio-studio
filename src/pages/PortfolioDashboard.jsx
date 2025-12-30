@@ -15,6 +15,7 @@ import ResourceAllocation from "@/components/dashboard/ResourceAllocation";
 import CustomAlertManager from "@/components/dashboard/CustomAlertManager";
 import AIInsightsDashboard from "@/components/analytics/AIInsightsDashboard";
 import VenturePerformanceSummary from "@/components/analytics/VenturePerformanceSummary";
+import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import { toast } from "sonner";
 import { createPageUrl } from "@/utils";
 
@@ -23,12 +24,23 @@ export default function PortfolioDashboard() {
   const [loading, setLoading] = useState(true);
   const [showCustomizer, setShowCustomizer] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [dashboardConfig, setDashboardConfig] = useState({
     showFinancials: true,
     showKPIs: true,
     showTalents: true,
     showMarket: true
   });
+
+  // Check if user needs onboarding
+  React.useEffect(() => {
+    const checkOnboarding = async () => {
+      if (user && !user.onboarding_completed) {
+        setShowOnboarding(true);
+      }
+    };
+    checkOnboarding();
+  }, [user]);
 
   React.useEffect(() => {
     const checkAuth = async () => {
@@ -305,6 +317,9 @@ export default function PortfolioDashboard() {
             onClose={() => setShowCustomizer(false)}
           />
         )}
+
+        {/* Onboarding Wizard */}
+        {showOnboarding && <OnboardingWizard onComplete={() => setShowOnboarding(false)} />}
       </div>
     </main>
   );

@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
 import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award, FileText, HelpCircle } from 'lucide-react';
 import InteractiveTour from '@/components/onboarding/InteractiveTour';
+import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionTitle from "@/components/ui/SectionTitle";
 import GlowCard from "@/components/ui/GlowCard";
@@ -35,6 +36,17 @@ export default function AdminHub() {
   const [portfolioData, setPortfolioData] = useState(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [showTour, setShowTour] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check if user needs onboarding
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      if (user && !user.onboarding_completed) {
+        setShowOnboarding(true);
+      }
+    };
+    checkOnboarding();
+  }, [user]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -481,6 +493,9 @@ export default function AdminHub() {
 
         {/* Interactive Tour */}
         {showTour && <InteractiveTour onComplete={() => setShowTour(false)} />}
+        
+        {/* Onboarding Wizard */}
+        {showOnboarding && <OnboardingWizard onComplete={() => setShowOnboarding(false)} />}
       </div>
     </main>
   );

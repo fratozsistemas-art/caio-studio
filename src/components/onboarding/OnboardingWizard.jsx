@@ -1,424 +1,153 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ArrowRight, ArrowLeft, Check, Sparkles, Target, Users, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
-import { Sparkles, Users, Target, Briefcase, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Label } from '@/components/ui/label';
+import { base44 } from '@/api/base44Client';
+import GlowCard from '@/components/ui/GlowCard';
 import { toast } from 'sonner';
 
-const ONBOARDING_STEPS = [
+const WIZARD_STEPS = [
   {
     id: 'welcome',
-    title: 'Bem-vindo ao CAIO Vision!',
+    title: 'Bem-vindo ao CASIO V2 STUDIO',
+    description: 'Sua plataforma completa para gestão de ventures. Vamos personalizar sua experiência.',
     icon: Sparkles,
-    component: WelcomeStep
+    color: 'cyan'
   },
   {
-    id: 'culture',
-    title: 'Nossa Cultura',
+    id: 'profile',
+    title: 'Configure seu Perfil',
+    description: 'Conte-nos um pouco sobre você e seus objetivos.',
     icon: Users,
-    component: CultureStep
+    color: 'gold'
   },
   {
-    id: 'goals',
-    title: 'Suas Metas',
+    id: 'interests',
+    title: 'Áreas de Interesse',
+    description: 'Selecione as áreas que mais te interessam para personalizar o dashboard.',
     icon: Target,
-    component: GoalsStep
-  },
-  {
-    id: 'connections',
-    title: 'Conexões',
-    icon: Users,
-    component: ConnectionsStep
+    color: 'mixed'
   },
   {
     id: 'complete',
     title: 'Tudo Pronto!',
-    icon: CheckCircle,
-    component: CompleteStep
+    description: 'Sua conta está configurada. Vamos começar!',
+    icon: Check,
+    color: 'cyan'
   }
 ];
 
-function WelcomeStep({ talent, onNext }) {
-  return (
-    <div className="text-center py-8">
-      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-[#C7A763] to-[#00D4FF] flex items-center justify-center">
-        <Sparkles className="w-10 h-10 text-white" />
-      </div>
-      <h2 className="text-3xl font-bold text-white mb-4">Olá, {talent?.full_name?.split(' ')[0]}! 👋</h2>
-      <p className="text-slate-300 mb-6 max-w-md mx-auto">
-        Estamos muito felizes em tê-lo(a) na equipe! Vamos fazer um tour rápido para você conhecer nossa cultura, 
-        definir suas metas e conectar-se com a equipe.
-      </p>
-      <div className="grid md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white/5 rounded-lg p-4">
-          <div className="text-2xl mb-2">🚀</div>
-          <div className="text-sm text-white font-medium">Inovação</div>
-          <div className="text-xs text-slate-400">Venture Building</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-4">
-          <div className="text-2xl mb-2">🤝</div>
-          <div className="text-sm text-white font-medium">Colaboração</div>
-          <div className="text-xs text-slate-400">Time First</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-4">
-          <div className="text-2xl mb-2">📈</div>
-          <div className="text-sm text-white font-medium">Crescimento</div>
-          <div className="text-xs text-slate-400">Desenvolvimento</div>
-        </div>
-      </div>
-      <Button onClick={onNext} className="bg-[#C7A763] hover:bg-[#A88B4A]">
-        Começar Tour
-        <ArrowRight className="w-4 h-4 ml-2" />
-      </Button>
-    </div>
-  );
-}
+const INTEREST_OPTIONS = [
+  { id: 'ventures', label: 'Gestão de Ventures', icon: BarChart3 },
+  { id: 'kpis', label: 'KPIs e Métricas', icon: Target },
+  { id: 'talents', label: 'Gestão de Talentos', icon: Users },
+  { id: 'financials', label: 'Análise Financeira', icon: BarChart3 },
+  { id: 'collaboration', label: 'Colaboração', icon: Users },
+  { id: 'reports', label: 'Relatórios', icon: BarChart3 }
+];
 
-function CultureStep({ onNext }) {
-  return (
-    <div className="py-6">
-      <h3 className="text-2xl font-bold text-white mb-6 text-center">Nossa Cultura & Valores</h3>
-      
-      <div className="space-y-4 mb-8">
-        <div className="bg-gradient-to-r from-[#C7A763]/10 to-transparent border-l-4 border-[#C7A763] p-4 rounded-r-lg">
-          <h4 className="text-white font-semibold mb-2">🎯 Foco em Resultados</h4>
-          <p className="text-slate-300 text-sm">
-            Trabalhamos com objetivos claros (OKRs) e métricas definidas. Cada venture tem KPIs específicos e acompanhamos o progresso continuamente.
-          </p>
-        </div>
-        
-        <div className="bg-gradient-to-r from-[#00D4FF]/10 to-transparent border-l-4 border-[#00D4FF] p-4 rounded-r-lg">
-          <h4 className="text-white font-semibold mb-2">🤝 Colaboração Radical</h4>
-          <p className="text-slate-300 text-sm">
-            Valorizamos a transparência e comunicação aberta. Use nossos canais de colaboração livremente e não hesite em pedir ajuda.
-          </p>
-        </div>
-        
-        <div className="bg-gradient-to-r from-purple-500/10 to-transparent border-l-4 border-purple-500 p-4 rounded-r-lg">
-          <h4 className="text-white font-semibold mb-2">📚 Aprendizado Contínuo</h4>
-          <p className="text-slate-300 text-sm">
-            Incentivamos o desenvolvimento constante. Defina metas de aprendizado, participe de feedbacks 360° e compartilhe conhecimento.
-          </p>
-        </div>
-        
-        <div className="bg-gradient-to-r from-green-500/10 to-transparent border-l-4 border-green-500 p-4 rounded-r-lg">
-          <h4 className="text-white font-semibold mb-2">⚡ Agilidade & Autonomia</h4>
-          <p className="text-slate-300 text-sm">
-            Confiamos na sua capacidade de tomar decisões. Trabalhe com autonomia, experimente e aprenda rápido.
-          </p>
-        </div>
-      </div>
-      
-      <div className="flex justify-center">
-        <Button onClick={onNext} className="bg-[#C7A763] hover:bg-[#A88B4A]">
-          Próximo
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function GoalsStep({ talent, onNext }) {
-  const [goals, setGoals] = useState([
-    { title: '', goal_type: 'skill_development', target_date: '' }
-  ]);
-
-  const saveMutation = useMutation({
-    mutationFn: async (goalsData) => {
-      const promises = goalsData.map(goal =>
-        base44.functions.invoke('secureEntityQuery', {
-          entity_name: 'TalentGoal',
-          operation: 'create',
-          data: {
-            talent_id: talent.id,
-            ...goal,
-            status: 'not_started',
-            progress: 0
-          }
-        })
-      );
-      return Promise.all(promises);
-    },
-    onSuccess: () => {
-      toast.success('Metas definidas!');
-      onNext();
-    }
-  });
-
-  const addGoal = () => {
-    setGoals([...goals, { title: '', goal_type: 'skill_development', target_date: '' }]);
-  };
-
-  return (
-    <div className="py-6">
-      <h3 className="text-2xl font-bold text-white mb-4 text-center">Defina Suas Primeiras Metas</h3>
-      <p className="text-slate-400 text-center mb-6 text-sm">
-        Quais são seus objetivos para os próximos 3 meses? (Você pode adicionar mais depois)
-      </p>
-      
-      <div className="space-y-3 mb-6">
-        {goals.map((goal, idx) => (
-          <div key={idx} className="bg-white/5 rounded-lg p-4 space-y-3">
-            <Input
-              placeholder="Ex: Dominar React Hooks"
-              value={goal.title}
-              onChange={(e) => {
-                const newGoals = [...goals];
-                newGoals[idx].title = e.target.value;
-                setGoals(newGoals);
-              }}
-              className="bg-white/5 border-white/10 text-white"
-            />
-            <div className="grid grid-cols-2 gap-2">
-              <select
-                value={goal.goal_type}
-                onChange={(e) => {
-                  const newGoals = [...goals];
-                  newGoals[idx].goal_type = e.target.value;
-                  setGoals(newGoals);
-                }}
-                className="bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-sm"
-              >
-                <option value="skill_development">Desenvolvimento</option>
-                <option value="project">Projeto</option>
-                <option value="performance">Performance</option>
-                <option value="career">Carreira</option>
-              </select>
-              <Input
-                type="date"
-                value={goal.target_date}
-                onChange={(e) => {
-                  const newGoals = [...goals];
-                  newGoals[idx].target_date = e.target.value;
-                  setGoals(newGoals);
-                }}
-                className="bg-white/5 border-white/10 text-white"
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="flex justify-between">
-        <Button onClick={addGoal} variant="outline" size="sm">
-          + Adicionar Meta
-        </Button>
-        <Button 
-          onClick={() => saveMutation.mutate(goals.filter(g => g.title))}
-          className="bg-[#C7A763] hover:bg-[#A88B4A]"
-        >
-          Salvar & Continuar
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function ConnectionsStep({ talent, onNext, onboardingData, setOnboardingData }) {
-  const { data: talents = [] } = useQuery({
-    queryKey: ['talents'],
-    queryFn: async () => {
-      const res = await base44.functions.invoke('secureEntityQuery', {
-        entity_name: 'Talent',
-        operation: 'list'
-      });
-      return res.data?.data?.filter(t => t.id !== talent.id) || [];
-    }
-  });
-
-  const [selectedMentor, setSelectedMentor] = useState('');
-  const [selectedBuddies, setSelectedBuddies] = useState([]);
-
-  const handleNext = () => {
-    setOnboardingData({
-      ...onboardingData,
-      assigned_mentor: selectedMentor,
-      buddy_matches: selectedBuddies
-    });
-    onNext();
-  };
-
-  const seniorTalents = talents.filter(t => 
-    t.seniority_level === 'senior' || t.seniority_level === 'lead' || t.seniority_level === 'executive'
-  );
-
-  return (
-    <div className="py-6">
-      <h3 className="text-2xl font-bold text-white mb-4 text-center">Conecte-se com a Equipe</h3>
-      
-      <div className="space-y-6">
-        <div>
-          <label className="text-white font-medium mb-3 block">Escolha um Mentor (opcional)</label>
-          <p className="text-slate-400 text-sm mb-3">
-            Um mentor pode guiá-lo(a) nos primeiros meses e ajudar no desenvolvimento de carreira.
-          </p>
-          <select
-            value={selectedMentor}
-            onChange={(e) => setSelectedMentor(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white"
-          >
-            <option value="">Selecionar depois</option>
-            {seniorTalents.map(t => (
-              <option key={t.id} value={t.email}>
-                {t.full_name} - {t.current_position}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="text-white font-medium mb-3 block">Buddies / Colegas (opcional)</label>
-          <p className="text-slate-400 text-sm mb-3">
-            Conecte-se com colegas para almoços, cafés ou apenas trocar ideias.
-          </p>
-          <div className="grid md:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-            {talents.slice(0, 10).map(t => (
-              <label key={t.id} className="flex items-center gap-2 bg-white/5 p-2 rounded cursor-pointer hover:bg-white/10">
-                <input
-                  type="checkbox"
-                  checked={selectedBuddies.includes(t.email)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedBuddies([...selectedBuddies, t.email]);
-                    } else {
-                      setSelectedBuddies(selectedBuddies.filter(b => b !== t.email));
-                    }
-                  }}
-                  className="rounded"
-                />
-                <span className="text-white text-sm">{t.full_name}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      <div className="flex justify-center mt-6">
-        <Button onClick={handleNext} className="bg-[#C7A763] hover:bg-[#A88B4A]">
-          Finalizar
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function CompleteStep({ onClose }) {
-  return (
-    <div className="text-center py-8">
-      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
-        <CheckCircle className="w-10 h-10 text-green-400" />
-      </div>
-      <h2 className="text-3xl font-bold text-white mb-4">Onboarding Concluído! 🎉</h2>
-      <p className="text-slate-300 mb-6 max-w-md mx-auto">
-        Você está pronto(a) para começar! Explore o sistema, conecte-se com sua equipe e não hesite em pedir ajuda.
-      </p>
-      
-      <div className="bg-white/5 rounded-lg p-6 max-w-md mx-auto mb-6">
-        <h4 className="text-white font-semibold mb-3">Próximos Passos:</h4>
-        <ul className="text-left text-slate-300 text-sm space-y-2">
-          <li>✅ Complete seu perfil na aba "Talentos"</li>
-          <li>✅ Explore as ventures ativas</li>
-          <li>✅ Confira seu checklist de onboarding</li>
-          <li>✅ Agende um café virtual com seu mentor/buddy</li>
-        </ul>
-      </div>
-      
-      <Button onClick={onClose} className="bg-gradient-to-r from-[#C7A763] to-[#00D4FF]">
-        Começar a Trabalhar!
-      </Button>
-    </div>
-  );
-}
-
-export default function OnboardingWizard({ talent, isOpen, onClose }) {
+export default function OnboardingWizard({ onComplete }) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [onboardingData, setOnboardingData] = useState({
-    talent_id: talent?.id,
-    current_step: 0,
-    completed_steps: [],
-    assigned_mentor: '',
-    buddy_matches: []
+  const [userData, setUserData] = useState({
+    role: '',
+    company: '',
+    interests: []
   });
-  const queryClient = useQueryClient();
+  const [saving, setSaving] = useState(false);
 
-  const saveMutation = useMutation({
-    mutationFn: async (data) => {
-      return await base44.functions.invoke('secureEntityQuery', {
-        entity_name: 'TalentOnboarding',
-        operation: 'create',
-        data: {
-          ...data,
-          completed: true,
-          started_at: new Date().toISOString(),
-          completed_at: new Date().toISOString()
-        }
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['talent-onboarding']);
-      onClose();
-    }
-  });
+  const step = WIZARD_STEPS[currentStep];
+  const StepIcon = step.icon;
 
-  const handleNext = () => {
-    if (currentStep < ONBOARDING_STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);
-      setOnboardingData({
-        ...onboardingData,
-        current_step: currentStep + 1,
-        completed_steps: [...onboardingData.completed_steps, ONBOARDING_STEPS[currentStep].id]
-      });
+  const handleNext = async () => {
+    if (currentStep === WIZARD_STEPS.length - 1) {
+      await handleComplete();
     } else {
-      saveMutation.mutate(onboardingData);
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const CurrentStepComponent = ONBOARDING_STEPS[currentStep].component;
-  const progress = ((currentStep + 1) / ONBOARDING_STEPS.length) * 100;
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const toggleInterest = (interestId) => {
+    setUserData(prev => ({
+      ...prev,
+      interests: prev.interests.includes(interestId)
+        ? prev.interests.filter(i => i !== interestId)
+        : [...prev.interests, interestId]
+    }));
+  };
+
+  const handleComplete = async () => {
+    setSaving(true);
+    try {
+      // Save user preferences
+      await base44.auth.updateMe({
+        onboarding_completed: true,
+        onboarding_data: userData
+      });
+      
+      toast.success('Onboarding concluído com sucesso!');
+      onComplete?.();
+    } catch (error) {
+      toast.error('Erro ao salvar preferências');
+      console.error(error);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl bg-[#0a1628] border-white/10 max-h-[90vh] overflow-y-auto">
-        <div className="space-y-6">
-          {/* Progress */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-slate-400">
-                Etapa {currentStep + 1} de {ONBOARDING_STEPS.length}
-              </span>
-              <span className="text-sm text-[#C7A763] font-medium">{Math.round(progress)}%</span>
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-2xl"
+      >
+        <GlowCard glowColor={step.color} className="p-8">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center">
+                <StepIcon className="w-6 h-6 text-[#C7A763]" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">{step.title}</h2>
+                <p className="text-slate-400 text-sm mt-1">{step.description}</p>
+              </div>
             </div>
-            <Progress value={progress} className="h-2" />
+            <button
+              onClick={onComplete}
+              className="text-slate-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Steps */}
-          <div className="flex justify-center gap-2 mb-4">
-            {ONBOARDING_STEPS.map((step, idx) => {
-              const Icon = step.icon;
-              return (
+          {/* Progress Bar */}
+          <div className="mb-8">
+            <div className="flex gap-2">
+              {WIZARD_STEPS.map((_, index) => (
                 <div
-                  key={step.id}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-                    idx === currentStep
-                      ? 'bg-[#C7A763]/20 text-[#C7A763]'
-                      : idx < currentStep
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'bg-white/5 text-slate-500'
+                  key={index}
+                  className={`h-1 flex-1 rounded-full transition-all ${
+                    index <= currentStep
+                      ? 'bg-gradient-to-r from-[#C7A763] to-[#00D4FF]'
+                      : 'bg-white/10'
                   }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-xs font-medium hidden md:inline">{step.title}</span>
-                </div>
-              );
-            })}
+                />
+              ))}
+            </div>
+            <div className="flex justify-between mt-2">
+              <span className="text-xs text-slate-500">
+                Passo {currentStep + 1} de {WIZARD_STEPS.length}
+              </span>
+            </div>
           </div>
 
           {/* Content */}
@@ -428,19 +157,133 @@ export default function OnboardingWizard({ talent, isOpen, onClose }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
+              className="min-h-[300px]"
             >
-              <CurrentStepComponent
-                talent={talent}
-                onNext={handleNext}
-                onboardingData={onboardingData}
-                setOnboardingData={setOnboardingData}
-                onClose={() => saveMutation.mutate(onboardingData)}
-              />
+              {step.id === 'welcome' && (
+                <div className="text-center py-8">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C7A763]/20 to-[#00D4FF]/20 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                    <Sparkles className="w-10 h-10 text-[#C7A763]" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    An Operating System for Venture Creation
+                  </h3>
+                  <p className="text-slate-400 leading-relaxed max-w-lg mx-auto">
+                    Transforme complexidade em clareza estratégica através da união entre 
+                    inteligência humana e artificial. Vamos configurar sua experiência.
+                  </p>
+                </div>
+              )}
+
+              {step.id === 'profile' && (
+                <div className="space-y-6">
+                  <div>
+                    <Label className="text-white mb-2 block">Qual seu papel?</Label>
+                    <Input
+                      value={userData.role}
+                      onChange={(e) => setUserData({...userData, role: e.target.value})}
+                      placeholder="Ex: CEO, Investidor, Gestor..."
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-white mb-2 block">Empresa/Organização</Label>
+                    <Input
+                      value={userData.company}
+                      onChange={(e) => setUserData({...userData, company: e.target.value})}
+                      placeholder="Nome da sua empresa"
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {step.id === 'interests' && (
+                <div>
+                  <p className="text-slate-400 mb-6 text-center">
+                    Selecione as áreas que você mais utiliza no seu dia a dia
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {INTEREST_OPTIONS.map((interest) => {
+                      const InterestIcon = interest.icon;
+                      const isSelected = userData.interests.includes(interest.id);
+                      
+                      return (
+                        <button
+                          key={interest.id}
+                          onClick={() => toggleInterest(interest.id)}
+                          className={`p-4 rounded-lg border transition-all text-left ${
+                            isSelected
+                              ? 'bg-[#C7A763]/20 border-[#C7A763] shadow-lg'
+                              : 'bg-white/5 border-white/10 hover:bg-white/10'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <InterestIcon className={`w-5 h-5 ${isSelected ? 'text-[#C7A763]' : 'text-slate-400'}`} />
+                            <span className={`font-medium ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                              {interest.label}
+                            </span>
+                            {isSelected && (
+                              <Check className="w-4 h-4 text-[#C7A763] ml-auto" />
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {step.id === 'complete' && (
+                <div className="text-center py-8">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 flex items-center justify-center mx-auto mb-6">
+                    <Check className="w-10 h-10 text-green-500" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Configuração Concluída!
+                  </h3>
+                  <p className="text-slate-400 leading-relaxed max-w-lg mx-auto mb-6">
+                    Seu dashboard foi personalizado com base nas suas preferências. 
+                    Você pode ajustar essas configurações a qualquer momento.
+                  </p>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-slate-400">Papel:</span>
+                        <p className="text-white font-medium">{userData.role || 'Não informado'}</p>
+                      </div>
+                      <div>
+                        <span className="text-slate-400">Empresa:</span>
+                        <p className="text-white font-medium">{userData.company || 'Não informado'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
-        </div>
-      </DialogContent>
-    </Dialog>
+
+          {/* Actions */}
+          <div className="flex justify-between pt-8 border-t border-white/10">
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              className="text-white"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
+            </Button>
+            <Button
+              onClick={handleNext}
+              disabled={saving}
+              className="bg-gradient-to-r from-[#C7A763] to-[#A88B4A] text-[#06101F] hover:opacity-90"
+            >
+              {saving ? 'Salvando...' : currentStep === WIZARD_STEPS.length - 1 ? 'Começar' : 'Próximo'}
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        </GlowCard>
+      </motion.div>
+    </div>
   );
 }
