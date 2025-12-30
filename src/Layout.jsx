@@ -332,11 +332,13 @@ function LayoutContent({ children, currentPageName }) {
       <div className="flex pt-16">
         {/* Sidebar for authenticated users on protected pages */}
         {showSidebar && (
-          <Sidebar 
-            isOpen={sidebarOpen} 
-            onClose={() => setSidebarOpen(false)}
-            isAdmin={isAdmin}
-          />
+          {isAdmin !== null && (
+            <Sidebar 
+              isOpen={sidebarOpen} 
+              onClose={() => setSidebarOpen(false)}
+              isAdmin={isAdmin}
+            />
+          )}
         )}
 
         {/* Main Content */}
