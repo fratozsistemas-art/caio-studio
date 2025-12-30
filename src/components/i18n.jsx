@@ -725,7 +725,9 @@ i18n
 
 // Save language changes to localStorage
 i18n.on('languageChanged', (lng) => {
-  localStorage.setItem('app_language', lng);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('app_language', lng);
+  }
 });
 
 export default i18n;
