@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Brain, ArrowUpRight, Globe, Moon, Sun, User, LogOut } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { useLanguage } from "@/components/LanguageProvider";
 import { useTranslation } from "react-i18next";
 import "@/components/i18n";
 import Sidebar from "@/components/layout/Sidebar";
@@ -14,8 +13,11 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 function LayoutContent({ children, currentPageName }) {
-  const { toggleLanguage } = useLanguage();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'pt-BR' ? 'en-US' : 'pt-BR';
+    i18n.changeLanguage(newLang);
+  };
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   
