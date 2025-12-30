@@ -22,10 +22,10 @@ function LayoutContent({ children, currentPageName }) {
   const location = useLocation();
   
   const publicNavigation = [
-    { name: t.nav.home, page: "Home" },
-    { name: t.nav.journey, page: "StakeholderJourney" },
-    { name: t.nav.portfolio, page: "Portfolio" },
-    { name: t.nav.about, page: "About" }
+    { name: t('nav.home'), page: "Home" },
+    { name: t('nav.journey'), page: "StakeholderJourney" },
+    { name: t('nav.portfolio'), page: "Portfolio" },
+    { name: t('nav.about'), page: "About" }
   ];
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -214,7 +214,7 @@ function LayoutContent({ children, currentPageName }) {
             <button
               onClick={toggleTheme}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-accent transition-all border border-border"
-              title={t.theme.toggle}
+              title={t('theme.toggle')}
             >
               {theme === 'dark' ? (
                 <Sun className="w-3.5 h-3.5" />
@@ -230,7 +230,7 @@ function LayoutContent({ children, currentPageName }) {
               title="Change language"
             >
               <Globe className="w-3.5 h-3.5" />
-              <span className="text-xs font-medium">{t.nav.langShort}</span>
+              <span className="text-xs font-medium">{t('nav.langShort')}</span>
             </button>
 
             {/* User Menu */}
@@ -244,7 +244,7 @@ function LayoutContent({ children, currentPageName }) {
                 <button
                   onClick={handleLogout}
                   className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-all"
-                  title={t.nav.logout}
+                  title={t('nav.logout')}
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
@@ -304,7 +304,7 @@ function LayoutContent({ children, currentPageName }) {
                   className="flex items-center gap-2.5 w-full px-3 py-2.5 text-base font-medium rounded-lg hover:bg-accent"
                 >
                   {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                  {theme === 'dark' ? t.theme.light : t.theme.dark}
+                  {theme === 'dark' ? t('theme.light') : t('theme.dark')}
                 </button>
 
                 <button
@@ -312,7 +312,7 @@ function LayoutContent({ children, currentPageName }) {
                   className="flex items-center gap-2.5 w-full px-3 py-2.5 text-base font-medium rounded-lg hover:bg-accent"
                 >
                   <Globe className="w-4 h-4" />
-                  {t.nav.langFull}
+                  {t('nav.langFull')}
                 </button>
 
                 <Button
@@ -363,13 +363,13 @@ function LayoutContent({ children, currentPageName }) {
                 </div>
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-                {t.footer.description}
+                {t('footer.description')}
               </p>
             </div>
 
             {/* Navigation */}
             <div>
-              <h4 className="text-white font-semibold mb-4">{t.footer.navigation}</h4>
+              <h4 className="text-white font-semibold mb-4">{t('footer.navigation')}</h4>
               <ul className="space-y-3">
                 {publicNavigation.map((item) => (
                   <li key={item.page}>
@@ -386,7 +386,7 @@ function LayoutContent({ children, currentPageName }) {
 
             {/* Contact */}
             <div>
-              <h4 className="text-white font-semibold mb-4">{t.footer.contact}</h4>
+              <h4 className="text-white font-semibold mb-4">{t('footer.contact')}</h4>
               <ul className="space-y-3 text-sm text-slate-400">
                 <li>contato@caiovision.com</li>
                 <li>São Paulo, Brasil</li>
@@ -397,11 +397,11 @@ function LayoutContent({ children, currentPageName }) {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} {t.footer.brand || 'CASIO V2 STUDIO'}. {t.footer.rights}
+              © {new Date().getFullYear()} {t('footer.brand') || 'CASIO V2 STUDIO'}. {t('footer.rights')}
             </p>
             <div className="flex items-center gap-6">
               <span className="text-xs text-slate-500">
-                {t.footer.tagline} <span className="text-[#C7A763]">{t.footer.speed}</span>
+                {t('footer.tagline')} <span className="text-[#C7A763]">{t('footer.speed')}</span>
               </span>
             </div>
           </div>
