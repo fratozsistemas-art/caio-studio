@@ -50,7 +50,16 @@ Deno.serve(async (req) => {
           assigned_to: clickupTask.assignees?.[0]?.email || user.email,
           due_date: clickupTask.due_date ? new Date(parseInt(clickupTask.due_date)).toISOString().split('T')[0] : null,
           related_entity: 'clickup',
-          related_entity_id: clickupTask.id
+          related_entity_id: clickupTask.id,
+          clickup_data: {
+            assignees: clickupTask.assignees || [],
+            custom_fields: clickupTask.custom_fields || [],
+            tags: clickupTask.tags || [],
+            url: clickupTask.url,
+            time_estimate: clickupTask.time_estimate,
+            time_spent: clickupTask.time_spent,
+            status_text: clickupTask.status?.status
+          }
         };
 
         if (existingTask) {

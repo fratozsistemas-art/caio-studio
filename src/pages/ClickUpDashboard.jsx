@@ -8,6 +8,7 @@ import SectionTitle from '@/components/ui/SectionTitle';
 import ClickUpIntegration from '@/components/clickup/ClickUpIntegration';
 import AutomationRuleManager from '@/components/clickup/AutomationRuleManager';
 import TaskSyncPanel from '@/components/clickup/TaskSyncPanel';
+import WebhookManager from '@/components/clickup/WebhookManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function ClickUpDashboard() {

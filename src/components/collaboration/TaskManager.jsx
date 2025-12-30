@@ -262,7 +262,37 @@ export default function TaskManager({ ventureId, ventures }) {
                           {new Date(task.due_date).toLocaleDateString()}
                         </div>
                       )}
+                      {task.clickup_data?.url && (
+                        <a
+                          href={task.clickup_data.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#00D4FF] hover:text-[#00B8E6] text-xs"
+                        >
+                          Ver no ClickUp →
+                        </a>
+                      )}
                     </div>
+                    {task.clickup_data && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {task.clickup_data.assignees?.map((assignee, idx) => (
+                          <div key={idx} className="flex items-center gap-1 px-2 py-1 rounded bg-white/5 text-xs">
+                            <User className="w-3 h-3" />
+                            {assignee.username || assignee.email}
+                          </div>
+                        ))}
+                        {task.clickup_data.tags?.map((tag, idx) => (
+                          <div key={idx} className="px-2 py-1 rounded bg-[#C7A763]/20 text-[#C7A763] text-xs">
+                            {tag.name}
+                          </div>
+                        ))}
+                        {task.clickup_data.time_estimate && (
+                          <div className="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-xs">
+                            Estimativa: {Math.round(task.clickup_data.time_estimate / 3600000)}h
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <Select
                     value={task.status}
