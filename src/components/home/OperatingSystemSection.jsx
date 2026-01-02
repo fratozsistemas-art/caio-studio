@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Layers, Cog, Shield, Zap, Network } from 'lucide-react';
+import { Brain, Layers, Cog, Shield, Zap, Network, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import SectionTitle from "@/components/ui/SectionTitle";
 
 const coreModules = [
@@ -54,17 +56,22 @@ export default function OperatingSystemSection() {
 
         <div className="grid lg:grid-cols-3 gap-8 mb-16">
           {coreModules.map((module, index) => (
-            <motion.div
+            <Link
               key={index}
-              className="relative group"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
+              to={createPageUrl('OperatingSystem')}
+              className="block"
             >
-              <div className="absolute inset-0 bg-gradient-to-b from-[#00D4FF]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              <div className="relative p-8 rounded-3xl border border-white/10 bg-[#0a1628]/50 backdrop-blur-sm h-full">
+              <motion.div
+                className="relative group cursor-pointer"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-[#00D4FF]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className="relative p-8 rounded-3xl border border-white/10 bg-[#0a1628]/50 backdrop-blur-sm h-full group-hover:border-[#00D4FF]/30 transition-colors"
                 {/* Icon */}
                 <div className="relative mb-6">
                   <div className="absolute inset-0 bg-[#00D4FF]/20 blur-xl rounded-full" />
@@ -83,9 +90,15 @@ export default function OperatingSystemSection() {
                   </span>
                 </div>
 
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">
                   {module.description}
                 </p>
+
+                {/* Learn More */}
+                <div className="flex items-center gap-2 text-[#00D4FF] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  Saiba mais
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
 
                 {/* Connection line */}
                 {index < coreModules.length - 1 && (
@@ -93,6 +106,7 @@ export default function OperatingSystemSection() {
                 )}
               </div>
             </motion.div>
+            </Link>
           ))}
         </div>
 
