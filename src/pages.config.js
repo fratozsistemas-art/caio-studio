@@ -20,12 +20,12 @@ import PermissionsManagement from './pages/PermissionsManagement';
 import Platforms from './pages/Platforms';
 import Portfolio from './pages/Portfolio';
 import PortfolioDashboard from './pages/PortfolioDashboard';
+import ReportsHub from './pages/ReportsHub';
 import StakeholderJourney from './pages/StakeholderJourney';
 import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
 import VentureProjects from './pages/VentureProjects';
 import VenturePublicPage from './pages/VenturePublicPage';
-import ReportsHub from './pages/ReportsHub';
 import __Layout from './Layout.jsx';
 
 
@@ -52,12 +52,12 @@ export const PAGES = {
     "Platforms": Platforms,
     "Portfolio": Portfolio,
     "PortfolioDashboard": PortfolioDashboard,
+    "ReportsHub": ReportsHub,
     "StakeholderJourney": StakeholderJourney,
     "VentureDetail": VentureDetail,
     "VentureManagement": VentureManagement,
     "VentureProjects": VentureProjects,
     "VenturePublicPage": VenturePublicPage,
-    "ReportsHub": ReportsHub,
 }
 
 export const pagesConfig = {

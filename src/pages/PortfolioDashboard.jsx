@@ -16,6 +16,7 @@ import CustomAlertManager from "@/components/dashboard/CustomAlertManager";
 import AIInsightsDashboard from "@/components/analytics/AIInsightsDashboard";
 import VenturePerformanceSummary from "@/components/analytics/VenturePerformanceSummary";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
+import PredictiveAnalytics from "@/components/ai/PredictiveAnalytics";
 import { toast } from "sonner";
 import { createPageUrl } from "@/utils";
 
