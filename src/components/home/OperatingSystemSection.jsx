@@ -71,7 +71,7 @@ export default function OperatingSystemSection() {
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-[#00D4FF]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                <div className="relative p-8 rounded-3xl border border-white/10 bg-[#0a1628]/50 backdrop-blur-sm h-full group-hover:border-[#00D4FF]/30 transition-colors"
+                <div className="relative p-8 rounded-3xl border border-white/10 bg-[#0a1628]/50 backdrop-blur-sm h-full group-hover:border-[#00D4FF]/30 transition-colors">
                 {/* Icon */}
                 <div className="relative mb-6">
                   <div className="absolute inset-0 bg-[#00D4FF]/20 blur-xl rounded-full" />
