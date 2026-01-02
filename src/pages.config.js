@@ -26,6 +26,7 @@ import VentureDetail from './pages/VentureDetail';
 import VentureManagement from './pages/VentureManagement';
 import VentureProjects from './pages/VentureProjects';
 import VenturePublicPage from './pages/VenturePublicPage';
+import OperatingSystem from './pages/OperatingSystem';
 import __Layout from './Layout.jsx';
 
 
@@ -58,6 +59,7 @@ export const PAGES = {
     "VentureManagement": VentureManagement,
     "VentureProjects": VentureProjects,
     "VenturePublicPage": VenturePublicPage,
+    "OperatingSystem": OperatingSystem,
 }
 
 export const pagesConfig = {
