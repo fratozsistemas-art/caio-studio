@@ -1,15 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
-import { Download, FileText, Filter, Calendar, TrendingUp, DollarSign, Target, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Download, FileText, Filter, Calendar, TrendingUp, DollarSign, Target, X, Bell, Plus, Trash2, AlertTriangle, CheckCircle2, AreaChart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, AreaChart as RechartsAreaChart, Area, ComposedChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import GlowCard from "@/components/ui/GlowCard";
 import SectionTitle from "@/components/ui/SectionTitle";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format } from 'date-fns';
 
@@ -23,6 +24,16 @@ export default function DynamicReportGenerator() {
   });
   const [showFilters, setShowFilters] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [showAlertConfig, setShowAlertConfig] = useState(false);
+  const [newAlert, setNewAlert] = useState({
+    metric: 'revenue',
+    threshold: '',
+    condition: 'above', // 'above', 'below'
+    notification: true
+  });
+  const [alerts, setAlerts] = useState([]);
+
+  const queryClient = useQueryClient();
 
   // Fetch data
   const { data: ventures = [] } = useQuery({
@@ -130,7 +141,7 @@ export default function DynamicReportGenerator() {
       }
 
       if (!groups[key]) {
-        groups[key] = { period: key, kpis: 0, revenue: 0, expenses: 0, count: 0 };
+        groups[key] = { period: key, kpis: 0, revenue: 0, expenses: 0, profit: 0, count: 0 };
       }
 
       if (item.type === 'KPI') {
@@ -139,11 +150,55 @@ export default function DynamicReportGenerator() {
       } else if (item.type === 'Financial') {
         groups[key].revenue += item.value || 0;
         groups[key].expenses += item.expense || 0;
+        groups[key].profit = groups[key].revenue - groups[key].expenses;
       }
     });
 
     return Object.values(groups);
   }, [filteredData, filters.groupBy]);
+
+  // Check alerts
+  const triggeredAlerts = useMemo(() => {
+    const triggered = [];
+    const latestData = groupedData[groupedData.length - 1];
+    
+    if (!latestData) return triggered;
+
+    alerts.forEach(alert => {
+      const value = latestData[alert.metric];
+      const threshold = parseFloat(alert.threshold);
+      
+      if (alert.condition === 'above' && value > threshold) {
+        triggered.push({...alert, currentValue: value});
+      } else if (alert.condition === 'below' && value < threshold) {
+        triggered.push({...alert, currentValue: value});
+      }
+    });
+
+    return triggered;
+  }, [groupedData, alerts]);
+
+  const addAlert = () => {
+    if (!newAlert.threshold) {
+      toast.error('Defina um valor de threshold');
+      return;
+    }
+
+    const alert = {
+      ...newAlert,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString()
+    };
+
+    setAlerts(prev => [...prev, alert]);
+    setNewAlert({ metric: 'revenue', threshold: '', condition: 'above', notification: true });
+    toast.success('Alerta configurado');
+  };
+
+  const removeAlert = (id) => {
+    setAlerts(prev => prev.filter(a => a.id !== id));
+    toast.success('Alerta removido');
+  };
 
   // Export functions
   const exportToPDF = async () => {
@@ -282,6 +337,14 @@ export default function DynamicReportGenerator() {
             {showFilters ? 'Ocultar' : 'Mostrar'} Filtros
           </Button>
           <Button
+            variant="outline"
+            onClick={() => setShowAlertConfig(!showAlertConfig)}
+            className="border-[#C7A763]/30 text-[#C7A763]"
+          >
+            <Bell className="w-4 h-4 mr-2" />
+            Alertas ({alerts.length})
+          </Button>
+          <Button
             onClick={exportToPDF}
             disabled={exporting || filteredData.length === 0}
             className="bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]"
@@ -299,6 +362,128 @@ export default function DynamicReportGenerator() {
           </Button>
         </div>
       </div>
+
+      {/* Triggered Alerts */}
+      {triggeredAlerts.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-2"
+        >
+          {triggeredAlerts.map(alert => (
+            <GlowCard key={alert.id} glowColor="gold" className="p-4 border-2 border-yellow-500/30">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="text-white font-semibold mb-1">Alerta Disparado!</div>
+                  <p className="text-sm text-slate-300">
+                    {alert.metric === 'revenue' ? 'Receita' : alert.metric === 'expenses' ? 'Despesas' : alert.metric === 'profit' ? 'Lucro' : 'KPIs'} está{' '}
+                    {alert.condition === 'above' ? 'acima' : 'abaixo'} do threshold de{' '}
+                    R$ {parseFloat(alert.threshold).toLocaleString('pt-BR')}
+                  </p>
+                  <p className="text-xs text-yellow-400 mt-1">
+                    Valor atual: R$ {alert.currentValue.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+            </GlowCard>
+          ))}
+        </motion.div>
+      )}
+
+      {/* Alert Configuration */}
+      <AnimatePresence>
+        {showAlertConfig && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <GlowCard glowColor="gold" className="p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Bell className="w-5 h-5 text-[#C7A763]" />
+                Configurar Alertas Automáticos
+              </h3>
+              
+              <div className="grid md:grid-cols-4 gap-4 mb-4">
+                <div>
+                  <Label className="text-white mb-2 block">Métrica</Label>
+                  <Select value={newAlert.metric} onValueChange={(v) => setNewAlert({...newAlert, metric: v})}>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="revenue">Receita</SelectItem>
+                      <SelectItem value="expenses">Despesas</SelectItem>
+                      <SelectItem value="profit">Lucro</SelectItem>
+                      <SelectItem value="kpis">KPIs</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">Condição</Label>
+                  <Select value={newAlert.condition} onValueChange={(v) => setNewAlert({...newAlert, condition: v})}>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="above">Acima de</SelectItem>
+                      <SelectItem value="below">Abaixo de</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">Threshold (R$)</Label>
+                  <Input
+                    type="number"
+                    value={newAlert.threshold}
+                    onChange={(e) => setNewAlert({...newAlert, threshold: e.target.value})}
+                    className="bg-white/5 border-white/10 text-white"
+                    placeholder="Ex: 50000"
+                  />
+                </div>
+
+                <div className="flex items-end">
+                  <Button
+                    onClick={addAlert}
+                    className="w-full bg-[#C7A763] hover:bg-[#A88B4A] text-[#06101F]"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Adicionar
+                  </Button>
+                </div>
+              </div>
+
+              {alerts.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-white block mb-2">Alertas Ativos</Label>
+                  {alerts.map(alert => (
+                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm text-white">
+                          {alert.metric === 'revenue' ? 'Receita' : alert.metric === 'expenses' ? 'Despesas' : alert.metric === 'profit' ? 'Lucro' : 'KPIs'}{' '}
+                          {alert.condition === 'above' ? '>' : '<'} R$ {parseFloat(alert.threshold).toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeAlert(alert.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </GlowCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Filters */}
       {showFilters && (
@@ -428,41 +613,122 @@ export default function DynamicReportGenerator() {
       {/* Charts */}
       {groupedData.length > 0 ? (
         <>
+          {/* Advanced Timeline - Revenue & Expenses with Area */}
           <GlowCard className="p-6">
-            <h3 className="text-white font-semibold mb-4">Receita vs Despesas ao Longo do Tempo</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={groupedData}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-semibold flex items-center gap-2">
+                <AreaChart className="w-5 h-5 text-[#C7A763]" />
+                Timeline Financeiro Completo
+              </h3>
+              <Badge className="bg-[#C7A763]/20 text-[#C7A763]">
+                {groupedData.length} períodos
+              </Badge>
+            </div>
+            <ResponsiveContainer width="100%" height={400}>
+              <ComposedChart data={groupedData}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#C7A763" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#C7A763" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                <XAxis dataKey="period" stroke="#94a3b8" />
+                <XAxis dataKey="period" stroke="#94a3b8" angle={-45} textAnchor="end" height={80} />
                 <YAxis stroke="#94a3b8" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0a1628', border: '1px solid #ffffff20' }}
-                  labelStyle={{ color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#0a1628', border: '1px solid #ffffff20', borderRadius: '8px' }}
+                  labelStyle={{ color: '#fff', marginBottom: '8px' }}
+                  formatter={(value) => `R$ ${value.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}`}
                 />
                 <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="#C7A763" strokeWidth={2} name="Receita" />
-                <Line type="monotone" dataKey="expenses" stroke="#EF4444" strokeWidth={2} name="Despesas" />
-              </LineChart>
+                <Area type="monotone" dataKey="revenue" stroke="#C7A763" fillOpacity={1} fill="url(#colorRevenue)" name="Receita" />
+                <Area type="monotone" dataKey="expenses" stroke="#EF4444" fillOpacity={1} fill="url(#colorExpenses)" name="Despesas" />
+                <Line type="monotone" dataKey="profit" stroke="#00D4FF" strokeWidth={3} name="Lucro" dot={{ fill: '#00D4FF', r: 4 }} />
+                {alerts.filter(a => a.metric === 'revenue').map(alert => (
+                  <ReferenceLine 
+                    key={alert.id} 
+                    y={parseFloat(alert.threshold)} 
+                    stroke="#FFD700" 
+                    strokeDasharray="5 5"
+                    label={{ value: `Threshold: R$ ${parseFloat(alert.threshold).toLocaleString('pt-BR')}`, position: 'right', fill: '#FFD700' }}
+                  />
+                ))}
+              </ComposedChart>
             </ResponsiveContainer>
           </GlowCard>
 
+          {/* KPI Performance Timeline */}
           {filters.metricType !== 'financial' && (
             <GlowCard className="p-6">
-              <h3 className="text-white font-semibold mb-4">Performance de KPIs</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={groupedData}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-semibold flex items-center gap-2">
+                  <Target className="w-5 h-5 text-[#00D4FF]" />
+                  Timeline de Performance de KPIs
+                </h3>
+              </div>
+              <ResponsiveContainer width="100%" height={350}>
+                <ComposedChart data={groupedData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                  <XAxis dataKey="period" stroke="#94a3b8" />
+                  <XAxis dataKey="period" stroke="#94a3b8" angle={-45} textAnchor="end" height={80} />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0a1628', border: '1px solid #ffffff20' }}
+                    contentStyle={{ backgroundColor: '#0a1628', border: '1px solid #ffffff20', borderRadius: '8px' }}
                     labelStyle={{ color: '#fff' }}
                   />
-                  <Bar dataKey="kpis" fill="#00D4FF" name="KPIs" />
-                </BarChart>
+                  <Legend />
+                  <Bar dataKey="kpis" fill="#00D4FF" name="KPIs Totais" radius={[8, 8, 0, 0]} />
+                  <Line type="monotone" dataKey="count" stroke="#C7A763" strokeWidth={2} name="Número de KPIs" dot={{ fill: '#C7A763', r: 3 }} />
+                  {alerts.filter(a => a.metric === 'kpis').map(alert => (
+                    <ReferenceLine 
+                      key={alert.id} 
+                      y={parseFloat(alert.threshold)} 
+                      stroke="#FFD700" 
+                      strokeDasharray="5 5"
+                      label={{ value: `Threshold: ${parseFloat(alert.threshold)}`, position: 'right', fill: '#FFD700' }}
+                    />
+                  ))}
+                </ComposedChart>
               </ResponsiveContainer>
             </GlowCard>
           )}
+
+          {/* Profit Margin Analysis */}
+          <GlowCard className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-semibold flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-green-400" />
+                Análise de Margem de Lucro
+              </h3>
+            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={groupedData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                <XAxis dataKey="period" stroke="#94a3b8" angle={-45} textAnchor="end" height={80} />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#0a1628', border: '1px solid #ffffff20', borderRadius: '8px' }}
+                  labelStyle={{ color: '#fff' }}
+                  formatter={(value) => `R$ ${value.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}`}
+                />
+                <Legend />
+                <Line type="monotone" dataKey="profit" stroke="#10B981" strokeWidth={3} name="Lucro Líquido" dot={{ fill: '#10B981', r: 5 }} />
+                <ReferenceLine y={0} stroke="#ffffff30" strokeDasharray="3 3" />
+                {alerts.filter(a => a.metric === 'profit').map(alert => (
+                  <ReferenceLine 
+                    key={alert.id} 
+                    y={parseFloat(alert.threshold)} 
+                    stroke="#FFD700" 
+                    strokeDasharray="5 5"
+                    label={{ value: `Threshold: R$ ${parseFloat(alert.threshold).toLocaleString('pt-BR')}`, position: 'right', fill: '#FFD700' }}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </GlowCard>
         </>
       ) : (
         <GlowCard className="p-12 text-center">
