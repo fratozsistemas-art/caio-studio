@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award, FileText, HelpCircle } from 'lucide-react';
+import { Shield, BarChart3, Users, MessageSquare, Settings, Loader2, Lock, Award, FileText, HelpCircle, TrendingUp } from 'lucide-react';
 import InteractiveTour from '@/components/onboarding/InteractiveTour';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -221,6 +221,10 @@ export default function AdminHub() {
               <Settings className="w-4 h-4 mr-2" />
               Insights IA
             </TabsTrigger>
+            <TabsTrigger value="predictive">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Análise Preditiva
+            </TabsTrigger>
             <TabsTrigger value="roles-skills">
               <Settings className="w-4 h-4 mr-2" />
               Cargos & Skills
@@ -401,6 +405,17 @@ export default function AdminHub() {
               kpis={portfolioData?.kpis || []}
               talents={portfolioData?.talents || []}
             />
+          </TabsContent>
+
+          {/* Predictive Analytics Tab */}
+          <TabsContent value="predictive" className="space-y-6">
+            <SectionTitle
+              title="Análise Preditiva"
+              subtitle="IA Avançada para Sucesso e Riscos"
+              accent="gold"
+              align="left"
+            />
+            <PredictiveAnalytics ventureId="all" />
           </TabsContent>
 
           {/* Arquivos Tab */}

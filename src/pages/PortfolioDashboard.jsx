@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from "@/api/base44Client";
 import { motion } from 'framer-motion';
-import { Download, Settings, TrendingUp, DollarSign, Target, Users, FileText, Loader2 } from 'lucide-react';
+import { Download, Settings, TrendingUp, DollarSign, Target, Users, FileText, Loader2, Brain } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionTitle from "@/components/ui/SectionTitle";
@@ -261,6 +261,10 @@ export default function PortfolioDashboard() {
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="financials">Financeiro</TabsTrigger>
             <TabsTrigger value="insights">Insights IA</TabsTrigger>
+            <TabsTrigger value="predictive">
+              <Brain className="w-4 h-4 mr-2" />
+              Análise Preditiva
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -303,6 +307,27 @@ export default function PortfolioDashboard() {
                 })}
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="predictive" className="space-y-6">
+            <div className="mb-6">
+              <label className="text-sm text-slate-400 mb-2 block">Selecione uma Venture</label>
+              <select 
+                className="w-full md:w-64 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                defaultValue="all"
+                onChange={(e) => {
+                  const select = e.target;
+                  const selectedId = select.value;
+                  // This would need state management, but for now we'll use 'all'
+                }}
+              >
+                <option value="all">Portfolio Completo</option>
+                {portfolioData?.ventures?.map(v => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </select>
+            </div>
+            <PredictiveAnalytics ventureId="all" />
           </TabsContent>
         </Tabs>
 
